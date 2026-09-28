@@ -106,9 +106,10 @@ So that my course package feels personally customized and legally watermarked to
 - **FR-010**: Upon valid submission, the system MUST create an Order record in `pending` state containing:
   - Unique human-readable order number (e.g., `KNZ-ORD-YYYY-XXXX`).
   - Total amount in USD minor units (cents).
-  - Frozen exchange rate and converted local currency amount (IQD).
+  - Frozen accounting exchange rate (`exchange_rate`, e.g. 1 USD = 1,310 IQD) and accounting gateway capture amount (`paid_amount_gateway_iqd`).
+  - Separately stored promotional marketing display label (`marketing_display_iqd`, e.g., "2,000 IQD").
   - Explicit record of complimentary promotional tickets granted.
-  - IP address and timestamp of legal terms acceptance.
+  - IP address and timestamp of affirmative legal terms acceptance.
 - **FR-011**: The user interface MUST support full bidirectional localization:
   - Arabic as the default primary language (`dir="rtl"`).
   - English secondary language (`dir="ltr"`).
@@ -139,7 +140,7 @@ So that my course package feels personally customized and legally watermarked to
 - **Course**: Educational curriculum. Attributes: Unique identifier, URL slug, Arabic title, English title, description, cover image, bundle price ($10 USD / 1000 cents), bundle promotional ticket count (15), publication status.
 - **Course Part**: Modular chapter within a course. Attributes: Unique identifier, parent course reference, part number (1 to 6), Arabic title, part price ($2 USD / 200 cents), part promotional ticket count (1), resource metadata (video URL, PDF path, audio path).
 - **Anti-Piracy Quiz Response**: User profile customization. Attributes: Reference to user or checkout session, sector of interest, weekly study hours, primary goal, completion timestamp.
-- **Order**: Educational purchase intent. Attributes: Unique identifier, human-readable order number, customer reference, line items, total amount in cents, currency (`USD`), captured local gateway amount (`IQD`), frozen exchange rate, order status (`pending`, `completed`, `failed`), legal agreement accepted flag, client IP address, creation timestamp.
+- **Order**: Educational purchase intent. Attributes: Unique identifier, human-readable order number, customer reference, line items, total amount in cents, currency (`USD`), frozen accounting exchange rate (`exchange_rate`), accounting gateway capture amount (`paid_amount_gateway_iqd`), promotional marketing display label (`marketing_display_iqd`), order status (`pending`, `completed`, `failed`), legal agreement accepted flag, client IP address, creation timestamp.
 - **Order Item**: Specific purchased unit. Attributes: Parent order reference, course reference, optional course part reference (null if bundle), item type (`bundle`, `part`), price in cents, promotional tickets granted count.
 
 ---
@@ -159,7 +160,9 @@ So that my course package feels personally customized and legally watermarked to
 
 ## Assumptions
 
-1. **Exchange Rate Baseline**: For the initial pending order creation, the default exchange rate is assumed at `1 USD = 1,310 IQD` (making a $2 part ~2,620 IQD); accounting rate frozen at 1 USD = 1,310 IQD; marketing display label 2,000 IQD stored separately.
+1. **Exchange Rate Baseline & Dual-Field Resolution**: The system strictly separates financial accounting from promotional marketing display across two distinct fields:
+   - **Accounting Rate & Capture Amount**: The accounting exchange rate is frozen at `1 USD = 1,310 IQD` (making a $2.00 part = 2,620 IQD) stored in `exchange_rate` and `paid_amount_gateway_iqd` for billing and financial reconciliation.
+   - **Marketing Display Label**: The human-facing promotional price label (e.g., `2,000 IQD`) is stored in `marketing_display_iqd` strictly as UI display metadata without mutating accounting ledger amounts.
 2. **Guest Identity Lifecycle**: A guest user account created via email-only checkout will automatically merge with a Google account if the user subsequently logs in with the identical email address.
 3. **No Direct Ticket Minting in this Phase**: Orders in `pending` state only calculate and record the number of promotional tickets to be awarded (`promotional_tickets_granted`); actual unique ticket codes (`KNZ-A15-...`) will only be minted once payment confirmation webhooks are implemented in Phase 3.
 4. **Anti-Piracy Quiz Simplicity**: The quiz is designed as a lightweight client-side interactive step for user engagement and psychological commitment; responses are passed into the order metadata without requiring complex server-side scoring.
