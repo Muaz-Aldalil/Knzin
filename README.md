@@ -7,8 +7,8 @@ Arabic-first educational and promotional raffle e-commerce platform.
 * [DECISIONS.md](DECISIONS.md) — Technical decision log (Next.js, Laravel 11, MySQL 8+, Dual-Ledger, Redis).
 * `specs/` & `.specify/` — Spec Kit governance constitution and UI specifications.
 
-## Prototype
-To view the current static HTML/JS prototype:
+## Prototype (Legacy Reference)
+To view the static HTML/JS design reference:
 ```powershell
-start index.html
+start prototype/index.html
 ```
