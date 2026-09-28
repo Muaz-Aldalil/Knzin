@@ -1,0 +1,472 @@
+openapi: 3.0.3
+info:
+  title: KNZiN API - Auth, Catalog & Checkout (MVP Scope)
+  version: 1.0.0
+  description: |
+    REST API contract for KNZiN educational platform (Feature 002).
+    Enforces strict legal shield validation, dual-currency accounting separation,
+    guest checkout, Google OAuth with one-way merge, and pending order creation with 48h TTL.
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local Laravel Backend
+
+paths:
+  /auth/guest:
+    post:
+      summary: Register or authenticate guest buyer
+      description: Issues a short-lived guest session token based on email.
+      operationId: authGuest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: student@example.com
+      responses:
+        '200':
+          description: Guest authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '422':
+          description: Validation error (invalid email format)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/google/redirect:
+    get:
+      summary: Redirect to Google OAuth (or dev-mock driver)
+      description: Returns the OAuth redirect URL or triggers direct redirect.
+      operationId: googleRedirect
+      parameters:
+        - name: mock_email
+          in: query
+          required: false
+          schema:
+            type: string
+          description: When GOOGLE_AUTH_MOCK=true, forces this email in the mock payload.
+      responses:
+        '302':
+          description: Redirects to Google consent screen (or mock callback)
+
+  /auth/google/callback:
+    get:
+      summary: Google OAuth callback handler
+      description: |
+        Processes Google identity token. If matching guest account exists, executes one-way
+        merge of orders and deactivates guest record.
+      operationId: googleCallback
+      parameters:
+        - name: code
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid OAuth grant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/me:
+    get:
+      summary: Get current authenticated profile
+      operationId: getAuthMe
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthenticated
+
+  /auth/logout:
+    post:
+      summary: Revoke session token
+      operationId: logout
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Token revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+
+  /catalog/courses:
+    get:
+      summary: List all active courses
+      description: Returns courses with bundle pricing, ticket incentives, and part summaries.
+      operationId: listCourses
+      responses:
+        '200':
+          description: Course catalog list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+
+  /catalog/courses/{slug}:
+    get:
+      summary: Get course details and full part breakdown
+      operationId: getCourseBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: auto-detailing
+      responses:
+        '200':
+          description: Course details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/CourseDetail'
+        '404':
+          description: Course not found
+
+  /checkout/orders:
+    post:
+      summary: Create pending order with canonical legal agreement
+      description: |
+        Validates the exact canonical legal shield verbatim. Enforces 10-minute idempotency dedup.
+        Creates order in pending status with dual currency amounts and 48-hour TTL.
+      operationId: createOrder
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Client-generated unique UUID for 10-minute dedup window
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created in pending status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '200':
+          description: Existing order returned (idempotency key matched within 10 min window)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '422':
+          description: Validation error (e.g. legal shield verbatim mismatch or missing checkbox)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /checkout/orders/{orderNumber}:
+    get:
+      summary: Get order details and pending status
+      operationId: getOrder
+      parameters:
+        - name: orderNumber
+          in: path
+          required: true
+          schema:
+            type: string
+            example: KNZ-ORD-2026-0001
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: Order not found
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        display_name:
+          type: string
+        auth_provider:
+          type: string
+          enum: [guest, google]
+        avatar_url:
+          type: string
+          nullable: true
+        is_verified:
+          type: boolean
+
+    AuthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              example: 1|laravel_sanctum_token_string
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        title_ar:
+          type: string
+        title_en:
+          type: string
+        description_ar:
+          type: string
+        description_en:
+          type: string
+        cover_image_url:
+          type: string
+        bundle_price_cents:
+          type: integer
+          example: 1000
+        bundle_promotional_tickets:
+          type: integer
+          example: 15
+        display_price_label:
+          type: string
+          example: 13,000 IQD
+        parts_count:
+          type: integer
+          example: 6
+
+    CoursePart:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        part_number:
+          type: integer
+          example: 1
+        title_ar:
+          type: string
+        title_en:
+          type: string
+        syllabus_ar:
+          type: string
+        syllabus_en:
+          type: string
+        part_price_cents:
+          type: integer
+          example: 200
+        part_promotional_tickets:
+          type: integer
+          example: 1
+        display_price_label:
+          type: string
+          example: 2,000 IQD
+        resource_types:
+          type: array
+          items:
+            type: string
+          example: ["video", "pdf"]
+        duration_minutes:
+          type: integer
+          example: 45
+
+    CourseDetail:
+      allOf:
+        - $ref: '#/components/schemas/Course'
+        - type: object
+          properties:
+            parts:
+              type: array
+              items:
+                $ref: '#/components/schemas/CoursePart'
+
+    CreateOrderRequest:
+      type: object
+      required:
+        - email
+        - course_id
+        - item_type
+        - legal_terms_agreed
+        - legal_terms_verbatim
+      properties:
+        email:
+          type: string
+          format: email
+          example: student@example.com
+        course_id:
+          type: string
+          format: uuid
+        course_part_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Required if item_type is 'part'. Null if 'bundle'.
+        item_type:
+          type: string
+          enum: [bundle, part]
+          example: part
+        legal_terms_agreed:
+          type: boolean
+          description: Must be strictly true.
+          example: true
+        legal_terms_verbatim:
+          type: string
+          description: Must match canonical verbatim string exactly.
+          example: "أوافق على الشروط والأحكام وسياسة الخصوصية، وأقر بأنني أقوم بشراء محتوى رقمي تعليمي، وأن تذكرة السحب المرفقة هي هدية ترويجية مجانية غير مستردة أو قابلة للتبديل"
+        quiz_answers:
+          type: object
+          nullable: true
+          example:
+            primary_goal: "car_detailing_shop"
+            weekly_commitment: "5_hours"
+            level: "beginner"
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        order_number:
+          type: string
+          example: KNZ-ORD-2026-0001
+        status:
+          type: string
+          enum: [pending, completed, failed, refunded]
+          example: pending
+        total_amount_cents:
+          type: integer
+          example: 200
+        currency:
+          type: string
+          example: USD
+        exchange_rate:
+          type: string
+          example: "1.3100"
+        paid_amount_gateway:
+          type: integer
+          example: 2620
+        display_price_label:
+          type: string
+          example: "2,000 IQD"
+        promotional_tickets_granted:
+          type: integer
+          example: 1
+        legal_terms_agreed:
+          type: boolean
+          example: true
+        terms_agreed_ip:
+          type: string
+          example: "192.168.1.1"
+        terms_agreed_at:
+          type: string
+          format: date-time
+        quiz_answers:
+          type: object
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    OrderResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/Order'
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        code:
+          type: string
+          example: ERR_LEGAL_SHIELD_MISMATCH
+        message:
+          type: string
+          example: The legal terms verbatim agreement does not match the canonical text.
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
