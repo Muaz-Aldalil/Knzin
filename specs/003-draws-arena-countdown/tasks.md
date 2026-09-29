@@ -29,10 +29,10 @@
 
 **Purpose**: Establishing shared TypeScript contracts, mock fallback fixtures, and bilingual translation dictionaries for the promotional draws domain.
 
-- [ ] T001 Establish TypeScript interfaces for DrawItem, PrizeItem, ActiveDrawsResponse, and ConcludedDrawsResponse in frontend/src/types/draws.ts
-- [ ] T002 [P] Create mock draw fixtures and offline fallback data in frontend/src/data/mock-draws.ts
-- [ ] T003 [P] Add draws translation dictionary namespace for Arabic locale in frontend/messages/ar.json
-- [ ] T004 [P] Add draws translation dictionary namespace for English locale in frontend/messages/en.json
+- [X] T001 Establish TypeScript interfaces for DrawItem, PrizeItem, ActiveDrawsResponse, and ConcludedDrawsResponse in frontend/src/types/draws.ts
+- [X] T002 [P] Create mock draw fixtures and offline fallback data in frontend/src/data/mock-draws.ts
+- [X] T003 [P] Add draws translation dictionary namespace for Arabic locale in frontend/messages/ar.json
+- [X] T004 [P] Add draws translation dictionary namespace for English locale in frontend/messages/en.json
 
 ---
 
@@ -42,11 +42,11 @@
 
 **⚠️ CRITICAL**: Must be completed and verified before ANY user story implementation begins.
 
-- [ ] T005 Create draws table migration with UUID PK, tier enum, execution_type enum, status enum, timestamps, and composite index in backend/database/migrations/2026_09_29_000007_create_draws_table.php
-- [ ] T006 [P] Create prizes table migration with UUID PK, draw_id FK (cascade), valuation_usd_cents BIGINT, and display_iqd_label in backend/database/migrations/2026_09_29_000008_create_prizes_table.php
-- [ ] T007 [P] Create draw_winners table migration with UUID PK, draw_id FK (restrict), masked winner fields, and winning ticket serial in backend/database/migrations/2026_09_29_000009_create_draw_winners_table.php
-- [ ] T008 Create Eloquent models Draw, Prize, and DrawWinner with HasUuids trait, relationships, and scopes (active, locked, concluded) in backend/app/Models/
-- [ ] T009 Create PromotionalDrawSeeder populating an authentic rolling schedule (4 hourly draws, 1 daily draw, 1 monthly grand draw, 3 past winners) in backend/database/seeders/PromotionalDrawSeeder.php
+- [X] T005 Create draws table migration with UUID PK, tier enum, execution_type enum, status enum, timestamps, and composite index in backend/database/migrations/2026_09_29_000007_create_draws_table.php
+- [X] T006 [P] Create prizes table migration with UUID PK, draw_id FK (cascade), valuation_usd_cents BIGINT, and display_iqd_label in backend/database/migrations/2026_09_29_000008_create_prizes_table.php
+- [X] T007 [P] Create draw_winners table migration with UUID PK, draw_id FK (restrict), masked winner fields, and winning ticket serial in backend/database/migrations/2026_09_29_000009_create_draw_winners_table.php
+- [X] T008 Create Eloquent models Draw, Prize, and DrawWinner with HasUuids trait, relationships, and scopes (active, locked, concluded) in backend/app/Models/
+- [X] T009 Create PromotionalDrawSeeder populating an authentic rolling schedule (4 hourly draws, 1 daily draw, 1 monthly grand draw, 3 past winners) in backend/database/seeders/PromotionalDrawSeeder.php
 
 **Checkpoint**: Database migrated, models linked, and seed data populated. User story implementation can now begin.
 
