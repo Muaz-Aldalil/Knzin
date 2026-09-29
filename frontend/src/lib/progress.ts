@@ -20,6 +20,13 @@ export async function saveLessonProgress(
   watchSeconds: number,
   percentComplete: number
 ): Promise<void> {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('knzin_auth_token');
+    if (!token || token === 'null' || token === 'undefined') {
+      return;
+    }
+  }
+
   try {
     await apiClient('/progress', {
       method: 'POST',
@@ -37,6 +44,14 @@ export async function saveLessonProgress(
 }
 
 export async function fetchActiveLearning(): Promise<ActiveLearningData | null> {
+  // If guest/unauthenticated user, skip network call completely
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('knzin_auth_token');
+    if (!token || token === 'null' || token === 'undefined') {
+      return null;
+    }
+  }
+
   try {
     const res = await apiClient<{ active_learning: ActiveLearningData | null }>(
       '/user/active-learning'
@@ -50,6 +65,13 @@ export async function fetchActiveLearning(): Promise<ActiveLearningData | null> 
 export async function fetchCourseProgress(
   courseSlug: string
 ): Promise<Record<number, { percent_complete: number; is_completed: boolean; watch_seconds: number }>> {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('knzin_auth_token');
+    if (!token || token === 'null' || token === 'undefined') {
+      return {};
+    }
+  }
+
   try {
     const res = await apiClient<{
       parts_progress: Record<number, { percent_complete: number; is_completed: boolean; watch_seconds: number }>;
