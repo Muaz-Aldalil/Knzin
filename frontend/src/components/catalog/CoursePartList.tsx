@@ -3,7 +3,7 @@
 import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { PlayCircle, Clock, Ticket, Sparkles, CheckCircle2, Lock, ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
+import { PlayCircle, Clock, Ticket, Lock, BookOpen } from 'lucide-react';
 import { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 import {
   Accordion,
@@ -102,12 +102,11 @@ export default function CoursePartList({
                     <div className="space-y-1.5 flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         {isFirstFree ? (
-                          <Badge variant="success" size="sm" className="font-black gap-1 text-[11px]">
-                            <Sparkles className="w-3 h-3" />
+                          <Badge variant="success" size="sm" className="font-semibold text-[11px]">
                             <span>{isRtl ? 'معاينة مجانية' : 'Free Preview'}</span>
                           </Badge>
                         ) : (
-                          <Badge variant="outline" size="sm" className="font-bold gap-1 text-[11px]">
+                          <Badge variant="outline" size="sm" className="font-medium gap-1 text-[11px]">
                             <Lock className="w-3 h-3 text-content-muted" />
                             <span>{isRtl ? `الجزء ${part.part_number}` : `Part ${part.part_number}`}</span>
                           </Badge>
@@ -119,14 +118,14 @@ export default function CoursePartList({
                         </span>
 
                         {!isFirstFree && (
-                          <span className="flex items-center gap-1 text-[11px] font-bold text-accent">
+                          <span className="flex items-center gap-1 text-[11px] font-semibold text-accent">
                             <Ticket className="w-3 h-3" />
                             <span>{part.part_promotional_tickets} {isRtl ? 'تذكرة سحب' : 'Ticket'}</span>
                           </span>
                         )}
                       </div>
 
-                      <h4 className="text-sm sm:text-base font-black text-content-primary leading-snug">
+                      <h4 className="text-sm sm:text-base font-bold text-content-primary leading-snug">
                         {partTitle}
                       </h4>
                     </div>
@@ -137,18 +136,18 @@ export default function CoursePartList({
                     {isFirstFree ? (
                       <Link
                         href={`/lessons/${lessonSlug}`}
-                        className="px-5 py-2.5 rounded-xl bg-success hover:bg-success/90 text-white text-xs font-black transition-all flex items-center gap-2 shadow-sm shadow-success/20 active:scale-95"
+                        className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5"
                       >
-                        <PlayCircle className="w-4 h-4 fill-current text-white/30" />
+                        <PlayCircle className="w-4 h-4" />
                         <span>{isRtl ? 'مشاهدة الدرس مجاناً' : 'Watch Free'}</span>
                       </Link>
                     ) : (
                       <div className="flex items-center gap-3">
                         <div className="text-start md:text-end">
-                          <div className="text-sm sm:text-base font-black text-content-primary">
+                          <div className="text-sm sm:text-base font-bold text-content-primary">
                             ${(part.part_price_cents / 100).toFixed(2)}
                           </div>
-                          <div className="text-[11px] text-content-muted font-mono font-bold">
+                          <div className="text-[11px] text-content-muted font-mono">
                             {part.display_price_label}
                           </div>
                         </div>
@@ -169,7 +168,7 @@ export default function CoursePartList({
                               displayPriceLabel: part.display_price_label,
                             })
                           }
-                          className="font-bold text-xs shadow-sm shadow-primary/20"
+                          className="font-medium text-xs rounded-lg"
                         >
                           {isRtl ? 'فتح الجزء' : 'Unlock Part'}
                         </Button>

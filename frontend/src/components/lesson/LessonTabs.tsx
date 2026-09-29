@@ -17,7 +17,6 @@ import {
 import { LessonResource } from '@/lib/course-content';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 
 interface LessonTabsProps {
   summary: string;
@@ -185,50 +184,48 @@ export function LessonTabs({
 
         {/* Tab 1: Lesson Content */}
         <TabsContent value="content" className="space-y-6 mt-4">
-          {/* Summary Box */}
-          <Card className="p-6 border border-border-subtle bg-surface">
-            <h3 className="text-base sm:text-lg font-black text-content-primary mb-3">
+          {/* Summary */}
+          <div className="space-y-2">
+            <h3 className="text-sm sm:text-base font-bold text-content-primary">
               {isRtl ? 'ملخص هذا الجزء التدريبي' : 'Training Part Summary'}
             </h3>
-            <p className="text-sm text-content-secondary leading-relaxed font-medium">
+            <p className="text-xs sm:text-sm text-content-secondary leading-relaxed">
               {summary}
             </p>
-          </Card>
+          </div>
 
           {/* Key Points */}
           {keyPoints && keyPoints.length > 0 && (
-            <Card className="p-6 border border-border-subtle bg-surface">
-              <h4 className="text-sm sm:text-base font-black text-content-primary mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-success" />
+            <div className="space-y-3 pt-2 border-t border-border-subtle">
+              <h4 className="text-sm font-bold text-content-primary flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>{isRtl ? 'المخرجات والمهارات العملية' : 'Hands-on Skills & Takeaways'}</span>
               </h4>
-              <ul className="space-y-3">
+              <ul className="space-y-2.5">
                 {keyPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-3 text-xs sm:text-sm text-content-secondary">
-                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-success/10 text-success text-[11px] font-bold mt-0.5">
+                  <li key={index} className="flex items-start gap-2.5 text-xs sm:text-sm text-content-secondary">
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-surface-secondary text-content-primary text-[10px] font-bold mt-0.5">
                       {index + 1}
                     </span>
                     <span className="leading-relaxed">{point}</span>
                   </li>
                 ))}
               </ul>
-            </Card>
+            </div>
           )}
 
-          {/* Pro Tip Card */}
+          {/* Pro Tip */}
           {proTip && (
-            <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-950 dark:text-amber-100 flex items-start gap-4 shadow-sm">
-              <div className="p-2 rounded-xl bg-amber-500/20 text-accent shrink-0 mt-0.5">
-                <Lightbulb className="w-5 h-5" />
+            <div className="p-4 rounded-xl border border-border-subtle bg-surface-secondary/40 text-content-primary flex items-start gap-3.5">
+              <div className="p-1.5 rounded-lg bg-surface-primary text-accent shrink-0 mt-0.5">
+                <Lightbulb className="w-4 h-4" />
               </div>
               <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-accent">
-                    {isRtl ? 'سر المهنة' : 'Pro Trade Secret'}
-                  </span>
-                </div>
-                <h5 className="text-sm font-bold">{proTip.title}</h5>
-                <p className="text-xs sm:text-sm text-content-secondary leading-relaxed">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
+                  {isRtl ? 'سر المهنة' : 'Pro Trade Secret'}
+                </span>
+                <h5 className="text-xs sm:text-sm font-bold">{proTip.title}</h5>
+                <p className="text-xs text-content-secondary leading-relaxed">
                   {proTip.content}
                 </p>
               </div>
@@ -236,141 +233,135 @@ export function LessonTabs({
           )}
         </TabsContent>
 
-        {/* Tab 2: Vocational Safety Checklist (Scrimba Hands-on pattern) */}
+        {/* Tab 2: Vocational Safety Checklist */}
         <TabsContent value="checklist" className="space-y-4 mt-4">
-          <Card className="p-6 border border-border-subtle bg-surface">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-border-subtle pb-4">
-              <div>
-                <h3 className="text-base sm:text-lg font-black text-content-primary flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 text-success" />
-                  <span>{isRtl ? 'خطوات الفحص والتطبيق العملي' : 'Vocational Safety & Quality Checklist'}</span>
-                </h3>
-                <p className="text-xs text-content-secondary mt-1">
-                  {isRtl
-                    ? 'تحقق من تنفيذ معايير الجودة والسلامة قبل إنهاء هذا الجزء المهني.'
-                    : 'Verify practical quality and safety steps before concluding this part.'}
-                </p>
-              </div>
-              <Badge variant={completedTasksCount === tasks.length ? 'success' : 'accent'} size="md">
-                {completedTasksCount === tasks.length
-                  ? isRtl ? 'تم التحقق بالكامل ✓' : 'All Checked ✓'
-                  : `${completedTasksCount} / ${tasks.length} ${isRtl ? 'منجز' : 'Done'}`}
-              </Badge>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border-subtle">
+            <div>
+              <h3 className="text-sm sm:text-base font-bold text-content-primary flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>{isRtl ? 'خطوات الفحص والتطبيق العملي' : 'Vocational Safety & Quality Checklist'}</span>
+              </h3>
+              <p className="text-xs text-content-secondary mt-0.5">
+                {isRtl
+                  ? 'تحقق من تنفيذ معايير الجودة والسلامة قبل إنهاء هذا الجزء المهني.'
+                  : 'Verify practical quality and safety steps before concluding this part.'}
+              </p>
             </div>
+            <Badge variant={completedTasksCount === tasks.length ? 'success' : 'outline'} size="sm">
+              {completedTasksCount === tasks.length
+                ? isRtl ? 'تم التحقق بالكامل ✓' : 'All Checked ✓'
+                : `${completedTasksCount} / ${tasks.length} ${isRtl ? 'منجز' : 'Done'}`}
+            </Badge>
+          </div>
 
-            <div className="space-y-3">
-              {tasks.map((task, idx) => {
-                const isChecked = !!checkedItems[idx];
-                return (
+          <div className="space-y-2.5">
+            {tasks.map((task, idx) => {
+              const isChecked = !!checkedItems[idx];
+              return (
+                <div
+                  key={idx}
+                  onClick={() => toggleChecklistItem(idx)}
+                  className={`p-3.5 rounded-lg border transition-colors cursor-pointer flex items-start gap-3 select-none ${
+                    isChecked
+                      ? 'bg-emerald-500/5 border-emerald-500/30'
+                      : 'bg-surface-primary border-border-subtle hover:border-border'
+                  }`}
+                >
                   <div
-                    key={idx}
-                    onClick={() => toggleChecklistItem(idx)}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-4 select-none ${
+                    className={`size-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
                       isChecked
-                        ? 'bg-success/5 border-success/30'
-                        : 'bg-surface-secondary/40 border-border-subtle hover:border-primary/40'
+                        ? 'bg-emerald-600 border-emerald-600 text-white'
+                        : 'border-border-strong bg-surface'
                     }`}
                   >
-                    <div
-                      className={`size-6 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-                        isChecked
-                          ? 'bg-success border-success text-white'
-                          : 'border-border-strong bg-surface'
+                    {isChecked && <CheckCircle2 className="w-3.5 h-3.5" />}
+                  </div>
+
+                  <div className="flex-1">
+                    <h5
+                      className={`text-xs sm:text-sm font-semibold ${
+                        isChecked ? 'line-through text-content-muted' : 'text-content-primary'
                       }`}
                     >
-                      {isChecked && <CheckCircle2 className="w-4 h-4" />}
-                    </div>
-
-                    <div className="flex-1">
-                      <h5
-                        className={`text-sm font-bold ${
-                          isChecked ? 'line-through text-content-muted' : 'text-content-primary'
-                        }`}
-                      >
-                        {task.title}
-                      </h5>
-                      <p className="text-xs text-content-secondary mt-0.5 leading-relaxed">
-                        {task.desc}
-                      </p>
-                    </div>
+                      {task.title}
+                    </h5>
+                    <p className="text-xs text-content-secondary mt-0.5 leading-relaxed">
+                      {task.desc}
+                    </p>
                   </div>
-                );
-              })}
-            </div>
-          </Card>
+                </div>
+              );
+            })}
+          </div>
         </TabsContent>
 
         {/* Tab 3: Resources */}
         <TabsContent value="resources" className="space-y-4 mt-4">
-          <Card className="p-6 border border-border-subtle bg-surface">
-            <h3 className="text-base sm:text-lg font-black text-content-primary mb-4">
-              {isRtl ? 'الملفات والمخططات الملحقة' : 'Downloadable Schematics & Resources'}
-            </h3>
+          <h3 className="text-sm sm:text-base font-bold text-content-primary">
+            {isRtl ? 'الملفات والمخططات الملحقة' : 'Downloadable Schematics & Resources'}
+          </h3>
 
-            {resources && resources.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {resources.map((res, idx) => (
-                  <a
-                    key={idx}
-                    href={res.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-4 rounded-xl border border-border-subtle bg-surface-secondary/50 hover:bg-surface-secondary hover:border-primary/40 transition-all flex items-center justify-between gap-3 group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform">
-                        <FolderArchive className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h5 className="text-xs sm:text-sm font-bold text-content-primary group-hover:text-primary transition-colors">
-                          {isRtl ? res.title_ar : res.title_en}
-                        </h5>
-                        <span className="text-[11px] font-mono text-content-muted">
-                          {res.type.toUpperCase()} • {res.size}
-                        </span>
-                      </div>
+          {resources && resources.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {resources.map((res, idx) => (
+                <a
+                  key={idx}
+                  href={res.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-lg border border-border-subtle bg-surface-primary hover:border-border transition-colors flex items-center justify-between gap-3 group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-md bg-surface-secondary text-primary">
+                      <FolderArchive className="w-4 h-4" />
                     </div>
-                  </a>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-content-muted py-6 text-center">
-                {isRtl ? 'لا توجد ملفات مرفقة لهذا الجزء.' : 'No downloadable resources attached to this part.'}
-              </p>
-            )}
-          </Card>
+                    <div>
+                      <h5 className="text-xs font-semibold text-content-primary group-hover:text-primary transition-colors">
+                        {isRtl ? res.title_ar : res.title_en}
+                      </h5>
+                      <span className="text-[10px] font-mono text-content-muted">
+                        {res.type.toUpperCase()} • {res.size}
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-content-muted py-6 text-center">
+              {isRtl ? 'لا توجد ملفات مرفقة لهذا الجزء.' : 'No downloadable resources attached to this part.'}
+            </p>
+          )}
         </TabsContent>
 
         {/* Tab 4: Private Notes */}
         <TabsContent value="notes" className="space-y-4 mt-4">
-          <Card className="p-6 border border-border-subtle bg-surface">
-            <div className="flex items-center justify-between gap-3 mb-4">
-              <h3 className="text-base sm:text-lg font-black text-content-primary flex items-center gap-2">
-                <PenLine className="w-5 h-5 text-primary" />
-                <span>{isRtl ? 'دفتر الملاحظات المهني الخاص بك' : 'Your Personal Trade Notes'}</span>
-              </h3>
-              <button
-                type="button"
-                onClick={handleSaveNote}
-                className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
-              >
-                <Save className="w-3.5 h-3.5" />
-                <span>{isSaved ? (isRtl ? 'تم الحفظ!' : 'Saved!') : isRtl ? 'حفظ' : 'Save'}</span>
-              </button>
-            </div>
+          <div className="flex items-center justify-between gap-3 pb-2 border-b border-border-subtle">
+            <h3 className="text-sm sm:text-base font-bold text-content-primary flex items-center gap-2">
+              <PenLine className="w-4 h-4 text-primary" />
+              <span>{isRtl ? 'دفتر الملاحظات الخاص بك' : 'Your Personal Notes'}</span>
+            </h3>
+            <button
+              type="button"
+              onClick={handleSaveNote}
+              className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-colors flex items-center gap-1.5"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{isSaved ? (isRtl ? 'تم الحفظ!' : 'Saved!') : isRtl ? 'حفظ' : 'Save'}</span>
+            </button>
+          </div>
 
-            <textarea
-              value={userNote}
-              onChange={(e) => setUserNote(e.target.value)}
-              placeholder={
-                isRtl
-                  ? 'سجّل هنا ملاحظاتك حول هذا الجزء، أطوال المسامير، درجات الحرارة أو خلطات المواد للرجوع إليها لاحقاً...'
-                  : 'Write your private notes, torque specs, temperatures, or procedural reminders here...'
-              }
-              rows={6}
-              className="w-full p-4 rounded-xl border border-border-subtle bg-input-bg text-content-primary text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all resize-y"
-            />
-          </Card>
+          <textarea
+            value={userNote}
+            onChange={(e) => setUserNote(e.target.value)}
+            placeholder={
+              isRtl
+                ? 'سجّل هنا ملاحظاتك حول هذا الجزء، أطوال المسامير، درجات الحرارة أو خلطات المواد للرجوع إليها لاحقاً...'
+                : 'Write your private notes, torque specs, temperatures, or procedural reminders here...'
+            }
+            rows={6}
+            className="w-full p-3.5 rounded-lg border border-border-subtle bg-input-bg text-content-primary text-xs sm:text-sm focus:outline-none focus:border-primary transition-colors resize-y"
+          />
         </TabsContent>
       </Tabs>
     </div>

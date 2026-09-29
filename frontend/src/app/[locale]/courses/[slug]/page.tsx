@@ -11,7 +11,7 @@ import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/Che
 import { LearningOutcomes } from '@/components/course/LearningOutcomes';
 import { CourseProgressBar } from '@/components/course/CourseProgressBar';
 import { useCourseDetail } from '@/hooks/useCatalog';
-import { Loader2, AlertCircle, Ticket, Sparkles, ArrowRight, ShieldCheck, Check } from 'lucide-react';
+import { Loader2, AlertCircle, Ticket, ArrowRight, Check } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 
 export default function CourseDetailPage() {
@@ -101,43 +101,38 @@ export default function CourseDetailPage() {
       {/* Hero Header & Bundle Feature Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Course Info (2 cols) */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light/60 dark:bg-primary/10 text-primary text-xs font-bold border border-primary/20">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>منهج مهني تدريبي معتمد</span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-secondary dark:text-white leading-tight">
+        <div className="lg:col-span-2 space-y-3">
+          <h1 className="text-2xl sm:text-3xl font-bold text-content-primary tracking-tight leading-tight">
             {title}
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p className="text-sm sm:text-base text-content-secondary leading-relaxed">
             {description}
           </p>
 
-          <div className="pt-2 flex flex-wrap gap-4 text-xs font-medium text-slate-500">
+          <div className="pt-1 flex flex-wrap gap-4 text-xs text-content-secondary">
             <span className="flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-success" />
+              <Check className="w-3.5 h-3.5 text-success" />
               <span>شامل 6 أجزاء تدريبية مصورة</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-success" />
+              <Check className="w-3.5 h-3.5 text-success" />
               <span>ملفات عمل ومخططات قابلة للتحميل</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-success" />
-              <span>دخول فوري مدى الحياة بدون اشتراك شهري</span>
+              <Check className="w-3.5 h-3.5 text-success" />
+              <span>دخول فوري مدى الحياة بدون اشتراك</span>
             </span>
           </div>
         </div>
 
-        {/* Full Bundle Purchase Card (1 col) */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-content-primary shadow-xl space-y-4 relative overflow-hidden">
+        {/* Full Bundle Purchase Card (1 col) - Preserving white background requirement */}
+        <div className="p-5 rounded-xl bg-white dark:bg-slate-900 border border-border-subtle text-content-primary space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-extrabold text-primary uppercase tracking-wider">
+            <span className="text-xs font-bold text-primary">
               {t('bundleOffer')}
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-accent/10 dark:bg-accent/20 text-accent border border-accent/25 text-xs font-black flex items-center gap-1 shadow-xs">
+            <span className="text-accent text-xs font-semibold flex items-center gap-1">
               <Ticket className="w-3.5 h-3.5" />
               <span>{course.bundle_promotional_tickets} تذكرة</span>
             </span>
@@ -145,27 +140,26 @@ export default function CourseDetailPage() {
 
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-secondary dark:text-white">
+              <span className="text-2xl sm:text-3xl font-extrabold text-content-primary">
                 ${(course.bundle_price_cents / 100).toFixed(2)}
               </span>
-              <span className="text-sm font-bold text-slate-500 dark:text-slate-400">
+              <span className="text-xs text-content-muted">
                 ({course.display_price_label})
               </span>
             </div>
-            <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+            <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
               {t('bundleSavings')}
             </p>
           </div>
 
           <button
             onClick={handleBundleCheckout}
-            className="w-full py-3.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-extrabold shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer"
           >
-            <Sparkles className="w-4 h-4 text-accent" />
             <span>{t('buyBundle')}</span>
           </button>
 
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center leading-relaxed">
+          <p className="text-[11px] text-content-muted text-center leading-relaxed">
             يشمل جميع الأجزاء الـ 6 كاملة + 15 تذكرة سحب ترويجية مجانية على الجوائز الكبرى.
           </p>
         </div>

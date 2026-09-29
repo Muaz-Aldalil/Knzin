@@ -7,7 +7,7 @@ import CourseCard from '@/components/catalog/CourseCard';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 import { ResumeHeroCard } from '@/components/course/ResumeHeroCard';
 import { useCatalog } from '@/hooks/useCatalog';
-import { Loader2, AlertCircle, Sparkles, Trophy, ShieldCheck, Zap, Search } from 'lucide-react';
+import { Loader2, AlertCircle, Search } from 'lucide-react';
 
 export default function CatalogPage() {
   const t = useTranslations('catalog');
@@ -32,53 +32,32 @@ export default function CatalogPage() {
   return (
     <div className="space-y-10 pb-12">
       {/* Hero Section */}
-      <div className="relative text-center max-w-4xl mx-auto pt-4 sm:pt-8 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-light/60 dark:bg-primary/10 text-primary text-xs font-bold border border-primary/20">
-          <Zap className="w-3.5 h-3.5 text-primary fill-primary" />
-          <span>التعليم المهني المصغر الأول في العراق مع هدايا ترويجية قانونية</span>
-        </div>
-
-        <h1 className="text-3xl sm:text-5xl font-black text-secondary dark:text-white tracking-tight leading-tight">
+      <div className="text-center max-w-3xl mx-auto pt-6 sm:pt-10 space-y-4">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-content-primary tracking-tight leading-tight">
           {t('heading')}
         </h1>
 
-        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-sm sm:text-base text-content-secondary max-w-xl mx-auto leading-relaxed">
           {t('subheading')}
         </p>
 
         {/* Supabase-style In-Place Quick Search Trigger */}
-        <div className="pt-2 max-w-lg mx-auto">
+        <div className="pt-2 max-w-md mx-auto">
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent('knzin:open-search'))}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-surface-primary hover:bg-surface-elevated border border-border-subtle hover:border-primary/50 text-content-muted hover:text-content-primary shadow-sm hover:shadow-md transition-all group cursor-pointer text-start"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-surface-primary hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-muted hover:text-content-primary transition-colors group cursor-pointer text-start"
           >
-            <div className="flex items-center gap-3">
-              <Search className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-              <span className="text-xs sm:text-sm font-medium">
-                ابحث في المهارات، الأدوات، أو اللحظات التدريبية...
+            <div className="flex items-center gap-2.5">
+              <Search className="w-4 h-4 text-content-muted group-hover:text-primary transition-colors" />
+              <span className="text-xs sm:text-sm font-normal">
+                ابحث في المهارات أو الأدوات أو الدروس...
               </span>
             </div>
-            <kbd className="inline-flex items-center px-2 py-0.5 text-[11px] font-mono font-bold text-content-muted bg-surface-secondary border border-border-subtle rounded-lg shadow-xs select-none group-hover:border-primary/40 group-hover:text-primary transition-colors">
+            <kbd className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-content-muted bg-surface-secondary border border-border-subtle rounded select-none">
               Ctrl K
             </kbd>
           </button>
-        </div>
-
-        {/* Value Proposition Highlights */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-600 dark:text-slate-400 font-semibold">
-          <span className="flex items-center gap-1.5">
-            <Trophy className="w-4 h-4 text-accent" />
-            <span>تذاكر سحب مجانية مرفقة مع كل عملية شراء</span>
-          </span>
-          <span className="flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-success" />
-            <span>تسعير دينار عراقي ثابت (سعر صرف 1,310)</span>
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span>شراء أجزاء منفصلة بـ 2$ أو الحقيبة بـ 10$</span>
-          </span>
         </div>
       </div>
 

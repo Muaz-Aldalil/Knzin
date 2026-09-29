@@ -3,7 +3,7 @@
 import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { Ticket, BookOpen, Sparkles, ArrowLeft, ArrowRight, Layers } from 'lucide-react';
+import { Ticket } from 'lucide-react';
 import { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 
 export interface CourseData {
@@ -48,75 +48,69 @@ export default function CourseCard({ course, onQuickCheckout }: CourseCardProps)
   };
 
   return (
-    <div className="group flex flex-col bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-1">
-      {/* Visual Accent Top Bar */}
-      <div className="h-2.5 bg-gradient-to-r from-primary via-secondary to-accent" />
-
-      <div className="p-6 flex-1 flex flex-col justify-between">
+    <div className="group flex flex-col bg-surface-primary border border-border-subtle hover:border-border rounded-xl p-5 transition-colors">
+      <div className="flex-1 flex flex-col justify-between">
         <div>
-          {/* Badge Row */}
-          <div className="flex items-center justify-between gap-2 mb-3">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-light text-primary text-xs font-bold border border-primary/20">
-              <Layers className="w-3.5 h-3.5 text-primary" />
-              <span>{course.parts_count || 6} أجزاء تطبيقية</span>
+          {/* Metadata Row */}
+          <div className="flex items-center justify-between gap-2 mb-2 text-xs">
+            <span className="text-content-muted font-medium">
+              {course.parts_count || 6} {locale === 'ar' ? 'أجزاء تدريبية' : 'parts'}
             </span>
 
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-black border border-accent/30">
-              <Ticket className="w-3.5 h-3.5 text-accent" />
+            <span className="text-accent font-medium flex items-center gap-1">
+              <Ticket className="w-3.5 h-3.5" />
               <span>{course.bundle_promotional_tickets} {tCommon('ticket')}</span>
             </span>
           </div>
 
           {/* Title */}
-          <h2 className="text-lg font-extrabold text-secondary dark:text-white leading-snug group-hover:text-primary dark:group-hover:text-primary-light transition-colors">
+          <h2 className="text-base font-bold text-content-primary leading-snug group-hover:text-primary transition-colors">
             <Link href={`/courses/${course.slug}`}>{title}</Link>
           </h2>
 
           {/* Description */}
-          <p className="mt-2.5 text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+          <p className="mt-2 text-xs text-content-secondary line-clamp-2 leading-relaxed">
             {description}
           </p>
         </div>
 
         {/* Pricing & Actions Section */}
-        <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
+        <div className="mt-5 pt-3.5 border-t border-border-subtle space-y-3">
           {/* Price Tag Row */}
           <div className="flex items-baseline justify-between">
             <div>
-              <span className="text-[11px] text-slate-400 font-medium block">
+              <span className="text-[11px] text-content-muted font-normal block">
                 {t('bundleOffer')}
               </span>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-xl font-extrabold text-secondary dark:text-white">
+                <span className="text-lg font-bold text-content-primary">
                   ${(course.bundle_price_cents / 100).toFixed(2)}
                 </span>
-                <span className="text-xs font-bold text-primary dark:text-primary-light">
+                <span className="text-xs text-content-muted font-medium">
                   ({course.display_price_label})
                 </span>
               </div>
             </div>
 
-            <div className="text-start sm:text-end text-[11px] font-semibold text-success">
+            <div className="text-start sm:text-end text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
               {t('bundleValueNote')}
             </div>
           </div>
 
-          {/* Dual Action Buttons (Responsive Stacking for 3-col 1024px grid) */}
-          <div className="flex flex-col sm:grid sm:grid-cols-2 lg:flex-col xl:grid xl:grid-cols-2 gap-2 pt-1">
+          {/* Dual Action Buttons */}
+          <div className="flex flex-col sm:grid sm:grid-cols-2 lg:flex-col xl:grid xl:grid-cols-2 gap-2 pt-0.5">
             <Link
               href={`/courses/${course.slug}`}
-              className="w-full py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-colors"
+              className="w-full py-2 px-3 rounded-lg border border-border-subtle hover:border-border hover:bg-surface-secondary text-content-secondary hover:text-content-primary text-xs font-medium text-center transition-colors"
             >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>الأجزاء (2$)</span>
+              {locale === 'ar' ? 'الأجزاء (2$)' : 'Parts ($2)'}
             </Link>
 
             <button
               onClick={handleBundleClick}
-              className="w-full py-2.5 px-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-md shadow-primary/20 flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+              className="w-full py-2 px-3 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-colors cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-accent" />
-              <span>{t('buyBundle')}</span>
+              {t('buyBundle')}
             </button>
           </div>
         </div>

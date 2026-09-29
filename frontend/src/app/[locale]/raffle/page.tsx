@@ -5,12 +5,8 @@ import {
   Trophy,
   Ticket,
   ShieldCheck,
-  Gift,
   Scale,
-  Sparkles,
-  ArrowRight,
   Info,
-  Calendar,
   CheckCircle2,
   FileCheck2
 } from 'lucide-react';
@@ -37,38 +33,38 @@ export default async function RafflePage({
   return (
     <div className="max-w-4xl mx-auto space-y-10 pb-16">
       {/* Hero Transparency Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 p-6 sm:p-10 shadow-lg">
+      <div className="rounded-2xl bg-surface-primary border border-border-subtle p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="space-y-3 max-w-xl">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 gap-1.5 font-bold">
-                <ShieldCheck className="w-3.5 h-3.5" />
+              <Badge variant="outline" className="text-content-secondary border-border-subtle gap-1.5 font-medium text-xs">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>{isRtl ? 'نظام السحوبات القانوني المرخص' : 'Licensed Promotional Draws'}</span>
               </Badge>
-              <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30">
+              <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-xs font-medium">
                 {isRtl ? 'شفافية 100%' : '100% Transparency'}
               </Badge>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-black text-secondary dark:text-white leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-content-primary leading-tight">
               {isRtl ? 'الجوائز الترويجية المجانية لكَنزين' : 'KNZiN Free Promotional Raffles'}
             </h1>
 
-            <p className="text-sm sm:text-base text-content-secondary leading-relaxed">
+            <p className="text-sm text-content-secondary leading-relaxed">
               {isRtl
                 ? 'في كَنزين، كل تذكرة سحب هي هدية ترويجية مجانية تماماً تُمنح مع شراء المسارات والدورات المهنية. لا نبيع الحظ ولا نفرض رسوم مقامرة، بل نكافئ المتعلمين الطموحين بجوائز حقيقية.'
                 : 'At KNZiN, every raffle ticket is a completely free promotional gift awarded with vocational course purchases. We do not sell lottery or gambling tickets; we reward ambitious learners with real prizes.'}
             </p>
           </div>
 
-          <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-surface-primary border border-border-subtle shadow-md min-w-[200px] text-center space-y-2">
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 shadow-inner">
-              <Trophy className="w-7 h-7" />
+          <div className="flex flex-col items-center justify-center p-5 rounded-xl bg-surface-secondary border border-border-subtle min-w-[190px] text-center space-y-1.5">
+            <div className="size-10 rounded-lg bg-surface-primary flex items-center justify-center text-accent">
+              <Trophy className="w-5 h-5" />
             </div>
-            <div className="text-xs font-semibold text-content-muted">
+            <div className="text-xs text-content-muted">
               {isRtl ? 'السحب القادم المجدول' : 'Next Scheduled Draw'}
             </div>
-            <div className="text-lg font-black text-amber-500">
+            <div className="text-base font-bold text-content-primary">
               {isRtl ? 'نهاية الشهر الحالي' : 'End of Current Month'}
             </div>
             <div className="text-[11px] text-content-muted">
@@ -80,83 +76,80 @@ export default async function RafflePage({
 
       {/* Commercial Invariants & Ticket Rules */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-border-subtle bg-surface-primary shadow-sm hover:shadow-md transition-shadow">
+        <Card className="border-border-subtle bg-surface-primary rounded-xl">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-extrabold flex items-center gap-2">
-                <Ticket className="w-5 h-5 text-accent" />
+              <CardTitle className="text-base font-bold flex items-center gap-2">
+                <Ticket className="w-4 h-4 text-accent" />
                 <span>{isRtl ? 'شراء جزء فردي من الدورة' : 'Single Part Purchase'}</span>
               </CardTitle>
-              <Badge variant="outline" className="text-xs font-black">
+              <span className="text-xs font-semibold text-content-muted">
                 {isRtl ? '2.00$ / 2,000 د.ع' : '$2.00 / 2,000 IQD'}
-              </Badge>
+              </span>
             </div>
-            <CardDescription>
+            <CardDescription className="text-xs">
               {isRtl ? 'تعلم جزءاً متخصصاً واحصل على تذكرة مجانية' : 'Master one targeted skill part with a free promotional gift'}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-content-secondary">
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+          <CardContent className="space-y-2.5 text-xs sm:text-sm text-content-secondary">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{isRtl ? 'تذكرة ترويجية واحدة (1) مجانية فورا' : '1 Free Promotional Ticket instantly'}</span>
             </div>
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{isRtl ? 'وصول دائم للفيديو ومواد التدريب' : 'Permanent access to video & practical material'}</span>
             </div>
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{isRtl ? 'رقم تسلسلي موثق ومخزن في قاعدة البيانات' : 'Verified ticket hash stored in database'}</span>
             </div>
           </CardContent>
           <CardFooter className="pt-0">
             <Link
               href="/"
-              className="w-full text-center py-2 px-4 rounded-xl bg-surface-secondary hover:bg-surface-elevated text-xs font-bold text-content-primary border border-border-subtle transition-colors"
+              className="w-full text-center py-2 px-4 rounded-lg bg-surface-secondary hover:bg-surface-elevated text-xs font-medium text-content-primary border border-border-subtle transition-colors"
             >
               {isRtl ? 'استعراض الأجزاء المتاحة' : 'Browse Individual Parts'}
             </Link>
           </CardFooter>
         </Card>
 
-        <Card className="border-accent/40 bg-accent/5 dark:bg-accent/10 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-          <div className="absolute -top-1 -right-1 bg-accent text-white text-[10px] font-black px-3 py-0.5 rounded-bl-xl shadow">
-            {isRtl ? 'أفضل قيمة للمتعلم' : 'Best Value'}
-          </div>
+        <Card className="border-border-subtle bg-surface-primary rounded-xl">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-extrabold flex items-center gap-2 text-content-primary">
-                <Sparkles className="w-5 h-5 text-accent" />
+              <CardTitle className="text-base font-bold flex items-center gap-2 text-content-primary">
+                <Ticket className="w-4 h-4 text-accent" />
                 <span>{isRtl ? 'شراء الدورة الكاملة (6 أجزاء)' : 'Full 6-Part Course Bundle'}</span>
               </CardTitle>
-              <Badge variant="default" className="text-xs font-black bg-accent text-white hover:bg-accent">
+              <span className="text-xs font-semibold text-primary">
                 {isRtl ? '10.00$ / 13,000 د.ع' : '$10.00 / 13,000 IQD'}
-              </Badge>
+              </span>
             </div>
-            <CardDescription>
+            <CardDescription className="text-xs">
               {isRtl ? 'وفر 2$ أو 3,000 د.ع واحصل على باقة 15 تذكرة مجاناً' : 'Save $2 or 3,000 IQD and receive 15 free promotional tickets'}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-content-secondary">
-            <div className="flex items-center gap-2.5">
+          <CardContent className="space-y-2.5 text-xs sm:text-sm text-content-secondary">
+            <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
-              <span className="font-bold text-accent">
+              <span className="font-semibold text-accent">
                 {isRtl ? '15 تذكرة سحب مجانية ترويجية (مكافأة 9 تذاكر إضافية)' : '15 Free Promotional Tickets (9 Bonus Tickets)'}
               </span>
             </div>
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{isRtl ? 'تغطية شاملة لكل أدوات وورش المهنة' : 'Full vocational workshop and safety mastery'}</span>
             </div>
-            <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{isRtl ? 'شهادة إتمام رقمية معتمدة من كَنزين' : 'Digital Certificate of Completion'}</span>
             </div>
           </CardContent>
           <CardFooter className="pt-0">
             <Link
               href="/"
-              className="w-full text-center py-2 px-4 rounded-xl bg-accent hover:bg-accent/90 text-xs font-bold text-white shadow-sm transition-colors"
+              className="w-full text-center py-2 px-4 rounded-lg bg-primary hover:bg-primary-hover text-xs font-semibold text-white transition-colors"
             >
               {isRtl ? 'احصل على الباقة الكاملة' : 'Enroll in Full Course'}
             </Link>

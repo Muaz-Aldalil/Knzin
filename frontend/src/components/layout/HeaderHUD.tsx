@@ -9,7 +9,6 @@ import {
   Ticket,
   Wallet,
   User as UserIcon,
-  Sparkles,
   LogIn,
   LogOut,
   Search,
@@ -91,34 +90,29 @@ export default function HeaderHUD() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-surface/90 backdrop-blur-md border-b border-border-subtle text-content-primary shadow-xs transition-colors duration-200">
-      {/* Live Social Proof Marquee Banner */}
-      <div className="bg-primary/10 border-b border-border-subtle text-xs py-1.5 px-4 overflow-hidden whitespace-nowrap transition-colors">
-        <div className="flex md:justify-center items-center gap-2 text-primary font-bold tracking-wide animate-marquee md:animate-none hover:[animation-play-state:paused]">
-          <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse shrink-0" />
-          <span>{t('liveDrawMarquee')}</span>
-        </div>
-      </div>
-
+    <header className="sticky top-0 z-40 w-full bg-surface/95 backdrop-blur-sm border-b border-border-subtle text-content-primary transition-colors duration-200">
       {/* Main Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo and Brand */}
         <div className="flex items-center gap-4 sm:gap-6">
           <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-blue-700 flex items-center justify-center shadow-lg shadow-primary/25 group-hover:scale-105 transition-transform duration-200">
-              <span className="text-white font-extrabold text-lg tracking-wider">K</span>
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-colors">
+              <span className="text-white font-bold text-sm tracking-wider">K</span>
             </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-lg sm:text-xl tracking-tight text-content-primary group-hover:text-primary transition-colors">
-                كَنزين <span className="hidden sm:inline text-xs font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">KNZiN</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-bold text-lg tracking-tight text-content-primary group-hover:text-primary transition-colors">
+                كَنزين
+              </span>
+              <span className="hidden sm:inline text-xs font-medium text-content-muted">
+                KNZIN
               </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-3 text-sm font-semibold text-content-secondary">
+          <nav className="hidden md:flex items-center gap-2 text-xs font-medium text-content-secondary">
             <Link
               href="/"
-              className="px-3 py-1.5 rounded-lg hover:text-primary hover:bg-surface-secondary transition-colors"
+              className="px-3 py-1.5 rounded-md hover:text-content-primary hover:bg-surface-secondary transition-colors"
             >
               {t('courses')}
             </Link>
@@ -126,12 +120,12 @@ export default function HeaderHUD() {
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-primary/40 text-content-secondary hover:text-content-primary transition-all text-xs font-semibold group cursor-pointer shadow-xs"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-secondary hover:text-content-primary transition-colors text-xs font-medium group cursor-pointer"
               title={isRtl ? 'البحث الذكي (Ctrl + K)' : 'Smart Search (Ctrl + K)'}
             >
-              <Search className="w-3.5 h-3.5 text-primary group-hover:scale-110 transition-transform" />
-              <span>{isRtl ? 'البحث الذكي' : 'Search'}</span>
-              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold text-content-muted bg-surface-primary border border-border-subtle rounded-md select-none group-hover:border-primary/40 group-hover:text-primary transition-colors">
+              <Search className="w-3.5 h-3.5 text-content-muted group-hover:text-primary transition-colors" />
+              <span>{isRtl ? 'البحث' : 'Search'}</span>
+              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-content-muted bg-surface-primary border border-border-subtle rounded select-none">
                 {isMac ? '⌘' : 'Ctrl'} K
               </kbd>
             </button>
@@ -146,33 +140,34 @@ export default function HeaderHUD() {
         </div>
 
         {/* HUD Counters & User Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Mobile search trigger */}
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="md:hidden p-2 rounded-xl bg-surface-secondary hover:bg-surface-elevated border border-border-subtle text-content-primary transition-colors cursor-pointer"
+            className="md:hidden p-2 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle text-content-primary transition-colors cursor-pointer"
             aria-label={isRtl ? 'البحث الذكي' : 'Search'}
             title={isRtl ? 'البحث الذكي' : 'Search'}
           >
             <Search className="w-4 h-4 text-primary" />
           </button>
-          {/* Ticket Counter HUD (Accent Color) */}
+
+          {/* Ticket Counter HUD */}
           <Link
             href="/raffle"
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-accent/10 border border-accent/30 text-accent text-xs font-black hover:bg-accent/20 transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-secondary text-xs font-medium transition-colors"
             title={isRtl ? 'تذاكر السحب الترويجية المجانية' : 'Promotional Raffle Tickets'}
           >
-            <Ticket className="w-4 h-4 text-accent" />
-            <span>0 <span className="hidden sm:inline">{tCommon('ticket')}</span></span>
+            <Ticket className="w-3.5 h-3.5 text-accent" />
+            <span>0 <span className="hidden sm:inline text-content-muted">{tCommon('ticket')}</span></span>
           </Link>
 
           {/* Wallet Balance HUD */}
           <div
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-secondary border border-border-subtle text-content-primary text-xs font-bold"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary text-xs font-medium"
             title={isRtl ? 'رصيد المحفظة' : 'Wallet Balance'}
           >
-            <Wallet className="w-3.5 h-3.5 text-primary" />
+            <Wallet className="w-3.5 h-3.5 text-content-muted" />
             <span>0 {tCommon('currencyIqd')}</span>
           </div>
 
@@ -185,8 +180,8 @@ export default function HeaderHUD() {
           {/* User Profile or Google Sign In using shadcn DropdownMenu */}
           {user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-surface-secondary border border-border-subtle text-xs font-bold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-2 focus:ring-primary/40">
-                <UserIcon className="w-3.5 h-3.5 text-primary" />
+              <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-secondary border border-border-subtle text-xs font-semibold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-1 focus:ring-primary/40">
+                <UserIcon className="w-3.5 h-3.5 text-content-muted" />
                 <span className="max-w-[80px] sm:max-w-[120px] truncate">
                   {user.displayName || user.email}
                 </span>
@@ -230,7 +225,7 @@ export default function HeaderHUD() {
           ) : (
             <button
               onClick={handleGoogleLogin}
-              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black transition-all shadow-md shadow-primary/20 active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-colors cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{t('loginWithGoogle')}</span>

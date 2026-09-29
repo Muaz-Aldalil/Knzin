@@ -48,21 +48,21 @@ export function useAuth() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [syncAuth]);
 
-  const login = (newToken: string, newUser: AuthUser) => {
+  const login = useCallback((newToken: string, newUser: AuthUser) => {
     localStorage.setItem('knzin_auth_token', newToken);
     localStorage.setItem('knzin_user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
     window.dispatchEvent(new Event('storage'));
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('knzin_auth_token');
     localStorage.removeItem('knzin_user');
     setToken(null);
     setUser(null);
     window.dispatchEvent(new Event('storage'));
-  };
+  }, []);
 
   return {
     token,

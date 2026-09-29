@@ -104,40 +104,29 @@ export function LearningOutcomes({
   const outcomes = customOutcomes || defaultOutcomesBySlug[slug] || defaultOutcomesBySlug['auto-detailing'];
 
   return (
-    <div
-      className={cn(
-        'p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6',
-        className
-      )}
-    >
-      <div className="flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-xl bg-primary-light text-primary flex items-center justify-center font-bold">
-          <Sparkles className="w-4 h-4 text-primary" />
-        </div>
-        <div>
-          <h2 className="text-lg sm:text-xl font-black text-secondary dark:text-white">
-            ماذا ستتعلم في هذا المنهج المهني؟
-          </h2>
-          <p className="text-xs text-slate-500">مهارات عملية وتطبيقية مباشرة لسوق العمل الحر والورش في العراق.</p>
-        </div>
+    <section className={cn('space-y-5 pt-4 pb-2', className)}>
+      <div>
+        <h2 className="text-lg sm:text-xl font-bold text-content-primary tracking-tight">
+          ماذا ستتعلم في هذا المنهج المهني؟
+        </h2>
+        <p className="text-xs sm:text-sm text-content-secondary mt-1">
+          مهارات عملية وتطبيقية مباشرة لسوق العمل الحر والورش في العراق.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 pt-1">
         {outcomes.map((item, index) => {
           const Icon = item.icon ? iconComponents[item.icon] : Sparkles;
           return (
-            <div
-              key={index}
-              className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 flex items-start gap-3.5 hover:border-primary/40 transition-colors"
-            >
-              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
-                <Icon className="w-4 h-4 text-primary" />
+            <div key={index} className="flex items-start gap-3.5">
+              <div className="size-7 rounded-lg bg-surface-secondary text-primary flex items-center justify-center shrink-0 mt-0.5">
+                <Icon className="w-3.5 h-3.5" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                <h3 className="text-sm font-semibold text-content-primary leading-snug">
                   {item.title}
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="text-xs text-content-secondary leading-relaxed">
                   {item.description}
                 </p>
               </div>
@@ -145,6 +134,6 @@ export function LearningOutcomes({
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }

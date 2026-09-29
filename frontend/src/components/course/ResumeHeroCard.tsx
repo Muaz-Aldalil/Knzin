@@ -4,9 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
-import { Play, Sparkles, ArrowLeft, ArrowRight, Clock } from 'lucide-react';
+import { Play, ArrowLeft, ArrowRight, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ButtonLink } from '@/components/ui/button';
 import { fetchActiveLearning, ActiveLearningData } from '@/lib/progress';
@@ -47,60 +46,58 @@ export function ResumeHeroCard() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-      <Card className="relative overflow-hidden border border-primary/30 bg-gradient-to-r from-surface via-surface to-primary/5 p-5 sm:p-6 shadow-md shadow-primary/5 dark:border-primary/20 dark:from-surface dark:via-surface dark:to-primary/10">
-        <div className="absolute top-0 right-0 h-1 w-full bg-gradient-to-r from-primary via-accent to-primary" />
-
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <Card className="border border-border-subtle bg-surface-primary p-4 sm:p-5 rounded-xl">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-5">
           {/* Left: Thumbnail & Details */}
-          <div className="flex flex-col sm:flex-row items-center gap-5 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
             {/* Video Cover Thumbnail */}
-            <div className="relative w-full sm:w-44 h-28 shrink-0 rounded-xl overflow-hidden bg-slate-900 border border-border-subtle group">
+            <div className="relative w-full sm:w-40 h-24 shrink-0 rounded-lg overflow-hidden bg-slate-900 border border-border-subtle group">
               {data.cover_image_url ? (
                 <Image
                   src={data.cover_image_url}
                   alt={courseTitle}
                   fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105 opacity-90"
+                  className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-slate-800 text-slate-400">
-                  <Play className="w-8 h-8 text-primary" />
+                  <Play className="w-6 h-6 text-primary" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-slate-950/30 flex items-center justify-center">
-                <span className="flex size-10 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform duration-200 group-hover:scale-110">
-                  <Play className="w-5 h-5 fill-current ms-0.5" />
+              <div className="absolute inset-0 bg-slate-950/20 flex items-center justify-center">
+                <span className="flex size-8 items-center justify-center rounded-full bg-primary text-white">
+                  <Play className="w-4 h-4 fill-current ms-0.5" />
                 </span>
               </div>
-              <div className="absolute bottom-2 end-2 bg-slate-950/80 backdrop-blur-xs px-2 py-0.5 rounded text-[11px] font-mono text-white font-bold flex items-center gap-1">
-                <Clock className="w-3 h-3 text-accent" />
+              <div className="absolute bottom-1.5 end-1.5 bg-slate-950/80 px-1.5 py-0.5 rounded text-[10px] font-mono text-white font-medium flex items-center gap-1">
+                <Clock className="w-2.5 h-2.5 text-accent" />
                 {formatTime(data.watch_seconds)}
               </div>
             </div>
 
             {/* Titles & Status */}
-            <div className="flex flex-col gap-1.5 text-center sm:text-start rtl:sm:text-right">
+            <div className="flex flex-col gap-1 text-center sm:text-start rtl:sm:text-right">
               <div className="flex items-center justify-center sm:justify-start gap-2">
-                <Badge variant="accent" size="sm" className="font-black gap-1 text-[11px]">
-                  <Sparkles className="w-3 h-3 text-slate-950" />
-                  {isRtl ? 'تابِع من حيث توقفت' : 'Jump Back In'}
-                </Badge>
-                <span className="text-xs text-content-muted font-bold">
+                <span className="text-xs font-semibold text-primary">
+                  {isRtl ? 'متابعة التدريب' : 'Continue Training'}
+                </span>
+                <span className="text-content-muted">·</span>
+                <span className="text-xs text-content-muted">
                   {isRtl ? `الجزء ${data.part_number}` : `Part ${data.part_number}`}
                 </span>
               </div>
 
-              <h4 className="text-base sm:text-lg font-black text-content-primary line-clamp-1">
+              <h4 className="text-sm sm:text-base font-bold text-content-primary line-clamp-1">
                 {partTitle}
               </h4>
-              <p className="text-xs sm:text-sm text-content-secondary line-clamp-1 font-medium">
+              <p className="text-xs text-content-secondary line-clamp-1">
                 {courseTitle}
               </p>
 
               {/* Progress Bar & Percentage */}
-              <div className="mt-2 w-full max-w-xs flex items-center gap-3">
-                <Progress value={data.percent_complete} className="h-2 flex-1" />
-                <span className="text-xs font-mono font-black text-primary shrink-0">
+              <div className="mt-1.5 w-full max-w-xs flex items-center gap-2.5">
+                <Progress value={data.percent_complete} className="h-1.5 flex-1" />
+                <span className="text-xs font-mono font-semibold text-content-secondary shrink-0">
                   {data.percent_complete}%
                 </span>
               </div>
@@ -112,11 +109,11 @@ export function ResumeHeroCard() {
             <ButtonLink
               href={resumeHref}
               variant="primary"
-              size="lg"
-              className="w-full sm:w-auto shadow-md shadow-primary/20 gap-2 font-black"
-              rightIcon={isRtl ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+              size="sm"
+              className="w-full sm:w-auto font-medium gap-1.5 text-xs"
+              rightIcon={isRtl ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
             >
-              {isRtl ? 'متابعة الدرس الآن' : 'Continue Lesson'}
+              {isRtl ? 'متابعة الدرس' : 'Continue'}
             </ButtonLink>
           </div>
         </div>
