@@ -12,14 +12,17 @@ function CallbackContent() {
   const { login } = useAuth();
   const [mergedCount, setMergedCount] = useState<number>(0);
   const [isProcessing, setIsProcessing] = useState(true);
+  const processedRef = React.useRef(false);
 
   useEffect(() => {
+    if (processedRef.current) return;
     const token = searchParams.get('token');
     const email = searchParams.get('email');
     const name = searchParams.get('name');
     const merged = parseInt(searchParams.get('merged_orders') || '0', 10);
 
     if (token && email) {
+      processedRef.current = true;
       setMergedCount(merged);
       login(token, {
         id: email,
@@ -35,7 +38,8 @@ function CallbackContent() {
       }, 1500);
 
       return () => clearTimeout(timer);
-    } else {
+    } else if (!token && !email) {
+      processedRef.current = true;
       router.replace('/');
     }
   }, [searchParams, login, router]);

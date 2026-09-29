@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Ticket, Video, BookOpen, Sparkles, CheckCircle2 } from 'lucide-react';
 
-export type BadgeVariant = 'video' | 'lesson' | 'popular' | 'ticket' | 'success' | 'outline' | 'accent';
+export type BadgeVariant = 'default' | 'video' | 'lesson' | 'popular' | 'ticket' | 'success' | 'outline' | 'accent';
 
 export type BadgeSize = 'sm' | 'md' | 'lg';
 
@@ -14,6 +14,7 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
+  default: 'bg-primary text-white border-primary/20 font-bold',
   video: 'bg-primary-light/80 dark:bg-primary/10 text-primary border-primary/20',
   lesson: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
   popular: 'bg-accent/15 text-amber-800 dark:text-accent border-accent/30 font-black',
