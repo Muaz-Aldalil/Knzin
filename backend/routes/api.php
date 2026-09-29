@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
 use Illuminate\Http\Request;
@@ -10,6 +11,11 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('v1')->group(function () {
+    // Auth Endpoints (US3)
+    Route::post('/auth/guest', [AuthController::class, 'guest']);
+    Route::get('/auth/google/redirect', [AuthController::class, 'googleRedirect']);
+    Route::get('/auth/google/callback', [AuthController::class, 'googleCallback']);
+
     // Catalog Endpoints (US2)
     Route::get('/catalog/courses', [CatalogController::class, 'index']);
     Route::get('/catalog/courses/{slug}', [CatalogController::class, 'show']);

@@ -113,17 +113,17 @@
 
 ### Tests for User Story 3
 
-- [ ] T038 [P] [US3] Create backend feature test for one-way account merging asserting guest orders are re-attributed, guest record is deactivated, and verified accounts are never merged into unverified accounts in backend/tests/Feature/AuthMergeTest.php
-- [ ] T039 [P] [US3] Create backend feature test for dev-mock Google OAuth driver asserting simulated login when GOOGLE_AUTH_MOCK=true in backend/tests/Feature/GoogleAuthMockTest.php
+- [X] T038 [P] [US3] Create backend feature test for one-way account merging asserting guest orders are re-attributed, guest record is deactivated, and verified accounts are never merged into unverified accounts in backend/tests/Feature/AuthMergeTest.php
+- [X] T039 [P] [US3] Create backend feature test for dev-mock Google OAuth driver asserting simulated login when GOOGLE_AUTH_MOCK=true in backend/tests/Feature/GoogleAuthMockTest.php
 
 ### Implementation for User Story 3
 
-- [ ] T040 [US3] Implement AuthService with one-way guest-to-Google merge logic, guest token generation, and Google profile synchronization in backend/app/Services/AuthService.php
-- [ ] T041 [US3] Implement AuthController with /api/v1/auth/guest, /api/v1/auth/google/redirect, /api/v1/auth/google/callback, /api/v1/auth/me, and /api/v1/auth/logout in backend/app/Http/Controllers/AuthController.php
-- [ ] T042 [US3] Implement local Google OAuth dev-mock driver enabled via GOOGLE_AUTH_MOCK=true for testing without live Google Cloud credentials in backend/app/Services/GoogleAuthMockDriver.php
-- [ ] T043 [P] [US3] Implement GoogleLoginButton component with one-click sign-in and loading state in frontend/src/components/auth/GoogleLoginButton.tsx
-- [ ] T044 [US3] Implement useAuth hook and auth context managing Sanctum bearer tokens, user profile, and login/logout state in frontend/src/hooks/useAuth.ts
-- [ ] T045 [US3] Integrate authenticated user profile and avatar display into Header HUD in frontend/src/components/layout/HeaderHUD.tsx
+- [X] T040 [US3] Implement AuthService with one-way guest-to-Google merge logic, guest token generation, and Google profile synchronization in backend/app/Services/AuthService.php
+- [X] T041 [US3] Implement AuthController with /api/v1/auth/guest, /api/v1/auth/google/redirect, /api/v1/auth/google/callback, /api/v1/auth/me, and /api/v1/auth/logout in backend/app/Http/Controllers/AuthController.php
+- [X] T042 [US3] Implement local Google OAuth dev-mock driver enabled via GOOGLE_AUTH_MOCK=true for testing without live Google Cloud credentials in backend/app/Services/GoogleAuthMockDriver.php
+- [X] T043 [P] [US3] Implement GoogleLoginButton component with one-click sign-in and loading state in frontend/src/components/auth/GoogleLoginButton.tsx
+- [X] T044 [US3] Implement useAuth hook and auth context managing Sanctum bearer tokens, user profile, and login/logout state in frontend/src/hooks/useAuth.ts
+- [X] T045 [US3] Integrate authenticated user profile and avatar display into Header HUD in frontend/src/components/layout/HeaderHUD.tsx
 
 **Checkpoint**: User Stories 1, 2, and 3 are fully operational. Guest purchases seamlessly merge into Google profiles upon login.
 
