@@ -43,3 +43,8 @@ build/
 out/
 frontend/.next/
 frontend/out/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class

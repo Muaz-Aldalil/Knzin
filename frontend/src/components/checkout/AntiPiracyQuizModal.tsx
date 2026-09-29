@@ -58,7 +58,7 @@ export default function AntiPiracyQuizModal({
         {/* Close Button (Logical End Corner) */}
         <button
           onClick={onClose}
-          className="absolute top-4 ltr:right-4 rtl:left-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors z-10"
+          className="absolute top-4 end-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>

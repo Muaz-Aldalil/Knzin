@@ -89,13 +89,13 @@ export default function MobileNavSheet({
               close();
               onOpenSearch();
             }}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-muted hover:text-content-primary transition-colors text-xs cursor-pointer"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-muted hover:text-content-primary transition-colors text-xs cursor-pointer text-start"
           >
-            <div className="flex items-center gap-2.5">
-              <Search className="w-4 h-4 text-content-muted" />
-              <span>{isRtl ? 'البحث في المهارات أو الأدوات...' : 'Search skills or tools...'}</span>
+            <div className="flex items-center gap-2.5 truncate">
+              <Search className="w-4 h-4 text-content-muted shrink-0" />
+              <span className="truncate">{t('searchPlaceholder')}</span>
             </div>
-            <kbd className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-content-muted bg-surface-primary border border-border-subtle rounded">
+            <kbd className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-content-muted bg-surface-primary border border-border-subtle rounded shrink-0">
               Ctrl K
             </kbd>
           </button>
@@ -124,7 +124,7 @@ export default function MobileNavSheet({
                   : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/60'
               }`}
             >
-              <span>{isRtl ? 'الجوائز والسحوبات الترويجية' : 'Promotional Raffles'}</span>
+              <span>{t('raffle')}</span>
               {isRaffleActive && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
             </Link>
 
@@ -137,7 +137,7 @@ export default function MobileNavSheet({
                   : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/60'
               }`}
             >
-              <span>{isRtl ? 'نظام التصميم' : 'Design System'}</span>
+              <span>{t('designSystem')}</span>
               {isDesignSystemActive && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
             </Link>
           </nav>

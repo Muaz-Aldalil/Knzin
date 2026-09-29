@@ -133,9 +133,9 @@ export default function CheckoutBottomSheet({
                   <span className="font-extrabold text-slate-900 dark:text-white">
                     ${(item.priceCents / 100).toFixed(2)}
                   </span>
-                  <span className="text-slate-400 mr-1.5">
+                  <bdi className="text-slate-400 ms-1.5">
                     ({item.displayPriceLabel})
-                  </span>
+                  </bdi>
                 </div>
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent/10 text-accent font-bold border border-accent/20">
                   <Ticket className="w-3.5 h-3.5" />
@@ -153,17 +153,18 @@ export default function CheckoutBottomSheet({
                 <input
                   id="checkout_email"
                   type="email"
+                  dir="ltr"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('emailPlaceholder')}
                   required
-                  className={`w-full py-2.5 ltr:pl-3.5 ltr:pr-10 rtl:pr-3.5 rtl:pl-10 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
+                  className={`w-full py-2.5 ps-3.5 pe-10 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
                     emailError
                       ? 'border-red-500 focus:ring-red-400/40'
                       : 'border-slate-200 dark:border-slate-700 focus:ring-primary/40'
                   }`}
                 />
-                <Mail className="absolute ltr:right-3 rtl:left-3 top-3 w-4 h-4 text-slate-400 pointer-events-none" />
+                <Mail className="absolute end-3 top-3 w-4 h-4 text-slate-400 pointer-events-none" />
               </div>
               {emailError && (
                 <p className="mt-1 text-xs font-semibold text-red-600">{emailError}</p>

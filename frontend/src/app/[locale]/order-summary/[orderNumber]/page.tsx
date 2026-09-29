@@ -3,6 +3,7 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+import { useLocale } from 'next-intl';
 import { apiClient } from '@/lib/api-client';
 import { CreatedOrder } from '@/hooks/useCheckout';
 import OrderSummaryCard from '@/components/checkout/OrderSummaryCard';
@@ -48,12 +49,16 @@ export default function OrderSummaryPage() {
     enabled: !!orderNumber,
   });
 
+  const locale = useLocale();
+
   // State 1: Loading (muaz-skill mandatory state)
   if (isLoading) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-slate-500">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
-        <p className="text-sm font-semibold">جاري استرجاع بيانات الطلب...</p>
+        <p className="text-sm font-semibold">
+          {locale === 'ar' ? 'جاري استرجاع بيانات الطلب...' : 'Retrieving order details...'}
+        </p>
       </div>
     );
   }
@@ -64,17 +69,17 @@ export default function OrderSummaryPage() {
       <div className="max-w-md mx-auto my-12 p-6 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-500/30 text-center">
         <AlertCircle className="w-10 h-10 text-red-600 mx-auto mb-3" />
         <h2 className="text-base font-bold text-red-900 dark:text-red-200">
-          لم يتم العثور على الطلب المطلوب
+          {locale === 'ar' ? 'لم يتم العثور على الطلب المطلوب' : 'Order Not Found'}
         </h2>
         <p className="mt-1 text-xs text-red-700 dark:text-red-300">
-          {(error as any)?.message || 'تأكد من صحة رقم الطلب المرجعي أو حاول مرة أخرى.'}
+          {(error as any)?.message || (locale === 'ar' ? 'تأكد من صحة رقم الطلب المرجعي أو حاول مرة أخرى.' : 'Please verify your order reference number or try again.')}
         </p>
         <div className="mt-5">
           <Link
             href="/"
             className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors"
           >
-            العودة للرئيسية
+            {locale === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
           </Link>
         </div>
       </div>

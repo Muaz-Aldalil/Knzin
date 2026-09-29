@@ -76,7 +76,7 @@ export function ResumeHeroCard() {
             </div>
 
             {/* Titles & Status */}
-            <div className="flex flex-col gap-1 text-center sm:text-start rtl:sm:text-right">
+            <div className="flex flex-col gap-1 text-center sm:text-start">
               <div className="flex items-center justify-center sm:justify-start gap-2">
                 <span className="text-xs font-semibold text-primary">
                   {isRtl ? 'متابعة التدريب' : 'Continue Training'}

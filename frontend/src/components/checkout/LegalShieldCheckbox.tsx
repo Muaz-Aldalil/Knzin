@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useLocale } from 'next-intl';
 import { ShieldCheck, AlertCircle } from 'lucide-react';
 
 export const CANONICAL_LEGAL_SHIELD = "أوافق على الشروط والأحكام وسياسة الخصوصية، وأقر بأنني أقوم بشراء محتوى رقمي تعليمي، وأن تذكرة السحب المرفقة هي هدية ترويجية مجانية غير مستردة أو قابلة للتبديل";
@@ -16,6 +17,8 @@ export default function LegalShieldCheckbox({
   onChange,
   error,
 }: LegalShieldCheckboxProps) {
+  const locale = useLocale();
+
   return (
     <div className={`p-4 rounded-xl border transition-colors ${
       error
@@ -43,10 +46,21 @@ export default function LegalShieldCheckbox({
         <div className="flex-1">
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
             <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-            <span>إقرار قانوني صريح وإخلاء مسؤولية</span>
+            <span>
+              {locale === 'ar' ? 'إقرار قانوني صريح وإخلاء مسؤولية' : 'Explicit Legal Agreement & Statutory Disclaimer'}
+            </span>
           </div>
           <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-300 font-medium">
-            {CANONICAL_LEGAL_SHIELD}
+            {locale === 'ar' ? (
+              CANONICAL_LEGAL_SHIELD
+            ) : (
+              <>
+                <span>I agree to the Terms & Conditions and Privacy Policy, and acknowledge that I am purchasing educational digital content, and that any included promotional raffle ticket is a complimentary free gift that is non-refundable and non-exchangeable.</span>
+                <span className="block mt-1 text-[11px] text-slate-500 font-normal">
+                  (Iraqi Legal Declaration: « {CANONICAL_LEGAL_SHIELD} »)
+                </span>
+              </>
+            )}
           </p>
         </div>
       </label>

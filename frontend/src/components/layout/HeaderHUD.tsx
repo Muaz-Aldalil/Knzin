@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { Link } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 import LanguageToggle from './LanguageToggle';
-import ThemeToggle from './ThemeToggle';
+import { useTheme } from '@/components/providers/ThemeProvider';
 import {
   Ticket,
   Wallet,
@@ -12,10 +12,11 @@ import {
   LogIn,
   LogOut,
   Search,
-  BookOpen,
   Trophy,
   ChevronDown,
   Menu,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -36,15 +37,33 @@ interface AuthUser {
   avatarUrl?: string | null;
 }
 
+function getFirstName(nameOrEmail?: string | null): string {
+  if (!nameOrEmail) return '';
+  const clean = nameOrEmail.trim();
+  if (clean.includes(' ')) {
+    return clean.split(/\s+/)[0];
+  }
+  if (clean.includes('@')) {
+    return clean.split('@')[0];
+  }
+  return clean;
+}
+
 export default function HeaderHUD() {
   const t = useTranslations('nav');
   const tCommon = useTranslations('common');
   const locale = useLocale();
+  const pathname = usePathname();
   const isRtl = locale === 'ar';
+
+  const { resolvedTheme, toggleTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     if (typeof navigator !== 'undefined') {
@@ -70,6 +89,15 @@ export default function HeaderHUD() {
   }, []);
 
   useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
     const savedUser = localStorage.getItem('knzin_user');
     if (savedUser) {
       try {
@@ -92,13 +120,25 @@ export default function HeaderHUD() {
     window.location.href = `${backendUrl}/auth/google/redirect`;
   };
 
+  const isCoursesActive = pathname === '/' || pathname.startsWith('/courses');
+  const isRaffleActive = pathname.startsWith('/raffle');
+  const isDesignSystemActive = pathname.startsWith('/design-system');
+
+  const firstName = user ? getFirstName(user.displayName || user.email) : '';
+
   return (
-    <header className="sticky top-0 z-40 w-full bg-surface/95 backdrop-blur-sm border-b border-border-subtle text-content-primary transition-colors duration-200">
+    <header
+      className={`sticky top-0 z-40 w-full text-content-primary transition-colors duration-150 border-b ${
+        isScrolled
+          ? 'bg-surface/85 dark:bg-surface/85 border-border-subtle shadow-2xs'
+          : 'bg-surface border-border-subtle'
+      }`}
+    >
       {/* Main Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo and Desktop Navigation */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        {/* Logical Start: Logo & Main Navigation */}
+        <div className="flex items-center gap-4 lg:gap-6 min-w-0">
+          <Link href="/" className="flex items-center gap-2.5 group focus:outline-none shrink-0">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-colors">
               <span className="text-white font-bold text-sm tracking-wider">K</span>
             </div>
@@ -112,39 +152,64 @@ export default function HeaderHUD() {
             </div>
           </Link>
 
-          {/* Full Desktop Navigation (Large Screens only: >= 1024px) */}
-          <nav className="hidden lg:flex items-center gap-2 text-xs font-medium text-content-secondary">
+          {/* Full Desktop Navigation (>= 1024px) */}
+          <nav className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-content-secondary">
             <Link
               href="/"
-              className="px-3 py-1.5 rounded-md hover:text-content-primary hover:bg-surface-secondary transition-colors"
+              className={`px-3 py-1.5 rounded-lg transition-colors ${
+                isCoursesActive
+                  ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
+                  : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
+              }`}
             >
               {t('courses')}
             </Link>
 
-            <button
-              type="button"
-              onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-secondary hover:text-content-primary transition-colors text-xs font-medium group cursor-pointer"
-              title={isRtl ? 'البحث الذكي (Ctrl + K)' : 'Smart Search (Ctrl + K)'}
+            <Link
+              href="/raffle"
+              className={`px-3 py-1.5 rounded-lg transition-colors ${
+                isRaffleActive
+                  ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
+                  : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
+              }`}
             >
-              <Search className="w-3.5 h-3.5 text-content-muted group-hover:text-primary transition-colors" />
-              <span>{isRtl ? 'البحث' : 'Search'}</span>
-              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-content-muted bg-surface-primary border border-border-subtle rounded select-none">
-                {isMac ? '⌘' : 'Ctrl'} K
-              </kbd>
-            </button>
+              {t('raffle')}
+            </Link>
 
             <Link
               href="/design-system"
-              className="px-2.5 py-1 rounded-md text-xs text-content-muted hover:text-content-primary hover:bg-surface-secondary transition-colors"
+              className={`px-2.5 py-1.5 rounded-lg transition-colors ${
+                isDesignSystemActive
+                  ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
+                  : 'text-content-muted hover:text-content-primary hover:bg-surface-secondary/70'
+              }`}
             >
-              {isRtl ? 'نظام التصميم' : 'Design System'}
+              {t('designSystem')}
             </Link>
+
+            {/* Global Search Bar (Accessible on all routes) */}
+            <button
+              type="button"
+              onClick={() => setIsSearchOpen(true)}
+              className="ms-2 flex items-center justify-between gap-3 w-52 xl:w-64 px-3 py-1.5 rounded-xl bg-surface-secondary/70 hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-muted hover:text-content-primary transition-all duration-150 text-xs font-normal group cursor-pointer shadow-2xs text-start"
+              title={isRtl ? 'البحث الذكي في كَنزين (Ctrl + K)' : 'Smart Search in KNZiN (Ctrl + K)'}
+              aria-label={t('searchPlaceholder')}
+            >
+              <div className="flex items-center gap-2 truncate">
+                <Search className="w-3.5 h-3.5 text-content-muted group-hover:text-primary shrink-0 transition-colors" />
+                <span className="truncate text-[11px] sm:text-xs">
+                  {t('searchPlaceholder')}
+                </span>
+              </div>
+              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-content-muted bg-surface-primary border border-border-subtle rounded select-none shrink-0">
+                {isMac ? '⌘' : 'Ctrl'} K
+              </kbd>
+            </button>
           </nav>
         </div>
 
-        {/* HUD Counters & User Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Logical End: Language Toggle & Profile Controls */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Mobile / Tablet search trigger (< 1024px) */}
           <button
             type="button"
@@ -175,72 +240,99 @@ export default function HeaderHUD() {
             <span>0 {tCommon('currencyIqd')}</span>
           </div>
 
-          {/* Desktop-only: Language Switcher (>= 1024px) */}
-          <div className="hidden lg:flex items-center">
-            <LanguageToggle />
-          </div>
+          {/* Language Switcher */}
+          <LanguageToggle />
 
-          {/* Desktop-only: Theme Switcher (>= 1024px) */}
+          {/* Profile Dropdown (First Name Only + Theme Toggle Inside) */}
           <div className="hidden lg:flex items-center">
-            <ThemeToggle />
-          </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-secondary border border-border-subtle text-xs font-semibold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-1 focus:ring-primary/40 cursor-pointer">
+                <UserIcon className="w-3.5 h-3.5 text-content-muted" />
+                <span className="max-w-[100px] truncate">
+                  {user ? firstName : t('guestBadge')}
+                </span>
+                <ChevronDown className="w-3 h-3 text-content-muted" />
+              </DropdownMenuTrigger>
 
-          {/* Desktop-only: User Profile or Google Sign In (>= 1024px) */}
-          <div className="hidden lg:flex items-center">
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-secondary border border-border-subtle text-xs font-semibold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-1 focus:ring-primary/40">
-                  <UserIcon className="w-3.5 h-3.5 text-content-muted" />
-                  <span className="max-w-[80px] sm:max-w-[120px] truncate">
-                    {user.displayName || user.email}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-content-muted" />
-                </DropdownMenuTrigger>
+              <DropdownMenuContent align={isRtl ? 'start' : 'end'} className="w-56">
+                {user ? (
+                  <>
+                    <DropdownMenuLabel>
+                      {isRtl ? 'حساب المتدرب' : 'Learner Account'}
+                    </DropdownMenuLabel>
+                    <div className="px-2.5 pb-2 text-[11px] text-content-muted truncate">
+                      {user.displayName && (
+                        <span className="font-semibold block text-content-primary truncate">
+                          {user.displayName}
+                        </span>
+                      )}
+                      <span className="truncate block">{user.email}</span>
+                    </div>
+                    <DropdownMenuSeparator />
 
-                <DropdownMenuContent align={isRtl ? 'start' : 'end'} className="w-52">
-                  <DropdownMenuLabel>
-                    {isRtl ? 'حساب المتدرب' : 'Learner Account'}
-                  </DropdownMenuLabel>
-                  <div className="px-2.5 pb-2 text-[11px] text-content-muted truncate">
-                    {user.email}
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center gap-2 w-full">
+                        <UserIcon className="w-4 h-4 text-primary" />
+                        <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Learning & Tickets'}</span>
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/raffle" className="flex items-center gap-2 w-full">
+                        <Trophy className="w-4 h-4 text-accent" />
+                        <span>{isRtl ? 'سحب الجوائز القانوني' : 'Raffle Transparency'}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuLabel>
+                      {t('guestBadge')}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={handleGoogleLogin}
+                      className="flex items-center gap-2 text-primary font-semibold cursor-pointer"
+                    >
+                      <LogIn className="w-4 h-4" />
+                      <span>{t('loginWithGoogle')}</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+
+                <DropdownMenuSeparator />
+
+                {/* Theme Toggle inside Profile Dropdown (Moon when light, Sun when dark) */}
+                <DropdownMenuItem
+                  onClick={toggleTheme}
+                  className="flex items-center justify-between cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    {isDark ? (
+                      <Sun className="w-4 h-4 text-accent" />
+                    ) : (
+                      <Moon className="w-4 h-4 text-blue-500" />
+                    )}
+                    <span>{t('theme')}</span>
                   </div>
-                  <DropdownMenuSeparator />
+                  <span className="text-[11px] text-content-muted font-normal">
+                    {isDark ? t('themeDark') : t('themeLight')}
+                  </span>
+                </DropdownMenuItem>
 
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center gap-2 w-full">
-                      <UserIcon className="w-4 h-4 text-primary" />
-                      <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Learning & Tickets'}</span>
-                    </Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem asChild>
-                    <Link href="/raffle" className="flex items-center gap-2 w-full">
-                      <Trophy className="w-4 h-4 text-accent" />
-                      <span>{isRtl ? 'سحب الجوائز القانوني' : 'Raffle Transparency'}</span>
-                    </Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20"
-                  >
-                    <LogOut className="w-4 h-4 ms-0 me-2" />
-                    <span>{t('logout')}</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <button
-                onClick={handleGoogleLogin}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-colors cursor-pointer"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{t('loginWithGoogle')}</span>
-                <span className="sm:hidden">{t('login')}</span>
-              </button>
-            )}
+                {user && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20 cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 ms-0 me-2" />
+                      <span>{t('logout')}</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile & Tablet Hamburger Menu Trigger (< 1024px) */}

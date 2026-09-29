@@ -65,17 +65,17 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
       <div className="max-w-md mx-auto my-12 p-6 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-500/30 text-center">
         <AlertCircle className="w-10 h-10 text-red-600 mx-auto mb-3" />
         <h2 className="text-base font-bold text-red-900 dark:text-red-200">
-          لم يتم العثور على الدورة المطلوبة
+          {locale === 'ar' ? 'لم يتم العثور على الدورة المطلوبة' : 'Course Not Found'}
         </h2>
         <p className="mt-1 text-xs text-red-700 dark:text-red-300">
-          {(error as any)?.message || 'تأكد من صحة الرابط أو تصفح باقي الدورات المتاحة.'}
+          {(error as any)?.message || (locale === 'ar' ? 'تأكد من صحة الرابط أو تصفح باقي الدورات المتاحة.' : 'Please verify the link or browse our available courses.')}
         </p>
         <div className="mt-5">
           <Link
             href="/"
             className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors"
           >
-            تصفح دليل الدورات
+            {locale === 'ar' ? 'تصفح دليل الدورات' : 'Browse Course Catalog'}
           </Link>
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
           className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-primary transition-colors"
         >
           <ArrowRight className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
-          <span>العودة لجميع الدورات</span>
+          <span>{locale === 'ar' ? 'العودة لجميع الدورات' : 'Back to all courses'}</span>
         </Link>
       </div>
 
@@ -139,11 +139,15 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
             </span>
             <span className="flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5 text-success" />
-              <span>ملفات عمل ومخططات قابلة للتحميل</span>
+              <span>
+                {locale === 'ar' ? 'ملفات عمل ومخططات قابلة للتحميل' : 'Downloadable schematics & workbooks'}
+              </span>
             </span>
             <span className="flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5 text-success" />
-              <span>دخول فوري مدى الحياة بدون اشتراك</span>
+              <span>
+                {locale === 'ar' ? 'دخول فوري مدى الحياة بدون اشتراك' : 'Instant lifetime access without subscription'}
+              </span>
             </span>
           </div>
         </div>
@@ -156,18 +160,18 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
             </span>
             <span className="text-accent text-xs font-semibold flex items-center gap-1">
               <Ticket className="w-3.5 h-3.5" />
-              <span>{course.bundle_promotional_tickets} تذكرة</span>
+              <span>{course.bundle_promotional_tickets} {tCommon('ticket')}</span>
             </span>
           </div>
 
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-extrabold text-content-primary">
+              <bdi className="text-2xl sm:text-3xl font-extrabold text-content-primary">
                 ${(course.bundle_price_cents / 100).toFixed(2)}
-              </span>
-              <span className="text-xs text-content-muted">
+              </bdi>
+              <bdi className="text-xs text-content-muted">
                 ({course.display_price_label})
-              </span>
+              </bdi>
             </div>
             <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
               {t('bundleSavings')}

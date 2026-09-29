@@ -68,3 +68,14 @@ Iraqi mobile networks are unreliable. Users will drop connection after USSD PIN 
 3. **Provably Fair RNG:** Draws use a Commit-Reveal protocol. Server seed SHA-256 hash is published prior to draw opening; raw seed is revealed post-draw alongside public block entropy for client-side deterministic verification in the Next.js Hall of Fame.
 4. **Legal Protection:** Orders are legally 100% course purchases. Tickets are registered exclusively as zero-cost promotional marketing grants (`promotional_tickets_granted`).
 
+---
+
+## [DEC-005] Constitution v3.1.0 Ratification & Full-Stack Ownership
+**Status:** APPROVED
+**Date:** 2026-09-29
+
+### Decision
+1. **Full-Stack Ownership**: Codified the technical mandate that the autonomous coding agent owns the complete technical lifecycle (Frontend, Laravel Backend API, Database schema/migrations, Redis queues, Auth, API contracts, Testing, and Deployment). The project owner focuses on UI/UX, product intent, and business decisions without being required to direct backend or database implementation.
+2. **Evidence-First Brownfield Protocol**: Codified taxonomy of claims (*Intended behavior*, *Existing implementation*, *Verified behavior*, *Proposed behavior*, *Hypothesis*, *Unknown*, *Unresolved decision*, *Confirmed defect*) and mandatory cross-layer trace investigation.
+3. **Spec Kit Quality & Verification Gates**: Enforced mandatory pre-implementation Analyze gates, post-implementation Convergence gates, and strict Separation of Concerns in Spec Kit artifacts (`spec.md` for tech-agnostic requirements, `plan.md` for full-stack architecture, `tasks.md` for dependency-ordered execution).
+

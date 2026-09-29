@@ -3,12 +3,15 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/routing';
+import { useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 
 function CallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const locale = useLocale();
+  const isRtl = locale === 'ar';
   const { login } = useAuth();
   const [mergedCount, setMergedCount] = useState<number>(0);
   const [isProcessing, setIsProcessing] = useState(true);
@@ -51,23 +54,25 @@ function CallbackContent() {
           <>
             <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
             <h2 className="text-base font-bold text-slate-800 dark:text-white">
-              جاري تسجيل الدخول وحفظ الجلسة...
+              {isRtl ? 'جاري تسجيل الدخول وحفظ الجلسة...' : 'Signing in and establishing session...'}
             </h2>
           </>
         ) : (
           <>
             <CheckCircle2 className="w-12 h-12 text-success mx-auto" />
             <h2 className="text-lg font-extrabold text-secondary dark:text-white">
-              تم تسجيل الدخول بنجاح!
+              {isRtl ? 'تم تسجيل الدخول بنجاح!' : 'Signed in successfully!'}
             </h2>
           </>
         )}
 
         {mergedCount > 0 && (
-          <div className="p-3.5 rounded-xl bg-primary-light/60 dark:bg-primary/10 border border-primary/20 flex items-center gap-2 text-xs font-semibold text-primary text-right">
+          <div className="p-3.5 rounded-xl bg-primary-light/60 dark:bg-primary/10 border border-primary/20 flex items-center gap-2 text-xs font-semibold text-primary text-start">
             <Sparkles className="w-4 h-4 text-primary shrink-0" />
             <span>
-              تم دمج وتثبيت {mergedCount} طلب شراء سابق قمت به كزائر مع حسابك الموثق!
+              {isRtl
+                ? `تم دمج وتثبيت ${mergedCount} طلب شراء سابق قمت به كزائر مع حسابك الموثق!`
+                : `Merged and linked ${mergedCount} previous guest order(s) with your verified account!`}
             </span>
           </div>
         )}

@@ -115,7 +115,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 gap-0 max-w-3xl overflow-hidden bg-surface-primary border border-border-subtle shadow-2xl rounded-2xl">
+      <DialogContent className="p-0 gap-0 max-w-3xl overflow-hidden bg-surface border border-border shadow-xl rounded-2xl">
         <DialogHeader className="sr-only">
           <DialogTitle>
             {isRtl ? 'البحث المهني الذكي في كَنزين' : 'KNZiN Vocational Smart Search'}
@@ -128,7 +128,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
         </DialogHeader>
 
         {/* Top Search Input Bar */}
-        <div className="relative flex items-center px-4 py-3.5 border-b border-border-subtle bg-surface-primary">
+        <div className="relative flex items-center px-4 py-3.5 border-b border-border bg-surface">
           <Search className="w-5 h-5 text-content-muted shrink-0 me-3 transition-colors" />
 
           <input
@@ -171,7 +171,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
 
         {/* Filter Pills when data exists */}
         {data && data.results.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-2 bg-surface-secondary/50 border-b border-border-subtle text-xs">
+          <div className="flex items-center justify-between px-4 py-2 bg-surface-secondary border-b border-border text-xs">
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
@@ -194,7 +194,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
                     : 'text-content-muted hover:text-content-primary hover:bg-surface-secondary'
                 }`}
               >
-                <Play className="w-3 h-3 fill-current rtl:rotate-180" />
+                <Play className="w-3 h-3 fill-current" />
                 <span>{isRtl ? 'لحظات فيديو' : 'Video Moments'}</span>
               </button>
 
@@ -236,7 +236,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
                         key={i}
                         type="button"
                         onClick={() => handleSelectSuggestion(text)}
-                        className="px-3 py-1.5 rounded-xl bg-surface-secondary hover:bg-primary-light hover:text-primary dark:hover:bg-primary/10 border border-border-subtle text-xs font-semibold text-content-secondary transition-all hover:scale-[1.02] active:scale-95 text-start"
+                        className="px-3 py-1.5 rounded-xl bg-surface-secondary hover:bg-surface-elevated hover:text-primary border border-border-subtle text-xs font-semibold text-content-secondary transition-colors text-start cursor-pointer"
                       >
                         {text}
                       </button>
@@ -245,7 +245,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-surface-secondary/60 border border-border-subtle flex items-start gap-3">
+              <div className="p-4 rounded-xl bg-surface-secondary border border-border-subtle flex items-start gap-3">
                 <Compass className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div className="space-y-1 text-xs">
                   <div className="font-extrabold text-content-primary">
@@ -308,7 +308,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
                 key={idx}
                 href={result.href}
                 onClick={() => onOpenChange(false)}
-                className="group block p-4 sm:p-4.5 rounded-xl bg-surface-secondary/50 hover:bg-surface-elevated border border-border-subtle hover:border-primary/50 transition-all duration-150 cursor-pointer shadow-xs hover:shadow-md"
+                className="group block p-4 sm:p-4.5 rounded-xl bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-primary/50 transition-colors cursor-pointer shadow-2xs hover:shadow-xs"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                   {/* Left Content */}
@@ -317,7 +317,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
                     <div className="flex items-center gap-2 flex-wrap">
                       {isVideo ? (
                         <Badge variant="video" size="sm">
-                          <Play className="w-2.5 h-2.5 fill-current rtl:rotate-180" />
+                          <Play className="w-2.5 h-2.5 fill-current" />
                           <span>{isRtl ? 'فيديو تدريبي' : 'Video Moment'}</span>
                         </Badge>
                       ) : (
@@ -369,7 +369,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
                     <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary/10 group-hover:bg-primary group-hover:text-white text-primary text-xs font-black transition-all shadow-xs group-hover:shadow-md">
                       {isVideo ? (
                         <>
-                          <Play className="w-3 h-3 fill-current rtl:rotate-180" />
+                          <Play className="w-3 h-3 fill-current" />
                           <span>{isRtl ? 'مشاهدة الآن' : 'Watch Now'}</span>
                         </>
                       ) : (

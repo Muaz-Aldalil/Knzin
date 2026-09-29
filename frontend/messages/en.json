@@ -15,6 +15,14 @@
   },
   "nav": {
     "courses": "Vocational Courses",
+    "home": "Home",
+    "raffle": "Promotional Raffles",
+    "designSystem": "Design System",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "search": "Search",
+    "searchPlaceholder": "Search skills or tools...",
     "about": "About KNZiN",
     "login": "Sign In",
     "loginWithGoogle": "Continue with Google",
@@ -79,7 +87,7 @@
     "next": "Next Question",
     "prev": "Previous",
     "submit": "Confirm & Stamp Digital Copy",
-    "watermarkStamp": "تم تخصيص هذه النسخة المبرمجة حصرياً لبياناتك"
+    "watermarkStamp": "This programmatic digital copy has been customized exclusively for your verified account."
   },
   "orderSummary": {
     "title": "Your Order Has Been Placed Successfully!",
@@ -95,5 +103,9 @@
     "offlineSupport": "After transferring, send your receipt and order number to our WhatsApp support to immediately activate your access.",
     "backToCatalog": "Browse More Courses",
     "ttlTitle": "Invoice validity (48 hours)"
+  },
+  "footer": {
+    "copyright": "© 2026 KNZiN. All rights reserved. Licensed vocational learning platform in Iraq.",
+    "disclaimer": "Raffle tickets included with courses are complimentary promotional gifts and non-refundable."
   }
 }

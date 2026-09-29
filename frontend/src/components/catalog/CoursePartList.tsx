@@ -144,12 +144,12 @@ export default function CoursePartList({
                     ) : (
                       <div className="flex items-center gap-3">
                         <div className="text-start md:text-end">
-                          <div className="text-sm sm:text-base font-bold text-content-primary">
+                          <bdi className="text-sm sm:text-base font-bold text-content-primary block">
                             ${(part.part_price_cents / 100).toFixed(2)}
-                          </div>
-                          <div className="text-[11px] text-content-muted font-mono">
+                          </bdi>
+                          <bdi className="text-[11px] text-content-muted font-mono block">
                             {part.display_price_label}
-                          </div>
+                          </bdi>
                         </div>
 
                         <Button

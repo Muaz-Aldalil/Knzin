@@ -48,7 +48,7 @@ export default function CourseCard({ course, onQuickCheckout }: CourseCardProps)
   };
 
   return (
-    <div className="group flex flex-col bg-surface-primary border border-border-subtle hover:border-border rounded-xl p-5 transition-colors">
+    <div className="group flex flex-col bg-surface border border-border-subtle hover:border-border rounded-xl p-5 shadow-xs hover:shadow-md transition-all duration-200 motion-safe:hover:-translate-y-1">
       <div className="flex-1 flex flex-col justify-between">
         <div>
           {/* Metadata Row */}
@@ -83,12 +83,12 @@ export default function CourseCard({ course, onQuickCheckout }: CourseCardProps)
                 {t('bundleOffer')}
               </span>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-bold text-content-primary">
+                <bdi className="text-lg font-bold text-content-primary">
                   ${(course.bundle_price_cents / 100).toFixed(2)}
-                </span>
-                <span className="text-xs text-content-muted font-medium">
+                </bdi>
+                <bdi className="text-xs text-content-muted font-medium">
                   ({course.display_price_label})
-                </span>
+                </bdi>
               </div>
             </div>
 

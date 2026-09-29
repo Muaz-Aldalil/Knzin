@@ -22,13 +22,13 @@ const DropdownMenuSubTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       'flex cursor-default select-none items-center rounded-lg px-2.5 py-1.5 text-sm outline-none focus:bg-surface-secondary data-[state=open]:bg-surface-secondary text-content-primary',
-      inset && 'pl-8 rtl:pr-8 rtl:pl-2.5',
+      inset && 'ps-8',
       className
     )}
     {...props}
   >
     {children}
-    <ChevronRight className="ml-auto h-4 w-4 rtl:rotate-180" />
+    <ChevronRight className="ms-auto h-4 w-4 rtl:rotate-180" />
   </DropdownMenuPrimitive.SubTrigger>
 ));
 DropdownMenuSubTrigger.displayName =
@@ -78,7 +78,7 @@ const DropdownMenuItem = React.forwardRef<
     ref={ref}
     className={cn(
       'relative flex cursor-pointer select-none items-center rounded-lg px-2.5 py-2 text-xs sm:text-sm font-semibold outline-none transition-colors focus:bg-surface-secondary focus:text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50 text-content-primary',
-      inset && 'pl-8 rtl:pr-8 rtl:pl-2.5',
+      inset && 'ps-8',
       className
     )}
     {...props}
@@ -96,7 +96,7 @@ const DropdownMenuLabel = React.forwardRef<
     ref={ref}
     className={cn(
       'px-2.5 py-1.5 text-xs font-bold text-content-muted uppercase tracking-wider',
-      inset && 'pl-8 rtl:pr-8 rtl:pl-2.5',
+      inset && 'ps-8',
       className
     )}
     {...props}

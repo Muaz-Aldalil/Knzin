@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { CheckCircle2, Ticket, Clock, CreditCard, ShieldCheck, ArrowRight, Smartphone } from 'lucide-react';
 import { CreatedOrder } from '@/hooks/useCheckout';
@@ -11,13 +11,17 @@ interface OrderSummaryCardProps {
 }
 
 export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
+  const locale = useLocale();
   const t = useTranslations('orderSummary');
   const tCommon = useTranslations('common');
 
-  const formattedExpiresAt = new Date(order.expires_at).toLocaleString('ar-IQ', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
+  const formattedExpiresAt = new Date(order.expires_at).toLocaleString(
+    locale === 'ar' ? 'ar-IQ' : 'en-US',
+    {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }
+  );
 
   return (
     <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden">
@@ -43,7 +47,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
               {t('orderNumber')}
             </span>
             <span className="text-sm font-extrabold text-secondary dark:text-primary-light font-mono">
-              {order.order_number}
+              <bdi>{order.order_number}</bdi>
             </span>
           </div>
 
@@ -53,10 +57,10 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
             </span>
             <div className="flex items-baseline gap-1.5">
               <span className="text-base font-extrabold text-slate-900 dark:text-white">
-                ${(order.total_amount_cents / 100).toFixed(2)}
+                <bdi>${(order.total_amount_cents / 100).toFixed(2)}</bdi>
               </span>
               <span className="text-xs font-bold text-primary dark:text-primary-light">
-                ({order.paid_amount_gateway.toLocaleString()} د.ع)
+                <bdi>({order.paid_amount_gateway.toLocaleString()} {tCommon('currencyIqd')})</bdi>
               </span>
             </div>
           </div>
@@ -109,7 +113,11 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
         {/* Personalization Stamp */}
         <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 text-xs font-semibold">
           <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-          <span>تم تخصيص هذه النسخة المبرمجة حصرياً لبياناتك</span>
+          <span>
+            {locale === 'ar'
+              ? 'تم تخصيص هذه النسخة المبرمجة حصرياً لبياناتك'
+              : 'This digital copy has been customized exclusively for your verified account'}
+          </span>
         </div>
 
         {/* Back Link */}
@@ -118,8 +126,8 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
             href="/"
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-secondary hover:bg-slate-800 text-white text-xs font-bold transition-colors"
           >
-            <span>{t('backToCatalog')}</span>
             <ArrowRight className="w-4 h-4 rtl:rotate-0 ltr:rotate-180" />
+            <span>{t('backToCatalog')}</span>
           </Link>
         </div>
       </div>

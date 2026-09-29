@@ -130,7 +130,7 @@ export function LessonVideoPlayer({
   return (
     <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800 shadow-2xl group">
       {/* Dynamic Watermark Stamp (Anti-piracy invariant 3) */}
-      <div className="absolute top-4 left-4 z-20 pointer-events-none opacity-30 select-none text-[10px] font-mono text-white/70 bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm">
+      <div className="absolute top-4 start-4 z-20 pointer-events-none opacity-30 select-none text-[10px] font-mono text-white/70 bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm">
         {watermarkText} • {new Date().toISOString().slice(0, 10)}
       </div>
 
@@ -154,7 +154,7 @@ export function LessonVideoPlayer({
             aria-label="Play video"
             className="relative z-10 w-20 h-20 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center shadow-2xl shadow-primary/50 transition-all transform group-hover:scale-110 active:scale-95"
           >
-            <Play className="w-9 h-9 fill-current rtl:rotate-180 translate-x-0.5" />
+            <Play className="w-9 h-9 fill-current ms-0.5" />
           </button>
 
           {/* Bottom Video Meta Bar */}
@@ -168,7 +168,7 @@ export function LessonVideoPlayer({
           </div>
 
           {startSeconds > 0 && (
-            <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full bg-accent text-secondary text-xs font-black shadow-lg">
+            <div className="absolute top-4 end-4 z-10 px-3 py-1 rounded-full bg-accent text-secondary text-xs font-black shadow-lg">
               {locale === 'ar' ? `البدء من ${formatTimestamp(startSeconds)}` : `Starts at ${formatTimestamp(startSeconds)}`}
             </div>
           )}

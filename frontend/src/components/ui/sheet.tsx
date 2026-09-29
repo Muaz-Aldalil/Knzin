@@ -61,7 +61,7 @@ const SheetContent = React.forwardRef<
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rtl:right-auto rtl:left-4 rounded-lg p-1.5 opacity-70 transition-opacity hover:opacity-100 hover:bg-surface-secondary focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:pointer-events-none text-content-muted hover:text-content-primary">
+      <SheetPrimitive.Close className="absolute end-4 top-4 rounded-lg p-1.5 opacity-70 transition-opacity hover:opacity-100 hover:bg-surface-secondary focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:pointer-events-none text-content-muted hover:text-content-primary">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
@@ -90,7 +90,7 @@ const SheetFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 rtl:sm:space-x-reverse',
+      'flex flex-col-reverse sm:flex-row sm:justify-end gap-2',
       className
     )}
     {...props}

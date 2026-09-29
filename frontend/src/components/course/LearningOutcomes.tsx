@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useLocale } from 'next-intl';
 import { Wrench, ShieldCheck, Sparkles, Layers, Cpu, Palette, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -211,16 +212,19 @@ export function LearningOutcomes({
   outcomes: customOutcomes,
   className,
 }: LearningOutcomesProps) {
+  const locale = useLocale();
   const outcomes = customOutcomes || defaultOutcomesBySlug[slug] || defaultOutcomesBySlug['auto-detailing'];
 
   return (
     <section className={cn('space-y-5 pt-4 pb-2', className)}>
       <div>
         <h2 className="text-lg sm:text-xl font-bold text-content-primary tracking-tight">
-          ماذا ستتعلم في هذا المنهج المهني؟
+          {locale === 'ar' ? 'ماذا ستتعلم في هذا المنهج المهني؟' : 'What You Will Master in this Curriculum'}
         </h2>
         <p className="text-xs sm:text-sm text-content-secondary mt-1">
-          مهارات عملية وتطبيقية مباشرة لسوق العمل الحر والورش في العراق.
+          {locale === 'ar'
+            ? 'مهارات عملية وتطبيقية مباشرة لسوق العمل الحر والورش في العراق.'
+            : 'Practical, hands-on skills tailored directly for trade workshops and market demand.'}
         </p>
       </div>
 

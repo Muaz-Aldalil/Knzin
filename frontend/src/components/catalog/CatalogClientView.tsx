@@ -1,18 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import CourseCard, { CourseData } from '@/components/catalog/CourseCard';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 import { ResumeHeroCard } from '@/components/course/ResumeHeroCard';
 import { useCatalog } from '@/hooks/useCatalog';
-import { Loader2, AlertCircle, Search } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 interface CatalogClientViewProps {
   initialCourses: CourseData[];
 }
 
 export default function CatalogClientView({ initialCourses }: CatalogClientViewProps) {
+  const locale = useLocale();
   const t = useTranslations('catalog');
   const tCommon = useTranslations('common');
 
@@ -43,25 +44,6 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
         <p className="text-sm sm:text-base text-content-secondary max-w-xl mx-auto leading-relaxed">
           {t('subheading')}
         </p>
-
-        {/* Supabase-style In-Place Quick Search Trigger */}
-        <div className="pt-2 max-w-md mx-auto">
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent('knzin:open-search'))}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-surface-primary hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-muted hover:text-content-primary transition-colors group cursor-pointer text-start"
-          >
-            <div className="flex items-center gap-2.5">
-              <Search className="w-4 h-4 text-content-muted group-hover:text-primary transition-colors" />
-              <span className="text-xs sm:text-sm font-normal">
-                ابحث في المهارات أو الأدوات أو الدروس...
-              </span>
-            </div>
-            <kbd className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-content-muted bg-surface-secondary border border-border-subtle rounded select-none">
-              Ctrl K
-            </kbd>
-          </button>
-        </div>
       </div>
 
       {/* Scrimba-Style Resume & Continuation Hero Banner */}
@@ -83,7 +65,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
             {tCommon('errorOccurred')}
           </h2>
           <p className="mt-1 text-xs text-red-700 dark:text-red-300">
-            {(error as any)?.message || 'تعذر تحميل قائمة الدورات. يرجى إعادة المحاولة.'}
+            {(error as any)?.message || (locale === 'ar' ? 'تعذر تحميل قائمة الدورات. يرجى إعادة المحاولة.' : 'Failed to load courses. Please retry.')}
           </p>
           <button
             onClick={() => refetch()}
