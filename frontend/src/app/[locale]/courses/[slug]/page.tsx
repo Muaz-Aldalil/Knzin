@@ -132,12 +132,12 @@ export default function CourseDetailPage() {
         </div>
 
         {/* Full Bundle Purchase Card (1 col) */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-secondary to-secondary-surface text-white shadow-xl border border-secondary-surface space-y-4">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-content-primary shadow-xl space-y-4 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-primary-light uppercase tracking-wider">
+            <span className="text-xs font-extrabold text-primary uppercase tracking-wider">
               {t('bundleOffer')}
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-accent/20 text-accent border border-accent/30 text-xs font-black flex items-center gap-1">
+            <span className="px-2.5 py-1 rounded-full bg-accent/10 dark:bg-accent/20 text-accent border border-accent/25 text-xs font-black flex items-center gap-1 shadow-xs">
               <Ticket className="w-3.5 h-3.5" />
               <span>{course.bundle_promotional_tickets} تذكرة</span>
             </span>
@@ -145,27 +145,27 @@ export default function CourseDetailPage() {
 
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-white">
+              <span className="text-3xl font-black text-secondary dark:text-white">
                 ${(course.bundle_price_cents / 100).toFixed(2)}
               </span>
-              <span className="text-sm font-semibold text-primary-light">
+              <span className="text-sm font-bold text-slate-500 dark:text-slate-400">
                 ({course.display_price_label})
               </span>
             </div>
-            <p className="mt-1 text-xs text-success font-semibold">
+            <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
               {t('bundleSavings')}
             </p>
           </div>
 
           <button
             onClick={handleBundleCheckout}
-            className="w-full py-3.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-extrabold shadow-lg shadow-primary/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            className="w-full py-3.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-extrabold shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-accent" />
             <span>{t('buyBundle')}</span>
           </button>
 
-          <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center leading-relaxed">
             يشمل جميع الأجزاء الـ 6 كاملة + 15 تذكرة سحب ترويجية مجانية على الجوائز الكبرى.
           </p>
         </div>
