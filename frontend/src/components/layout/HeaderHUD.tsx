@@ -14,7 +14,8 @@ import {
   Search,
   BookOpen,
   Trophy,
-  ChevronDown
+  ChevronDown,
+  Menu,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -25,6 +26,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { SearchCommandDialog } from '@/components/search/SearchCommandDialog';
+import MobileNavSheet from './MobileNavSheet';
 
 interface AuthUser {
   id: string;
@@ -41,6 +43,7 @@ export default function HeaderHUD() {
   const isRtl = locale === 'ar';
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
 
   useEffect(() => {
@@ -93,7 +96,7 @@ export default function HeaderHUD() {
     <header className="sticky top-0 z-40 w-full bg-surface/95 backdrop-blur-sm border-b border-border-subtle text-content-primary transition-colors duration-200">
       {/* Main Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo and Brand */}
+        {/* Logo and Desktop Navigation */}
         <div className="flex items-center gap-4 sm:gap-6">
           <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-colors">
@@ -109,7 +112,8 @@ export default function HeaderHUD() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-2 text-xs font-medium text-content-secondary">
+          {/* Full Desktop Navigation (Large Screens only: >= 1024px) */}
+          <nav className="hidden lg:flex items-center gap-2 text-xs font-medium text-content-secondary">
             <Link
               href="/"
               className="px-3 py-1.5 rounded-md hover:text-content-primary hover:bg-surface-secondary transition-colors"
@@ -141,15 +145,15 @@ export default function HeaderHUD() {
 
         {/* HUD Counters & User Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Mobile search trigger */}
+          {/* Mobile / Tablet search trigger (< 1024px) */}
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="md:hidden p-2 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle text-content-primary transition-colors cursor-pointer"
+            className="lg:hidden p-2 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle text-content-secondary hover:text-content-primary transition-colors cursor-pointer"
             aria-label={isRtl ? 'البحث الذكي' : 'Search'}
             title={isRtl ? 'البحث الذكي' : 'Search'}
           >
-            <Search className="w-4 h-4 text-primary" />
+            <Search className="w-4 h-4" />
           </button>
 
           {/* Ticket Counter HUD */}
@@ -162,81 +166,108 @@ export default function HeaderHUD() {
             <span>0 <span className="hidden sm:inline text-content-muted">{tCommon('ticket')}</span></span>
           </Link>
 
-          {/* Wallet Balance HUD */}
+          {/* Desktop-only: Wallet Balance HUD (>= 1024px) */}
           <div
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary text-xs font-medium"
+            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary text-xs font-medium"
             title={isRtl ? 'رصيد المحفظة' : 'Wallet Balance'}
           >
             <Wallet className="w-3.5 h-3.5 text-content-muted" />
             <span>0 {tCommon('currencyIqd')}</span>
           </div>
 
-          {/* Language Switcher */}
-          <LanguageToggle />
+          {/* Desktop-only: Language Switcher (>= 1024px) */}
+          <div className="hidden lg:flex items-center">
+            <LanguageToggle />
+          </div>
 
-          {/* Theme Switcher */}
-          <ThemeToggle />
+          {/* Desktop-only: Theme Switcher (>= 1024px) */}
+          <div className="hidden lg:flex items-center">
+            <ThemeToggle />
+          </div>
 
-          {/* User Profile or Google Sign In using shadcn DropdownMenu */}
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-secondary border border-border-subtle text-xs font-semibold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-1 focus:ring-primary/40">
-                <UserIcon className="w-3.5 h-3.5 text-content-muted" />
-                <span className="max-w-[80px] sm:max-w-[120px] truncate">
-                  {user.displayName || user.email}
-                </span>
-                <ChevronDown className="w-3.5 h-3.5 text-content-muted" />
-              </DropdownMenuTrigger>
+          {/* Desktop-only: User Profile or Google Sign In (>= 1024px) */}
+          <div className="hidden lg:flex items-center">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-secondary border border-border-subtle text-xs font-semibold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-1 focus:ring-primary/40">
+                  <UserIcon className="w-3.5 h-3.5 text-content-muted" />
+                  <span className="max-w-[80px] sm:max-w-[120px] truncate">
+                    {user.displayName || user.email}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-content-muted" />
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent align={isRtl ? 'start' : 'end'} className="w-52">
-                <DropdownMenuLabel>
-                  {isRtl ? 'حساب المتدرب' : 'Learner Account'}
-                </DropdownMenuLabel>
-                <div className="px-2.5 pb-2 text-[11px] text-content-muted truncate">
-                  {user.email}
-                </div>
-                <DropdownMenuSeparator />
+                <DropdownMenuContent align={isRtl ? 'start' : 'end'} className="w-52">
+                  <DropdownMenuLabel>
+                    {isRtl ? 'حساب المتدرب' : 'Learner Account'}
+                  </DropdownMenuLabel>
+                  <div className="px-2.5 pb-2 text-[11px] text-content-muted truncate">
+                    {user.email}
+                  </div>
+                  <DropdownMenuSeparator />
 
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center gap-2 w-full">
-                    <UserIcon className="w-4 h-4 text-primary" />
-                    <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Learning & Tickets'}</span>
-                  </Link>
-                </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center gap-2 w-full">
+                      <UserIcon className="w-4 h-4 text-primary" />
+                      <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Learning & Tickets'}</span>
+                    </Link>
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem asChild>
-                  <Link href="/raffle" className="flex items-center gap-2 w-full">
-                    <Trophy className="w-4 h-4 text-accent" />
-                    <span>{isRtl ? 'سحب الجوائز القانوني' : 'Raffle Transparency'}</span>
-                  </Link>
-                </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/raffle" className="flex items-center gap-2 w-full">
+                      <Trophy className="w-4 h-4 text-accent" />
+                      <span>{isRtl ? 'سحب الجوائز القانوني' : 'Raffle Transparency'}</span>
+                    </Link>
+                  </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
+                  <DropdownMenuSeparator />
 
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20"
-                >
-                  <LogOut className="w-4 h-4 ms-0 me-2" />
-                  <span>{t('logout')}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <button
-              onClick={handleGoogleLogin}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-colors cursor-pointer"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t('loginWithGoogle')}</span>
-              <span className="sm:hidden">{t('login')}</span>
-            </button>
-          )}
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20"
+                  >
+                    <LogOut className="w-4 h-4 ms-0 me-2" />
+                    <span>{t('logout')}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <button
+                onClick={handleGoogleLogin}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-colors cursor-pointer"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{t('loginWithGoogle')}</span>
+                <span className="sm:hidden">{t('login')}</span>
+              </button>
+            )}
+          </div>
+
+          {/* Mobile & Tablet Hamburger Menu Trigger (< 1024px) */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="lg:hidden p-2 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle text-content-secondary hover:text-content-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+            aria-label={isRtl ? 'فتح القائمة الرئيسية' : 'Open main navigation menu'}
+            title={isRtl ? 'القائمة الرئيسية' : 'Main menu'}
+          >
+            <Menu className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
       {/* Global In-Place Search Command Palette (Ctrl + K) */}
       <SearchCommandDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+
+      {/* Mobile & Tablet Navigation Sheet Drawer */}
+      <MobileNavSheet
+        open={isMobileMenuOpen}
+        onOpenChange={setIsMobileMenuOpen}
+        user={user}
+        onLogout={handleLogout}
+        onGoogleLogin={handleGoogleLogin}
+        onOpenSearch={() => setIsSearchOpen(true)}
+      />
     </header>
   );
 }
