@@ -270,11 +270,17 @@ export default function HeaderHUD() {
                     </div>
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile" className="flex items-center gap-2 w-full">
+                    <DropdownMenuItem
+                      disabled
+                      className="flex items-center justify-between gap-2 w-full cursor-not-allowed opacity-75"
+                    >
+                      <div className="flex items-center gap-2">
                         <UserIcon className="w-4 h-4 text-primary" />
                         <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Learning & Tickets'}</span>
-                      </Link>
+                      </div>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-semibold">
+                        {isRtl ? 'قريباً' : 'Soon'}
+                      </span>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem asChild>

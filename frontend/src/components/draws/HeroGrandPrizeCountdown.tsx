@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import { useGrandPrizeDraw } from '@/hooks/useDraws';
 import { CountdownClock } from './CountdownClock';
@@ -66,7 +66,7 @@ export function HeroGrandPrizeCountdown() {
           {/* Action CTAs */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
-              href="#catalog"
+              href="/#catalog"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-md hover:bg-primary/90 hover:scale-[1.02] transition-all duration-200"
             >
               <Gift className="h-4 w-4" />

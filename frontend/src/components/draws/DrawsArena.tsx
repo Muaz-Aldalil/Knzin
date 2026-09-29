@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useActiveDraws, useConcludedDraws } from '@/hooks/useDraws';
 import { DrawCard } from './DrawCard';
@@ -10,6 +10,35 @@ import { Clock, Trophy, Sparkles, AlertCircle } from 'lucide-react';
 export function DrawsArena() {
   const t = useTranslations('draws');
   const [activeTab, setActiveTab] = useState<'active' | 'concluded'>('active');
+
+  // Deep-link section target resolution (Protocol Sections 6, 16 & 17)
+  useEffect(() => {
+    const syncTabWithHash = () => {
+      if (typeof window === 'undefined') return;
+      const hash = window.location.hash;
+      if (hash === '#hall-of-fame' || hash === '#concluded') {
+        setActiveTab('concluded');
+        requestAnimationFrame(() => {
+          const el = document.getElementById('hall-of-fame');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      } else if (hash === '#active' || hash === '#draws-arena') {
+        setActiveTab('active');
+        requestAnimationFrame(() => {
+          const el = document.getElementById('draws-arena');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+    };
+
+    syncTabWithHash();
+    window.addEventListener('hashchange', syncTabWithHash);
+    return () => window.removeEventListener('hashchange', syncTabWithHash);
+  }, []);
 
   const {
     draws: activeDraws,
@@ -24,7 +53,7 @@ export function DrawsArena() {
   } = useConcludedDraws();
 
   return (
-    <div className="w-full space-y-8 py-6">
+    <div id="draws-arena" className="w-full space-y-8 py-6 scroll-mt-20">
       {/* Header Section */}
       <div className="text-center max-w-3xl mx-auto space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
@@ -109,7 +138,7 @@ export function DrawsArena() {
             )}
           </div>
         ) : (
-          <div>
+          <div id="hall-of-fame" className="scroll-mt-24">
             {isLoadingConcluded ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (

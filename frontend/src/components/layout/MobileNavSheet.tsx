@@ -57,7 +57,6 @@ export default function MobileNavSheet({
   const isCoursesActive = pathname === '/' || pathname.startsWith('/courses');
   const isRaffleActive = pathname.startsWith('/raffle');
   const isDesignSystemActive = pathname.startsWith('/design-system');
-  const isProfileActive = pathname.startsWith('/profile');
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -182,17 +181,15 @@ export default function MobileNavSheet({
                   </div>
                 </div>
 
-                <Link
-                  href="/profile"
-                  onClick={close}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                    isProfileActive
-                      ? 'bg-surface-secondary text-primary font-semibold'
-                      : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/60'
-                  }`}
+                <div
+                  className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-content-muted opacity-75 cursor-not-allowed select-none"
+                  aria-disabled="true"
                 >
                   <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Learning & Tickets'}</span>
-                </Link>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-secondary text-content-muted font-semibold">
+                    {isRtl ? 'قريباً' : 'Soon'}
+                  </span>
+                </div>
 
                 <button
                   type="button"

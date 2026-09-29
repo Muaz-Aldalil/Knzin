@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import { DrawItem } from '@/types/draws';
 import { CountdownClock } from './CountdownClock';
@@ -129,7 +129,7 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
       <div className="p-4 sm:p-5 pt-0 space-y-3">
         {/* Course Entry CTA */}
         <Link
-          href="#catalog"
+          href="/#catalog"
           className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-bold shadow-xs hover:bg-primary/90 hover:shadow-md transition-all duration-200"
         >
           <Gift className="h-4 w-4" />

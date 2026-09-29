@@ -15,6 +15,25 @@ export interface ShouldTriggerNavigationOptions {
 }
 
 /**
+ * Normalizes a pathname by separating supported locale prefix (/ar, /en) from the logical route path.
+ */
+export function normalizePathname(pathname: string): { locale: string | null; logicalPath: string } {
+  const normalized = pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
+  const match = normalized.match(/^\/(ar|en)(\/.*)?$/);
+  if (match) {
+    const rawLogical = match[2] || '/';
+    return {
+      locale: match[1],
+      logicalPath: rawLogical.endsWith('/') && rawLogical.length > 1 ? rawLogical.slice(0, -1) : rawLogical,
+    };
+  }
+  return {
+    locale: null,
+    logicalPath: normalized === '' ? '/' : normalized,
+  };
+}
+
+/**
  * Determines whether a click interaction constitutes a valid internal client-side navigation.
  */
 export function shouldTriggerNavigation({
@@ -65,19 +84,30 @@ export function shouldTriggerNavigation({
       return false;
     }
 
-    // Reject hash-only changes on current page
+    const currentNorm = normalizePathname(currentUrl.pathname);
+    const targetNorm = normalizePathname(parsedTarget.pathname);
+
+    // If target does not explicitly declare a locale, it inherits currentUrl's locale
+    const effectiveTargetLocale = targetNorm.locale ?? currentNorm.locale;
+    const isSameLocale = effectiveTargetLocale === currentNorm.locale;
+    const isSameLogicalPath = targetNorm.logicalPath === currentNorm.logicalPath;
+    const isSameSearch = parsedTarget.search === currentUrl.search;
+
+    // Reject hash-only changes on current logical route and locale (Section 10 & 14)
     if (
-      parsedTarget.pathname === currentUrl.pathname &&
-      parsedTarget.search === currentUrl.search &&
+      isSameLocale &&
+      isSameLogicalPath &&
+      isSameSearch &&
       parsedTarget.hash !== currentUrl.hash
     ) {
       return false;
     }
 
-    // Reject same-page re-clicks (no path/search change)
+    // Reject same-page re-clicks (no path, locale, or search change, and no hash change)
     if (
-      parsedTarget.pathname === currentUrl.pathname &&
-      parsedTarget.search === currentUrl.search &&
+      isSameLocale &&
+      isSameLogicalPath &&
+      isSameSearch &&
       !parsedTarget.hash
     ) {
       return false;

@@ -90,6 +90,49 @@ describe('Navigation Progress Bar Invariants', () => {
         defaultPrevented: false,
       });
       assert.equal(localHash, false);
+
+      // Protocol Section 10 & 14: Unprefixed relative anchor on home page
+      const homeUrl = new URL('https://knzin.iq/ar');
+      const unprefixedAnchor = shouldTriggerNavigation({
+        currentUrl: homeUrl,
+        targetHref: '/#catalog',
+        isModifiedEvent: false,
+        button: 0,
+        defaultPrevented: false,
+      });
+      assert.equal(unprefixedAnchor, false, 'Unprefixed same-page anchor should not trigger progress');
+    });
+
+    it('accepts cross-route section navigation (Protocol Section 10 & 15)', () => {
+      const homeUrl = new URL('https://knzin.iq/ar');
+      const crossRouteSection = shouldTriggerNavigation({
+        currentUrl: homeUrl,
+        targetHref: '/ar/raffle#hall-of-fame',
+        isModifiedEvent: false,
+        button: 0,
+        defaultPrevented: false,
+      });
+      assert.equal(crossRouteSection, true, 'Cross-route section link should trigger progress');
+
+      const raffleToCatalog = shouldTriggerNavigation({
+        currentUrl: new URL('https://knzin.iq/ar/raffle'),
+        targetHref: '/#catalog',
+        isModifiedEvent: false,
+        button: 0,
+        defaultPrevented: false,
+      });
+      assert.equal(raffleToCatalog, true, 'Raffle to home catalog link should trigger progress');
+    });
+
+    it('accepts locale-switch navigation on the same logical page (Protocol Section 12)', () => {
+      const localeSwitch = shouldTriggerNavigation({
+        currentUrl: new URL('https://knzin.iq/ar/raffle'),
+        targetHref: '/en/raffle',
+        isModifiedEvent: false,
+        button: 0,
+        defaultPrevented: false,
+      });
+      assert.equal(localeSwitch, true, 'Locale switch must never be classified as a no-op');
     });
 
     it('rejects clicking the currently active page URL (no-op)', () => {
