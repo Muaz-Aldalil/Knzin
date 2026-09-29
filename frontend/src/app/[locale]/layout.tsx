@@ -6,6 +6,7 @@ import { routing } from '@/i18n/routing';
 import QueryProvider from '@/components/providers/QueryProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import HeaderHUD from '@/components/layout/HeaderHUD';
+import NavigationProgressBar from '@/components/layout/NavigationProgressBar';
 
 export const metadata: Metadata = {
   title: 'كَنزين | منصة الدورات المهنية والجوائز الترويجية',
@@ -42,6 +43,7 @@ export default async function LocaleLayout({
       <NextIntlClientProvider locale={locale} messages={messages}>
         <ThemeProvider>
           <QueryProvider>
+            <NavigationProgressBar />
             <HeaderHUD />
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
               {children}
