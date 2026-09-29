@@ -197,7 +197,7 @@ Represents educational purchase intent. In Phase 2 MVP, orders remain in `pendin
 | `display_price_label`| `VARCHAR(50)` | No | - | Customer marketing label (e.g. `'2,000 IQD'`), display only. |
 | `promotional_tickets_granted`| `INT` | No | `1` | Total promotional tickets recorded for this order. |
 | `status` | `ENUM('pending', 'completed', 'failed', 'refunded')` | No | `'pending'` | Initial status is strictly `'pending'`. |
-| `idempotency_key` | `VARCHAR(64)` | No | - | Unique client-generated UUID for 10-minute dedup window. |
+| `idempotency_key` | `VARCHAR(64)` | No | - | Permanent unique UUID per checkout intent; replaying key returns existing order. |
 | `legal_terms_agreed`| `BOOLEAN` | No | - | Must be strictly `true`. False/null rejected by server. |
 | `terms_agreed_ip` | `VARCHAR(45)` | No | - | Client IPv4/IPv6 address at agreement time. |
 | `terms_agreed_at` | `TIMESTAMP` | No | - | Timestamp of affirmative agreement. |
@@ -256,6 +256,6 @@ stateDiagram-v2
 
 ### Invariants:
 1. **Creation Invariant**: Every order MUST be created with `status = 'pending'`, `legal_terms_agreed = true`, valid IP address, and `expires_at = created_at + 48 hours`.
-2. **Dedup Invariant**: Same `idempotency_key` submitted within 10 minutes returns original order; new insert blocked by database unique key.
+2. **Dedup Invariant**: Same `idempotency_key` permanently points to exactly one order intent via MySQL `uq_orders_idempotency`; duplicate requests return existing order with HTTP 200 OK (with Redis providing sub-second fast-path deduplication during the active 10-minute double-click window).
 3. **Immutability Invariant**: `total_amount_cents`, `currency`, `exchange_rate`, `paid_amount_gateway`, and `promotional_tickets_granted` can NEVER be modified once the order row is created.
 4. **Expired Order Invariant**: Orders transitioning from `pending` &rarr; `failed` upon 48-hour expiration can NEVER mint promotional tickets and can NEVER mutate wallet ledgers.

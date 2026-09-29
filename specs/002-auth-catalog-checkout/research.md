@@ -85,10 +85,10 @@ Prevents ledger drift, rounding discrepancies, and currency reconciliation bugs 
 ## 5. Pending Order Lifecycle, Idempotency & TTL
 
 ### Decision
-- **Client Idempotency Key**: Generated on the client using UUIDv4 per checkout intent.
-- **10-Minute Dedup Window (`FR-011`)**:
-  - Enforced via unique constraint on `orders.idempotency_key` and a Redis atomic lock: `checkout:idempotency:{key}` with a 10-minute TTL.
-  - If a second request arrives within 10 minutes with the same idempotency key, the server catches the duplicate and returns the existing order reference with `HTTP 200 OK` (or `HTTP 409 Conflict` with existing order payload) without creating a second database row.
+- **Client Idempotency Key**: Generated on the client using UUIDv4 per checkout intent, permanently unique in MySQL (`uq_orders_idempotency`). Starting a new checkout intent requires a new client idempotency key.
+- **Deduplication Semantics (`FR-011`)**:
+  - Enforced via permanent database unique constraint on `orders.idempotency_key` combined with a Redis atomic lock: `checkout:idempotency:{key}` with a 10-minute TTL to handle sub-second rapid double-clicks.
+  - Re-submitting an identical idempotency key replays and returns the existing order reference with `HTTP 200 OK` without creating a duplicate database row.
 - **Multiple Pendings**: Users are permitted to create multiple distinct pending orders (with distinct idempotency keys) to allow purchasing multiple course parts or gifts.
 - **48-Hour TTL Expiry (`FR-012`)**:
   - `expires_at` is set to `created_at + 48 hours`.

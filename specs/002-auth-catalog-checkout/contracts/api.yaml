@@ -360,6 +360,7 @@ components:
         - item_type
         - legal_terms_agreed
         - legal_terms_verbatim
+        - quiz_answers
       properties:
         email:
           type: string
@@ -387,11 +388,44 @@ components:
           example: "أوافق على الشروط والأحكام وسياسة الخصوصية، وأقر بأنني أقوم بشراء محتوى رقمي تعليمي، وأن تذكرة السحب المرفقة هي هدية ترويجية مجانية غير مستردة أو قابلة للتبديل"
         quiz_answers:
           type: object
+          required:
+            - primary_goal
+            - weekly_commitment
+            - level
+          properties:
+            primary_goal:
+              type: string
+              example: "car_detailing_shop"
+            weekly_commitment:
+              type: string
+              example: "5_hours"
+            level:
+              type: string
+              example: "beginner"
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        course_id:
+          type: string
+          format: uuid
+        course_part_id:
+          type: string
+          format: uuid
           nullable: true
-          example:
-            primary_goal: "car_detailing_shop"
-            weekly_commitment: "5_hours"
-            level: "beginner"
+        item_type:
+          type: string
+          enum: [bundle, part]
+        price_cents:
+          type: integer
+          format: int64
+          example: 200
+        promotional_tickets_granted:
+          type: integer
+          example: 1
 
     Order:
       type: object
@@ -408,6 +442,7 @@ components:
           example: pending
         total_amount_cents:
           type: integer
+          format: int64
           example: 200
         currency:
           type: string
@@ -417,6 +452,7 @@ components:
           example: "1.3100"
         paid_amount_gateway:
           type: integer
+          format: int64
           example: 2620
         display_price_label:
           type: string
@@ -435,13 +471,16 @@ components:
           format: date-time
         quiz_answers:
           type: object
-          nullable: true
         expires_at:
           type: string
           format: date-time
         created_at:
           type: string
           format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
 
     OrderResponse:
       type: object

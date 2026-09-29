@@ -14,7 +14,7 @@
 - Q: Which exact Arabic text must be strictly validated on the backend and rendered on the mandatory checkout checkbox? (FR-008) → A: Option A canonical verbatim only: `"أوافق على الشروط والأحكام وسياسة الخصوصية، وأقر بأنني أقوم بشراء محتوى رقمي تعليمي، وأن تذكرة السحب المرفقة هي هدية ترويجية مجانية غير مستردة أو قابلة للتبديل"`. Server strictly rejects any non-matching string. Checkbox must be non-pre-checked. Store acceptance flag + client IP + timestamp. Variants B and C rejected.
 - Q: How are currency amounts and the exchange rate separated to avoid ledger discrepancies? → A: Single source of truth is `total_amount_cents` (USD integer). Currency is `USD`. Accounting exchange rate is frozen at order creation (`1 USD = 1,310 IQD`) and stored in `exchange_rate`. Converted gateway amount is stored as `paid_amount_gateway` (IQD integer). Marketing display label is stored separately in `display_price_label` (e.g. `"2,000 IQD"`) strictly for UI display and never used in financial calculations.
 - Q: How does account merging work when a guest user later logs in with Google? → A: One-way merge only: unverified guest identity merges into verified Google account upon exact email match. Previous pending/completed orders are re-attributed, guest record is deactivated, leaving a single surviving user. Verified accounts are never merged into unverified accounts. Google logins with new emails create new distinct users with no cross-linking.
-- Q: How are rapid double-clicks prevented, and what is the lifecycle/TTL of pending orders? → A: Client generates an idempotency key per checkout intent. Server enforces a 10-minute unique window to prevent double-clicks. Multiple pending orders are permitted per user (for rebuys/gifts). Each pending order has a 48-hour TTL before auto-expiring to `failed` (accommodating delayed Zain Cash offline payments). Expired pending orders can never mint tickets and never mutate the ledger.
+- Q: How are rapid double-clicks prevented, and what is the lifecycle/TTL of pending orders? → A: Client generates a unique UUID idempotency key per checkout intent, stored permanently under a UNIQUE constraint in MySQL. Submitting an identical key replays the original order with HTTP 200 OK (with Redis fast-path caching during the initial 10-minute double-click window). Starting a new checkout intent requires a new client idempotency key. Multiple distinct pending orders are permitted per user. Each pending order has a 48-hour TTL before auto-expiring to `failed` (accommodating delayed Zain Cash offline payments). Expired pending orders can never mint tickets and never mutate the ledger.
 - Q: What is the retake policy for the anti-piracy quiz and how are answers linked to the order? → A: Quiz is bound to checkout intent / `order_id` with `completed_at` and `answers` JSON. Unlimited retakes allowed before Confirm Order; last completed submission persists. Personalization stamp text `"تم تخصيص هذه النسخة المبرمجة حصرياً لبياناتك"` is generated client-side and saved as order metadata. Zero server-side scoring or grading.
 
 ---
@@ -94,7 +94,7 @@ So that my course package feels personally customized and legally watermarked to
 ### Edge Cases
 
 - **Invalid or Malformed Email**: When a guest enters an invalid email format (e.g. `user@`, `user@domain`), the system rejects order creation with an inline validation alert.
-- **Rapid Double-Click Submission**: Client generates a unique idempotency key per checkout intent. The server enforces a 10-minute unique window on this key, rejecting duplicate submissions within 10 minutes while returning the original order reference.
+- **Rapid Double-Click Submission**: Client generates a unique idempotency key per checkout intent, backed by a permanent database UNIQUE constraint and an active 10-minute Redis duplicate lock. Re-submitting the same key replays the existing order reference with HTTP 200 OK without creating a duplicate record.
 - **Multiple Legitimate Orders**: A user is permitted to hold multiple distinct `pending` orders concurrently (e.g. buying different course parts or gifts for friends).
 - **Pending Order Expiration (48-Hour TTL)**: A `pending` order that receives no payment confirmation within 48 hours is automatically marked `failed`. Expired pending orders can never mint tickets and can never mutate the ledger.
 - **Unticked or Non-Matching Legal Checkbox**: If the user unchecks the legal agreement, or if a manipulated payload transmits any string other than the canonical verbatim text, the server strictly rejects order creation.
@@ -135,9 +135,9 @@ So that my course package feels personally customized and legally watermarked to
   - Explicit record of complimentary promotional tickets granted (`promotional_tickets_granted`).
   - Client-generated idempotency key (`idempotency_key`).
   - Order expiration timestamp (`expires_at`, set to `created_at + 48 hours`).
-- **FR-011**: The system MUST enforce a 10-minute idempotency deduplication window on order creation:
-  - Requests submitted with an identical `idempotency_key` within 10 minutes MUST return the existing order without creating a duplicate database record.
-  - Multiple distinct pending orders are permitted per user (allowing legitimate multiple purchases or gifts).
+- **FR-011**: The system MUST enforce idempotency deduplication on order creation:
+  - The `idempotency_key` MUST be permanently unique per order in the database; requests submitted with an identical `idempotency_key` MUST return the existing order with HTTP 200 OK without creating duplicate database rows (with Redis providing sub-second fast-path deduplication during the active 10-minute window).
+  - Multiple distinct pending orders are permitted per user (each requiring a distinct client-generated idempotency key).
 - **FR-012**: The system MUST enforce a 48-hour time-to-live (TTL) on pending orders:
   - Orders remaining in `pending` state after 48 hours MUST be transitioned to `failed`.
   - Expired pending orders can NEVER mint promotional tickets and can NEVER mutate wallet ledgers.
