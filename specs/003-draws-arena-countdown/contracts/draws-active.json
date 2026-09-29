@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ActiveDrawsResponse",
+  "type": "object",
+  "required": ["status", "data"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "fail", "error"]
+    },
+    "data": {
+      "type": "object",
+      "required": ["server_time_utc", "draws"],
+      "properties": {
+        "server_time_utc": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Authoritative ISO 8601 server reference time for client drift synchronization"
+        },
+        "draws": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "tier",
+              "execution_type",
+              "title",
+              "status",
+              "starts_at",
+              "ends_at",
+              "badge_label",
+              "prize"
+            ],
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "tier": { "type": "string", "enum": ["hourly", "daily", "monthly"] },
+              "execution_type": { "type": "string", "enum": ["automated_electronic", "live_broadcast"] },
+              "title": { "type": "string" },
+              "status": { "type": "string", "enum": ["upcoming", "active", "locked"] },
+              "starts_at": { "type": "string", "format": "date-time" },
+              "ends_at": { "type": "string", "format": "date-time" },
+              "badge_label": { "type": "string", "example": "سحب مضمون ومجدول رسمياً" },
+              "broadcast_url": { "type": ["string", "null"] },
+              "total_eligible_tickets": { "type": "integer" },
+              "prize": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "category",
+                  "valuation_usd",
+                  "display_iqd_label",
+                  "image_url"
+                ],
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": ["string", "null"] },
+                  "category": { "type": "string", "enum": ["cash", "merchandise"] },
+                  "valuation_usd": { "type": "number", "description": "Formatted USD decimal ($100.00)" },
+                  "display_iqd_label": { "type": "string", "example": "131,000 د.ع" },
+                  "image_url": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

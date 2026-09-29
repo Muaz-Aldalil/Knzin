@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ConcludedDrawsResponse",
+  "type": "object",
+  "required": ["status", "data"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "fail", "error"]
+    },
+    "data": {
+      "type": "object",
+      "required": ["draws"],
+      "properties": {
+        "draws": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "tier",
+              "title",
+              "concluded_at",
+              "prize",
+              "winner"
+            ],
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "tier": { "type": "string", "enum": ["hourly", "daily", "monthly"] },
+              "title": { "type": "string" },
+              "concluded_at": { "type": "string", "format": "date-time" },
+              "broadcast_replay_url": { "type": ["string", "null"] },
+              "prize": {
+                "type": "object",
+                "required": ["title", "valuation_usd", "display_iqd_label", "image_url"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "valuation_usd": { "type": "number" },
+                  "display_iqd_label": { "type": "string" },
+                  "image_url": { "type": "string" }
+                }
+              },
+              "winner": {
+                "type": "object",
+                "required": [
+                  "winning_ticket_serial",
+                  "masked_name",
+                  "governorate",
+                  "prize_delivered"
+                ],
+                "properties": {
+                  "winning_ticket_serial": { "type": "string", "example": "#KNZ-H12-8821" },
+                  "masked_name": { "type": "string", "example": "علي ك." },
+                  "governorate": { "type": "string", "example": "بغداد" },
+                  "prize_delivered": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
