@@ -46,10 +46,10 @@ export default function HeaderHUD() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-secondary border-b border-slate-800 text-white shadow-md">
+    <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-[#070e1b]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white shadow-xs transition-colors duration-200">
       {/* Live Social Proof Marquee Banner */}
-      <div className="bg-gradient-to-r from-secondary-surface via-primary to-secondary-surface text-xs py-1.5 px-4 overflow-hidden border-b border-primary/20 whitespace-nowrap">
-        <div className="flex md:justify-center items-center gap-2 text-blue-100 font-medium tracking-wide animate-marquee md:animate-none hover:[animation-play-state:paused]">
+      <div className="bg-primary-light/80 dark:bg-slate-900 border-b border-primary/20 dark:border-primary/20 text-xs py-1.5 px-4 overflow-hidden whitespace-nowrap transition-colors">
+        <div className="flex md:justify-center items-center gap-2 text-blue-900 dark:text-blue-100 font-bold tracking-wide animate-marquee md:animate-none hover:[animation-play-state:paused]">
           <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse shrink-0" />
           <span>{t('liveDrawMarquee')}</span>
         </div>
@@ -64,23 +64,23 @@ export default function HeaderHUD() {
               <span className="text-white font-extrabold text-lg tracking-wider">K</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-blue-200 transition-colors">
-                كَنزين <span className="hidden sm:inline text-xs font-semibold px-1.5 py-0.5 rounded bg-primary/20 text-blue-300 border border-primary/30">KNZiN</span>
+              <span className="font-extrabold text-lg sm:text-xl tracking-tight text-secondary dark:text-white group-hover:text-primary transition-colors">
+                كَنزين <span className="hidden sm:inline text-xs font-bold px-1.5 py-0.5 rounded bg-primary-light dark:bg-primary/20 text-primary dark:text-blue-300 border border-primary/20 dark:border-primary/30">KNZiN</span>
               </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-3 text-sm font-medium text-slate-300">
+          <nav className="hidden md:flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
             <Link
               href="/"
-              className="px-3 py-1.5 rounded-lg hover:text-white hover:bg-slate-800/60 transition-colors"
+              className="px-3 py-1.5 rounded-lg hover:text-primary dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
             >
               {t('courses')}
             </Link>
 
             <Link
               href="/search"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-white hover:bg-slate-800/60 transition-colors text-blue-300 hover:text-white"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-primary-hover dark:hover:text-white hover:bg-primary-light/60 dark:hover:bg-slate-800/60 transition-colors text-primary dark:text-blue-300"
             >
               <Search className="w-3.5 h-3.5 text-primary" />
               <span>{locale === 'ar' ? 'البحث الذكي' : 'Search'}</span>
@@ -88,7 +88,7 @@ export default function HeaderHUD() {
 
             <Link
               href="/design-system"
-              className="px-2.5 py-1 rounded-md text-xs text-slate-400 hover:text-white hover:bg-slate-800/40 transition-colors"
+              className="px-2.5 py-1 rounded-md text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors"
             >
               {locale === 'ar' ? 'نظام التصميم' : 'Design System'}
             </Link>
@@ -99,7 +99,7 @@ export default function HeaderHUD() {
         <div className="flex items-center gap-1.5 sm:gap-3">
           {/* Ticket Counter HUD (Accent Color) */}
           <div
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/30 text-accent text-xs font-bold"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-accent/10 border border-amber-300/80 dark:border-accent/30 text-amber-900 dark:text-accent text-xs font-black"
             title="تذاكر السحب الترويجية المجانية"
           >
             <Ticket className="w-4 h-4 text-accent" />
@@ -108,7 +108,7 @@ export default function HeaderHUD() {
 
           {/* Wallet Balance HUD */}
           <div
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 text-xs font-semibold"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold"
             title="رصيد المحفظة"
           >
             <Wallet className="w-3.5 h-3.5 text-primary" />
@@ -124,13 +124,13 @@ export default function HeaderHUD() {
           {/* User Profile or Google Sign In */}
           {user ? (
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-slate-300">
-                <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+              <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-300">
+                <UserIcon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                 <span className="max-w-[70px] sm:max-w-[120px] truncate">{user.displayName || user.email}</span>
               </div>
               <button
                 onClick={handleLogout}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title={t('logout')}
               >
                 <LogOut className="w-4 h-4" />
@@ -139,7 +139,7 @@ export default function HeaderHUD() {
           ) : (
             <button
               onClick={handleGoogleLogin}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-all shadow-md shadow-primary/20 active:scale-95"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-md shadow-primary/20 active:scale-95 cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{t('loginWithGoogle')}</span>

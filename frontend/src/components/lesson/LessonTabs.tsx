@@ -141,8 +141,8 @@ export function LessonTabs({
 
           {/* Vocational Pro Tip in Knzin Accent Gold */}
           <div className="p-5 sm:p-6 rounded-2xl bg-accent/10 border-2 border-accent/40 shadow-sm space-y-2 relative overflow-hidden">
-            <div className="flex items-center gap-2 text-accent font-black text-sm">
-              <Lightbulb className="w-5 h-5 fill-accent/20" />
+            <div className="flex items-center gap-2 text-amber-800 dark:text-accent font-black text-sm">
+              <Lightbulb className="w-5 h-5 text-accent fill-accent/20" />
               <span>{proTip.title}</span>
             </div>
 
