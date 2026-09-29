@@ -36,7 +36,10 @@
     "duration": "{minutes} mins",
     "resources": "Resources",
     "viewDetails": "View Course Details & Syllabus",
-    "ticketsGranted": "{count} Free Raffle Ticket(s)"
+    "ticketsGranted": "{count} Free Raffle Ticket(s)",
+    "bundleValueNote": "Save $2 + 15 tickets",
+    "partsCountNote": "6 standalone parts • $2 each",
+    "bundleIqdLabel": "(13,000 IQD)"
   },
   "checkout": {
     "title": "Complete Your Order",
@@ -90,6 +93,7 @@
     "zainCash": "ZainCash: Transfer to merchant wallet 07800000000",
     "qiCard": "Qi Card / Rafidain MasterCard: Direct local gateway payment",
     "offlineSupport": "After transferring, send your receipt and order number to our WhatsApp support to immediately activate your access.",
-    "backToCatalog": "Browse More Courses"
+    "backToCatalog": "Browse More Courses",
+    "ttlTitle": "Invoice validity (48 hours)"
   }
 }

@@ -46,7 +46,7 @@ export default function CoursePartList({
           <span>{t('partsTitle')}</span>
         </h3>
         <span className="text-xs text-slate-500 font-semibold">
-          6 أجزاء مستقلة • 2$ لكل جزء
+          {t('partsCountNote')}
         </span>
       </div>
 

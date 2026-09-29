@@ -76,7 +76,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
         <div className="p-4 rounded-xl bg-accent-light/50 dark:bg-amber-950/20 border border-accent/40 text-amber-950 dark:text-amber-200 text-xs">
           <div className="flex items-center gap-2 font-bold mb-1">
             <Clock className="w-4 h-4 text-accent" />
-            <span>مهلة صلاحية الفاتورة (48 ساعة)</span>
+            <span>{t('ttlTitle')}</span>
           </div>
           <p className="leading-relaxed">
             {t('expiresNotice', { date: formattedExpiresAt })}

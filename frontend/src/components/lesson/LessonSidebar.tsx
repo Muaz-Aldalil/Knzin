@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import {
   ArrowRight,
@@ -45,6 +45,7 @@ export function LessonSidebar({
   onBuyBundle,
 }: LessonSidebarProps) {
   const locale = useLocale();
+  const t = useTranslations('catalog');
   const isRtl = locale === 'ar';
 
   const completedCount = parts.filter((p) => p.isCompleted).length;
@@ -185,7 +186,7 @@ export function LessonSidebar({
               ${(bundlePriceCents / 100).toFixed(2)}
             </span>
             <span className="text-[11px] text-slate-300">
-              (13,000 د.ع)
+              {t('bundleIqdLabel')}
             </span>
           </div>
           <p className="text-[11px] text-slate-300 mt-1 leading-snug">

@@ -97,7 +97,7 @@ export default function CourseCard({ course, onQuickCheckout }: CourseCardProps)
             </div>
 
             <div className="text-start sm:text-end text-[11px] font-semibold text-success">
-              وفر 2$ + 15 تذكرة
+              {t('bundleValueNote')}
             </div>
           </div>
 

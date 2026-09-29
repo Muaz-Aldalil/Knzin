@@ -10,6 +10,7 @@ import { StatusIndicator } from '@/components/ui/status-indicator';
 import { SearchInput } from '@/components/ui/search-input';
 import LegalShieldCheckbox from '@/components/checkout/LegalShieldCheckbox';
 import PersonalizationBadge from '@/components/quiz/PersonalizationBadge';
+import { useTheme } from '@/components/providers/ThemeProvider';
 import {
   Sparkles,
   Ticket,
@@ -25,10 +26,14 @@ import {
   Download,
   CheckCircle2,
   ExternalLink,
+  Sun,
+  Moon,
+  Monitor,
 } from 'lucide-react';
 
 export default function DesignSystemPage() {
   const locale = useLocale();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [legalChecked, setLegalChecked] = useState(true);
   const [progressVal, setProgressVal] = useState(65);
 
@@ -307,6 +312,172 @@ export default function DesignSystemPage() {
           <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
             <div className="text-xs font-bold text-slate-400 uppercase">ختم التخصيص الشخصي (Personalization Stamp)</div>
             <PersonalizationBadge email="ahmed.repair.engineer@knzin.iq" />
+          </div>
+        </div>
+      </section>
+
+      {/* 08 Theme Roles & Semantic Token Matrix */}
+      <section className="space-y-6">
+        <div className="border-s-4 border-accent ps-3">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 className="text-xl font-black text-secondary dark:text-white">
+                08 — نظام السمات والأدوار الدلالية (Theme Roles & Token Matrix)
+              </h2>
+              <p className="text-xs text-slate-500">
+                وضعان متناسقان لنفس المنتج (Light / Dark) بهيكلية دلالية موحدة وبدون قلب ألوان عشوائي.
+              </p>
+            </div>
+
+            {/* Live Interactive Theme Switcher */}
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setTheme('light')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  theme === 'light'
+                    ? 'bg-white text-secondary shadow-sm'
+                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                }`}
+              >
+                <Sun className="w-3.5 h-3.5 text-accent" />
+                <span>فاتح (Light)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTheme('dark')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  theme === 'dark'
+                    ? 'bg-[#183052] text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                }`}
+              >
+                <Moon className="w-3.5 h-3.5 text-blue-400" />
+                <span>داكن (Dark)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setTheme('system')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  theme === 'system'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                }`}
+              >
+                <Monitor className="w-3.5 h-3.5" />
+                <span>النظام (System)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 1. Surface Elevation Hierarchy */}
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-6">
+          <div>
+            <h3 className="text-sm font-black text-secondary dark:text-white mb-1">
+              تدرج الأسطح والعمق البصري (Surface Elevation Hierarchy)
+            </h3>
+            <p className="text-xs text-slate-500">
+              تدرج متدرج من الخلفية إلى السطح الأولي ثم الثانوي ثم المرتفع للحفاظ على التركيز البصري.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 rounded-xl bg-app-bg border border-border-subtle space-y-2">
+              <span className="text-[10px] font-mono font-bold text-content-muted uppercase">Level 0: Background</span>
+              <div className="text-xs font-bold text-content-primary">App Background</div>
+              <p className="text-[11px] text-content-secondary leading-snug">
+                خلفية الصفحة الرئيسية (#F8FAFC / #070E1B).
+              </p>
+              <div className="text-[10px] font-mono text-primary">--bg-app</div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-surface border border-border-subtle shadow-sm space-y-2">
+              <span className="text-[10px] font-mono font-bold text-content-muted uppercase">Level 1: Surface</span>
+              <div className="text-xs font-bold text-content-primary">Primary Surface</div>
+              <p className="text-[11px] text-content-secondary leading-snug">
+                أسطح البطاقات والحاويات الرئيسية (#FFFFFF / #0D1B2E).
+              </p>
+              <div className="text-[10px] font-mono text-primary">--surface-primary</div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-surface-secondary border border-border-subtle space-y-2">
+              <span className="text-[10px] font-mono font-bold text-content-muted uppercase">Level 2: Sub-Surface</span>
+              <div className="text-xs font-bold text-content-primary">Secondary Surface</div>
+              <p className="text-[11px] text-content-secondary leading-snug">
+                الحاويات الفرعية وترويسات الجداول (#F1F5F9 / #132640).
+              </p>
+              <div className="text-[10px] font-mono text-primary">--surface-secondary</div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-surface-elevated border border-border-strong shadow-lg space-y-2">
+              <span className="text-[10px] font-mono font-bold text-content-muted uppercase">Level 3: Elevated</span>
+              <div className="text-xs font-bold text-content-primary">Elevated Surface</div>
+              <p className="text-[11px] text-content-secondary leading-snug">
+                النوافذ المنبثقة والقوائم السفلية (#FFFFFF / #183052).
+              </p>
+              <div className="text-[10px] font-mono text-primary">--surface-elevated</div>
+            </div>
+          </div>
+
+          {/* 2. Text Hierarchy */}
+          <div className="pt-4 border-t border-border-subtle space-y-3">
+            <h3 className="text-sm font-black text-secondary dark:text-white">
+              مستويات التباين والنصوص (Text Hierarchy)
+            </h3>
+            <div className="p-4 rounded-xl bg-surface-secondary border border-border-subtle space-y-2">
+              <div className="text-base font-extrabold text-content-primary">
+                النص الأساسي (Primary Text): عالي المقروئية بدون استخدام الأسود أو الأبيض الحاد عشوائياً.
+              </div>
+              <div className="text-sm font-medium text-content-secondary">
+                النص الثانوي (Secondary Text): معلومات داعمة واضحة ومريحة للعين في القراءة المطولة.
+              </div>
+              <div className="text-xs font-normal text-content-muted">
+                النص الخافت (Muted / Metadata): التواريخ، أرقام الميكرون، والرموز التعريفية الصامتة.
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Interactive States */}
+          <div className="pt-4 border-t border-border-subtle space-y-3">
+            <h3 className="text-sm font-black text-secondary dark:text-white">
+              الحالات التفاعلية المعتمدة (Interactive States)
+            </h3>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold shadow-sm"
+              >
+                الافتراضي (Default)
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-xl bg-primary-hover text-white text-xs font-bold shadow-md"
+              >
+                التحويم (Hover)
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold ring-4 ring-primary/30"
+              >
+                التركيز (Focus)
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold scale-95"
+              >
+                النشط (Active)
+              </button>
+              <button
+                type="button"
+                disabled
+                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 text-xs font-bold cursor-not-allowed"
+              >
+                المعطل (Disabled)
+              </button>
+            </div>
           </div>
         </div>
       </section>

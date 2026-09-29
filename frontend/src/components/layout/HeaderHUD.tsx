@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import LanguageToggle from './LanguageToggle';
+import ThemeToggle from './ThemeToggle';
 import { Ticket, Wallet, User as UserIcon, Sparkles, LogIn, LogOut, Search } from 'lucide-react';
 
 interface AuthUser {
@@ -116,6 +117,9 @@ export default function HeaderHUD() {
 
           {/* Language Switcher */}
           <LanguageToggle />
+
+          {/* Theme Switcher */}
+          <ThemeToggle />
 
           {/* User Profile or Google Sign In */}
           {user ? (
