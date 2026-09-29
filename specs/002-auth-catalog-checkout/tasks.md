@@ -88,18 +88,18 @@
 
 ### Tests for User Story 2
 
-- [ ] T029 [P] [US2] Create backend feature test for course catalog listing and detail endpoints asserting parts breakdown, pricing in cents, and ticket incentives in backend/tests/Feature/CatalogApiTest.php
-- [ ] T030 [P] [US2] Create frontend unit test for catalog pricing display and RTL layout mirroring in frontend/src/tests/CatalogDisplay.test.tsx
+- [X] T029 [P] [US2] Create backend feature test for course catalog listing and detail endpoints asserting parts breakdown, pricing in cents, and ticket incentives in backend/tests/Feature/CatalogApiTest.php
+- [X] T030 [P] [US2] Create frontend unit test for catalog pricing display and RTL layout mirroring in frontend/src/tests/CatalogDisplay.test.tsx
 
 ### Implementation for User Story 2
 
-- [ ] T031 [US2] Implement CourseResource and CoursePartResource formatting API output with parts breakdown and marketing display labels in backend/app/Http/Resources/CourseResource.php
-- [ ] T032 [US2] Implement CatalogController with GET /api/v1/catalog/courses and GET /api/v1/catalog/courses/{slug} endpoints in backend/app/Http/Controllers/CatalogController.php
-- [ ] T033 [P] [US2] Implement CourseCard component displaying cover image, Arabic/English title, bundle price ($10), and ticket incentive badge (15 tickets) in frontend/src/components/catalog/CourseCard.tsx
-- [ ] T034 [P] [US2] Implement CoursePartList component displaying modular parts 1 to 6 ($2 each / 1 ticket), duration, media types, and individual purchase triggers in frontend/src/components/catalog/CoursePartList.tsx
-- [ ] T035 [US2] Implement course detail page with complete curriculum syllabus and bundle-vs-part purchase triggers in frontend/src/app/[locale]/courses/[slug]/page.tsx
-- [ ] T036 [US2] Implement main catalog showcase page with responsive grid and live draw banner in frontend/src/app/[locale]/page.tsx
-- [ ] T037 [US2] Implement useCatalog hook with TanStack Query for cached server state and pre-fetching in frontend/src/hooks/useCatalog.ts
+- [X] T031 [US2] Implement CourseResource and CoursePartResource formatting API output with parts breakdown and marketing display labels in backend/app/Http/Resources/CourseResource.php
+- [X] T032 [US2] Implement CatalogController with GET /api/v1/catalog/courses and GET /api/v1/catalog/courses/{slug} endpoints in backend/app/Http/Controllers/CatalogController.php
+- [X] T033 [P] [US2] Implement CourseCard component displaying cover image, Arabic/English title, bundle price ($10), and ticket incentive badge (15 tickets) in frontend/src/components/catalog/CourseCard.tsx
+- [X] T034 [P] [US2] Implement CoursePartList component displaying modular parts 1 to 6 ($2 each / 1 ticket), duration, media types, and individual purchase triggers in frontend/src/components/catalog/CoursePartList.tsx
+- [X] T035 [US2] Implement course detail page with complete curriculum syllabus and bundle-vs-part purchase triggers in frontend/src/app/[locale]/courses/[slug]/page.tsx
+- [X] T036 [US2] Implement main catalog showcase page with responsive grid and live draw banner in frontend/src/app/[locale]/page.tsx
+- [X] T037 [US2] Implement useCatalog hook with TanStack Query for cached server state and pre-fetching in frontend/src/hooks/useCatalog.ts
 
 **Checkpoint**: User Stories 1 AND 2 are both fully functional and integrated. Visitors can explore catalog micro-pricing and seamlessly initiate checkout.
 
