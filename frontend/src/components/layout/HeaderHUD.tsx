@@ -25,6 +25,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { SearchCommandDialog } from '@/components/search/SearchCommandDialog';
 
 interface AuthUser {
   id: string;
@@ -40,6 +41,31 @@ export default function HeaderHUD() {
   const locale = useLocale();
   const isRtl = locale === 'ar';
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    if (typeof navigator !== 'undefined') {
+      setIsMac(/Mac|iPod|iPhone|iPad/.test(navigator.userAgent));
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    };
+
+    const handleCustomOpen = () => setIsSearchOpen(true);
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('knzin:open-search', handleCustomOpen);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('knzin:open-search', handleCustomOpen);
+    };
+  }, []);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('knzin_user');
@@ -97,13 +123,18 @@ export default function HeaderHUD() {
               {t('courses')}
             </Link>
 
-            <Link
-              href="/search"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-primary-hover hover:bg-surface-secondary transition-colors text-primary"
+            <button
+              type="button"
+              onClick={() => setIsSearchOpen(true)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-primary/40 text-content-secondary hover:text-content-primary transition-all text-xs font-semibold group cursor-pointer shadow-xs"
+              title={isRtl ? 'البحث الذكي (Ctrl + K)' : 'Smart Search (Ctrl + K)'}
             >
-              <Search className="w-3.5 h-3.5 text-primary" />
+              <Search className="w-3.5 h-3.5 text-primary group-hover:scale-110 transition-transform" />
               <span>{isRtl ? 'البحث الذكي' : 'Search'}</span>
-            </Link>
+              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold text-content-muted bg-surface-primary border border-border-subtle rounded-md select-none group-hover:border-primary/40 group-hover:text-primary transition-colors">
+                {isMac ? '⌘' : 'Ctrl'} K
+              </kbd>
+            </button>
 
             <Link
               href="/design-system"
@@ -116,6 +147,16 @@ export default function HeaderHUD() {
 
         {/* HUD Counters & User Controls */}
         <div className="flex items-center gap-1.5 sm:gap-3">
+          {/* Mobile search trigger */}
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="md:hidden p-2 rounded-xl bg-surface-secondary hover:bg-surface-elevated border border-border-subtle text-content-primary transition-colors cursor-pointer"
+            aria-label={isRtl ? 'البحث الذكي' : 'Search'}
+            title={isRtl ? 'البحث الذكي' : 'Search'}
+          >
+            <Search className="w-4 h-4 text-primary" />
+          </button>
           {/* Ticket Counter HUD (Accent Color) */}
           <Link
             href="/raffle"
@@ -198,6 +239,9 @@ export default function HeaderHUD() {
           )}
         </div>
       </div>
+
+      {/* Global In-Place Search Command Palette (Ctrl + K) */}
+      <SearchCommandDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
     </header>
   );
 }

@@ -7,7 +7,7 @@ import CourseCard from '@/components/catalog/CourseCard';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 import { ResumeHeroCard } from '@/components/course/ResumeHeroCard';
 import { useCatalog } from '@/hooks/useCatalog';
-import { Loader2, AlertCircle, Sparkles, Trophy, ShieldCheck, Zap } from 'lucide-react';
+import { Loader2, AlertCircle, Sparkles, Trophy, ShieldCheck, Zap, Search } from 'lucide-react';
 
 export default function CatalogPage() {
   const t = useTranslations('catalog');
@@ -45,6 +45,25 @@ export default function CatalogPage() {
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
           {t('subheading')}
         </p>
+
+        {/* Supabase-style In-Place Quick Search Trigger */}
+        <div className="pt-2 max-w-lg mx-auto">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('knzin:open-search'))}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-surface-primary hover:bg-surface-elevated border border-border-subtle hover:border-primary/50 text-content-muted hover:text-content-primary shadow-sm hover:shadow-md transition-all group cursor-pointer text-start"
+          >
+            <div className="flex items-center gap-3">
+              <Search className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+              <span className="text-xs sm:text-sm font-medium">
+                ابحث في المهارات، الأدوات، أو اللحظات التدريبية...
+              </span>
+            </div>
+            <kbd className="inline-flex items-center px-2 py-0.5 text-[11px] font-mono font-bold text-content-muted bg-surface-secondary border border-border-subtle rounded-lg shadow-xs select-none group-hover:border-primary/40 group-hover:text-primary transition-colors">
+              Ctrl K
+            </kbd>
+          </button>
+        </div>
 
         {/* Value Proposition Highlights */}
         <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-600 dark:text-slate-400 font-semibold">

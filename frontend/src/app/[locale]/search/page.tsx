@@ -263,9 +263,10 @@ function SearchResultsContent() {
           {data.results.map((result, idx) => {
             if (result.kind === 'video') {
               return (
-                <div
+                <Link
                   key={idx}
-                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-primary/50 transition-all shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 group"
+                  href={result.href}
+                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-primary/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-all shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 group cursor-pointer block"
                 >
                   <div className="space-y-2.5 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -301,23 +302,23 @@ function SearchResultsContent() {
                   </div>
 
                   <div className="shrink-0 self-start md:self-center">
-                    <Link
-                      href={result.href}
-                      className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center gap-2 whitespace-nowrap"
+                    <span
+                      className="px-5 py-2.5 rounded-xl bg-primary group-hover:bg-primary-hover text-white text-xs font-black shadow-md shadow-primary/20 transition-all flex items-center gap-2 whitespace-nowrap"
                     >
                       <Play className="w-3.5 h-3.5 fill-white rtl:rotate-180" />
                       <span>{locale === 'ar' ? 'مشاهدة اللحظة' : 'Watch Moment'}</span>
-                    </Link>
+                    </span>
                   </div>
-                </div>
+                </Link>
               );
             }
 
             // Lesson Result Card
             return (
-              <div
+              <Link
                 key={idx}
-                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-primary/50 transition-all shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 group"
+                href={result.href}
+                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-primary/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-all shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 group cursor-pointer block"
               >
                 <div className="space-y-2.5 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -359,15 +360,14 @@ function SearchResultsContent() {
                 </div>
 
                 <div className="shrink-0 self-start md:self-center">
-                  <Link
-                    href={result.href}
-                    className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary text-secondary dark:text-slate-200 hover:text-primary text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap"
+                  <span
+                    className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 group-hover:border-primary text-secondary dark:text-slate-200 group-hover:text-primary text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap"
                   >
                     <span>{locale === 'ar' ? 'فتح الجزء' : 'Open Part'}</span>
                     <ArrowRight className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
-                  </Link>
+                  </span>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
