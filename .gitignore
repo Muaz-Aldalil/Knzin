@@ -2,12 +2,27 @@
 .env
 .env.local
 .env.*.local
+*.env
 
 # Node & package managers
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
+
+# PHP & Composer
+vendor/
+composer.phar
+.phpunit.result.cache
+
+# Laravel specific
+backend/storage/*.key
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+backend/bootstrap/cache/*
 
 # OS artifacts
 Thumbs.db
@@ -26,3 +41,5 @@ dist/
 build/
 .next/
 out/
+frontend/.next/
+frontend/out/

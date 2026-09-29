@@ -22,13 +22,13 @@
 
 **Purpose**: Scaffolding the isolated `/backend` and `/frontend` project directories and core configuration files.
 
-- [ ] T001 Initialize backend Laravel 11 REST API project with PHP 8.2+ dependencies in backend/composer.json
-- [ ] T002 [P] Install and configure Laravel Sanctum for API token authentication in backend/config/sanctum.php
-- [ ] T003 [P] Configure Redis connection, cache, and queue drivers in backend/config/database.php and backend/.env.example
-- [ ] T004 Initialize frontend Next.js 14+ App Router project with TypeScript and Tailwind CSS in frontend/package.json
-- [ ] T005 [P] Configure next-intl bilingual routing and Google Fonts Tajawal typography in frontend/src/app/[locale]/layout.tsx
-- [ ] T006 [P] Create bilingual translation dictionaries for Arabic and English in frontend/messages/ar.json and frontend/messages/en.json
-- [ ] T007 [P] Configure TanStack React Query and base API client with JSend handling in frontend/src/lib/api-client.ts
+- [X] T001 Initialize backend Laravel 11 REST API project with PHP 8.2+ dependencies in backend/composer.json
+- [X] T002 [P] Install and configure Laravel Sanctum for API token authentication in backend/config/sanctum.php
+- [X] T003 [P] Configure Redis connection, cache, and queue drivers in backend/config/database.php and backend/.env.example
+- [X] T004 Initialize frontend Next.js 14+ App Router project with TypeScript and Tailwind CSS in frontend/package.json
+- [X] T005 [P] Configure next-intl bilingual routing and Google Fonts Tajawal typography in frontend/src/app/[locale]/layout.tsx
+- [X] T006 [P] Create bilingual translation dictionaries for Arabic and English in frontend/messages/ar.json and frontend/messages/en.json
+- [X] T007 [P] Configure TanStack React Query and base API client with JSend handling in frontend/src/lib/api-client.ts
 
 ---
 
@@ -38,16 +38,16 @@
 
 **⚠️ CRITICAL**: No user story implementation can begin until this phase is verified.
 
-- [ ] T008 Create users table migration with UUID primary key, status enum, merged_into_user_id FK, and email index in backend/database/migrations/2026_09_29_000001_create_users_table.php
-- [ ] T009 [P] Create courses table migration with UUID primary key, slug unique key, bundle_price_cents BIGINT, and bundle_promotional_tickets INT in backend/database/migrations/2026_09_29_000002_create_courses_table.php
-- [ ] T010 [P] Create course_parts table migration with UUID primary key, course_id FK, part_number, part_price_cents BIGINT, part_promotional_tickets INT, and resource_types JSON in backend/database/migrations/2026_09_29_000003_create_course_parts_table.php
-- [ ] T011 Create orders table migration with UUID primary key, order_number unique, user_id FK, total_amount_cents BIGINT, currency CHAR(3), exchange_rate DECIMAL(10,4), paid_amount_gateway BIGINT, display_price_label VARCHAR(50), promotional_tickets_granted INT, status enum, idempotency_key permanent unique key, legal_terms_agreed boolean, terms_agreed_ip VARCHAR(45), terms_agreed_at timestamp, quiz_answers JSON, quiz_completed_at timestamp, and expires_at timestamp in backend/database/migrations/2026_09_29_000004_create_orders_table.php
-- [ ] T012 Create order_items table migration with BIGINT PK, order_id FK, course_id FK, course_part_id nullable FK, item_type enum, price_cents BIGINT, and promotional_tickets_granted INT in backend/database/migrations/2026_09_29_000005_create_order_items_table.php
-- [ ] T013 Create Eloquent models and relationships for User, Course, CoursePart, Order, and OrderItem in backend/app/Models/
-- [ ] T014 Create CourseCatalogSeeder with authentic Iraqi vocational courses (Auto Detailing, Mobile Phone Repair, Freelance Design) with 6 parts each ($2/1 ticket) and full bundle ($10/15 tickets) in backend/database/seeders/CourseCatalogSeeder.php
-- [ ] T015 Create standardized JSend API response trait and base controller in backend/app/Http/Controllers/ApiController.php
-- [ ] T016 [P] Create shared Header HUD component displaying logo, stubbed ticket count, stubbed wallet balance, and social proof marquee in frontend/src/components/layout/HeaderHUD.tsx
-- [ ] T017 [P] Create bidirectional language toggle component switching between Arabic (dir="rtl") and English (dir="ltr") in frontend/src/components/layout/LanguageToggle.tsx
+- [X] T008 Create users table migration with UUID primary key, status enum, merged_into_user_id FK, and email index in backend/database/migrations/2026_09_29_000001_create_users_table.php
+- [X] T009 [P] Create courses table migration with UUID primary key, slug unique key, bundle_price_cents BIGINT, and bundle_promotional_tickets INT in backend/database/migrations/2026_09_29_000002_create_courses_table.php
+- [X] T010 [P] Create course_parts table migration with UUID primary key, course_id FK, part_number, part_price_cents BIGINT, part_promotional_tickets INT, and resource_types JSON in backend/database/migrations/2026_09_29_000003_create_course_parts_table.php
+- [X] T011 Create orders table migration with UUID primary key, order_number unique, user_id FK, total_amount_cents BIGINT, currency CHAR(3), exchange_rate DECIMAL(10,4), paid_amount_gateway BIGINT, display_price_label VARCHAR(50), promotional_tickets_granted INT, status enum, idempotency_key permanent unique key, legal_terms_agreed boolean, terms_agreed_ip VARCHAR(45), terms_agreed_at timestamp, quiz_answers JSON, quiz_completed_at timestamp, and expires_at timestamp in backend/database/migrations/2026_09_29_000004_create_orders_table.php
+- [X] T012 Create order_items table migration with BIGINT PK, order_id FK, course_id FK, course_part_id nullable FK, item_type enum, price_cents BIGINT, and promotional_tickets_granted INT in backend/database/migrations/2026_09_29_000005_create_order_items_table.php
+- [X] T013 Create Eloquent models and relationships for User, Course, CoursePart, Order, and OrderItem in backend/app/Models/
+- [X] T014 Create CourseCatalogSeeder with authentic Iraqi vocational courses (Auto Detailing, Mobile Phone Repair, Freelance Design) with 6 parts each ($2/1 ticket) and full bundle ($10/15 tickets) in backend/database/seeders/CourseCatalogSeeder.php
+- [X] T015 Create standardized JSend API response trait and base controller in backend/app/Http/Controllers/ApiController.php
+- [X] T016 [P] Create shared Header HUD component displaying logo, stubbed ticket count, stubbed wallet balance, and social proof marquee in frontend/src/components/layout/HeaderHUD.tsx
+- [X] T017 [P] Create bidirectional language toggle component switching between Arabic (dir="rtl") and English (dir="ltr") in frontend/src/components/layout/LanguageToggle.tsx
 
 **Checkpoint**: Database migrated, seeders populated, and shared client HUD initialized. User story implementation can now begin.
 
@@ -61,20 +61,20 @@
 
 ### Tests for User Story 1
 
-- [ ] T018 [P] [US1] Create backend feature test for canonical legal shield validation asserting exact Arabic verbatim match and HTTP 422 ERR_LEGAL_SHIELD_MISMATCH on modified strings in backend/tests/Feature/LegalShieldValidationTest.php
-- [ ] T019 [P] [US1] Create backend feature test for order idempotency asserting identical idempotency_key returns HTTP 200 with existing order and zero duplicate DB rows in backend/tests/Feature/OrderIdempotencyTest.php
-- [ ] T020 [P] [US1] Create backend feature test for dual-currency separation asserting total_amount_cents is USD integer, exchange_rate is 1.3100, and display_price_label is isolated in backend/tests/Feature/OrderDualCurrencyTest.php
+- [X] T018 [P] [US1] Create backend feature test for canonical legal shield validation asserting exact Arabic verbatim match and HTTP 422 ERR_LEGAL_SHIELD_MISMATCH on modified strings in backend/tests/Feature/LegalShieldValidationTest.php
+- [X] T019 [P] [US1] Create backend feature test for order idempotency asserting identical idempotency_key returns HTTP 200 with existing order and zero duplicate DB rows in backend/tests/Feature/OrderIdempotencyTest.php
+- [X] T020 [P] [US1] Create backend feature test for dual-currency separation asserting total_amount_cents is USD integer, exchange_rate is 1.3100, and display_price_label is isolated in backend/tests/Feature/OrderDualCurrencyTest.php
 
 ### Implementation for User Story 1
 
-- [ ] T021 [US1] Implement CreateOrderRequest with strict canonical verbatim string validation, email format check, and mandatory quiz_answers validation in backend/app/Http/Requests/CreateOrderRequest.php
-- [ ] T022 [US1] Implement OrderService handling guest user resolution, frozen exchange rate calculation (1.3100), gateway amount conversion, idempotency deduplication with Redis lock, and pending order creation in backend/app/Services/OrderService.php
-- [ ] T023 [US1] Implement CheckoutController with POST /api/v1/checkout/orders and GET /api/v1/checkout/orders/{orderNumber} endpoints in backend/app/Http/Controllers/CheckoutController.php
-- [ ] T024 [P] [US1] Implement LegalShieldCheckbox component rendering exact canonical text with strictly non-pre-checked state and required validation in frontend/src/components/checkout/LegalShieldCheckbox.tsx
-- [ ] T025 [P] [US1] Implement CheckoutBottomSheet component with responsive mobile slide-up / desktop modal, item summary, email input, pricing breakdown, and submit button in frontend/src/components/checkout/CheckoutBottomSheet.tsx
-- [ ] T026 [US1] Implement OrderSummaryCard component rendering created order details, pending status badge, promotional tickets granted preview, and offline payment instructions in frontend/src/components/checkout/OrderSummaryCard.tsx
-- [ ] T027 [US1] Implement order summary page displaying confirmed pending order reference and offline cash guidance in frontend/src/app/[locale]/order-summary/[orderNumber]/page.tsx
-- [ ] T028 [US1] Integrate useCheckout hook connecting bottom-sheet submission to backend API with client-generated UUID idempotency key in frontend/src/hooks/useCheckout.ts
+- [X] T021 [US1] Implement CreateOrderRequest with strict canonical verbatim string validation, email format check, and mandatory quiz_answers validation in backend/app/Http/Requests/CreateOrderRequest.php
+- [X] T022 [US1] Implement OrderService handling guest user resolution, frozen exchange rate calculation (1.3100), gateway amount conversion, idempotency deduplication with Redis lock, and pending order creation in backend/app/Services/OrderService.php
+- [X] T023 [US1] Implement CheckoutController with POST /api/v1/checkout/orders and GET /api/v1/checkout/orders/{orderNumber} endpoints in backend/app/Http/Controllers/CheckoutController.php
+- [X] T024 [P] [US1] Implement LegalShieldCheckbox component rendering exact canonical text with strictly non-pre-checked state and required validation in frontend/src/components/checkout/LegalShieldCheckbox.tsx
+- [X] T025 [P] [US1] Implement CheckoutBottomSheet component with responsive mobile slide-up / desktop modal, item summary, email input, pricing breakdown, and submit button in frontend/src/components/checkout/CheckoutBottomSheet.tsx
+- [X] T026 [US1] Implement OrderSummaryCard component rendering created order details, pending status badge, promotional tickets granted preview, and offline payment instructions in frontend/src/components/checkout/OrderSummaryCard.tsx
+- [X] T027 [US1] Implement order summary page displaying confirmed pending order reference and offline cash guidance in frontend/src/app/[locale]/order-summary/[orderNumber]/page.tsx
+- [X] T028 [US1] Integrate useCheckout hook connecting bottom-sheet submission to backend API with client-generated UUID idempotency key in frontend/src/hooks/useCheckout.ts
 
 **Checkpoint**: User Story 1 is fully functional and independently testable end-to-end. Guest checkout creates valid `pending` orders with legal compliance.
 
