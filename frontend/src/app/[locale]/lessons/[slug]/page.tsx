@@ -1,13 +1,11 @@
 import { setRequestLocale } from 'next-intl/server';
-import { getCourseDetailServer } from '@/lib/server-catalog';
+import { getCourseDetailServer, FALLBACK_COURSES } from '@/lib/server-catalog';
 import LessonPlayerClientView from '@/components/lesson/LessonPlayerClientView';
 
 export function generateStaticParams() {
-  return [
-    { slug: 'freelance-design' },
-    { slug: 'phone-repair' },
-    { slug: 'auto-detailing' },
-  ];
+  return FALLBACK_COURSES.map((course) => ({
+    slug: course.slug,
+  }));
 }
 
 export default async function LessonPage({

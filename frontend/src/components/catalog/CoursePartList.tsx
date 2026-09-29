@@ -74,7 +74,7 @@ export default function CoursePartList({
             const partTitle = isRtl ? part.title_ar : part.title_en;
             const syllabus = isRtl ? part.syllabus_ar : part.syllabus_en;
             const isFirstFree = part.part_number === 1;
-            const lessonSlug = `${courseSlug || 'course'}-part-${part.part_number}`;
+            const lessonHref = `/lessons/${courseSlug || 'course'}?part=${part.part_number}`;
             const isLast = index === parts.length - 1;
 
             return (
@@ -135,7 +135,7 @@ export default function CoursePartList({
                   <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-border-subtle">
                     {isFirstFree ? (
                       <Link
-                        href={`/lessons/${lessonSlug}`}
+                        href={lessonHref}
                         className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5"
                       >
                         <PlayCircle className="w-4 h-4" />

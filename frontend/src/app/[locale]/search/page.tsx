@@ -24,12 +24,26 @@ import { Badge } from '@/components/ui/badge';
 import { SearchInput } from '@/components/ui/search-input';
 import { formatTimestamp } from '@/lib/video';
 
-const SUGGESTED_QUERIES = [
+const SUGGESTED_QUERIES_AR = [
   'علاج خدوش الصبغ بالنانو',
+  'حساب أحمال الطاقة الشمسية والإنفرتر',
   'تشخيص شورت الباور والـ VDD',
-  'فك وتركيب رقاقات BGA',
-  'تصميم واجهات المتاجر في فيجما',
+  'شحن غاز التبريد R410A بالميزان',
+  'برمجة كاميرات المراقبة IP عن بعد',
+  'تدريج السكين فيد ونحت اللحية',
+  'معايرة طاحونة الإسبريسو واللاتيه آرت',
   'تسعير مشاريع الفريلانس بالعراق',
+];
+
+const SUGGESTED_QUERIES_EN = [
+  'Nano ceramic paint correction',
+  'Solar PV inverter sizing & battery bank',
+  'Phone board short & VDD power rail',
+  'Inverter AC R410A refrigerant charge',
+  'IP CCTV PoE camera remote viewing',
+  'Skin fade haircut & beard sculpting',
+  'Espresso grinder dialing & latte art',
+  'Freelance project pricing & contracts',
 ];
 
 function SearchResultsContent() {
@@ -149,7 +163,7 @@ function SearchResultsContent() {
           <span className="text-slate-400 font-medium">
             {locale === 'ar' ? 'مقترحات شائعة:' : 'Suggestions:'}
           </span>
-          {SUGGESTED_QUERIES.map((sq, idx) => (
+          {(locale === 'ar' ? SUGGESTED_QUERIES_AR : SUGGESTED_QUERIES_EN).map((sq, idx) => (
             <button
               key={idx}
               type="button"

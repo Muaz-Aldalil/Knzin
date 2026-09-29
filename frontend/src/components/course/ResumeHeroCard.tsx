@@ -35,8 +35,7 @@ export function ResumeHeroCard() {
 
   const courseTitle = isRtl ? data.course_title_ar : data.course_title_en;
   const partTitle = isRtl ? data.part_title_ar : data.part_title_en;
-  const lessonSlug = `${data.course_slug}-part-${data.part_number}`;
-  const resumeHref = `/lessons/${lessonSlug}?t=${data.watch_seconds}`;
+  const resumeHref = `/lessons/${data.course_slug}?part=${data.part_number}&t=${data.watch_seconds}`;
 
   const formatTime = (secs: number) => {
     const mins = Math.floor(secs / 60);
@@ -57,6 +56,7 @@ export function ResumeHeroCard() {
                   src={data.cover_image_url}
                   alt={courseTitle}
                   fill
+                  unoptimized
                   className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                 />
               ) : (

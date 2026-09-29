@@ -7,6 +7,7 @@ import CoursePartList from '@/components/catalog/CoursePartList';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 import { LearningOutcomes } from '@/components/course/LearningOutcomes';
 import { CourseProgressBar } from '@/components/course/CourseProgressBar';
+import { fetchCourseProgress } from '@/lib/progress';
 import { Loader2, AlertCircle, Ticket, ArrowRight, Check } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 
@@ -22,6 +23,7 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
 
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItemData | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [studentProgress, setStudentProgress] = useState<number>(0);
 
   const {
     data: course,
@@ -29,6 +31,23 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
     isError,
     error,
   } = useCourseDetail(slug, initialCourse || undefined);
+
+  React.useEffect(() => {
+    let mounted = true;
+    fetchCourseProgress(slug).then((progressMap) => {
+      if (mounted && progressMap) {
+        const partsCount = course?.parts?.length || course?.parts_count || 1;
+        const completedParts = Object.values(progressMap).filter((p) => p.is_completed).length;
+        const currentPart = Object.values(progressMap).find((p) => !p.is_completed && p.percent_complete > 0);
+        const inProgressContribution = currentPart ? (currentPart.percent_complete / 100) : 0;
+        const total = Math.round(((completedParts + inProgressContribution) / partsCount) * 100);
+        setStudentProgress(Math.min(100, Math.max(0, total)));
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [slug, course]);
 
   // State 1: Loading (only when no initialCourse is available)
   if (isLoading && !course) {
@@ -112,7 +131,11 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
           <div className="pt-1 flex flex-wrap gap-4 text-xs text-content-secondary">
             <span className="flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5 text-success" />
-              <span>شامل 6 أجزاء تدريبية مصورة</span>
+              <span>
+                {locale === 'ar'
+                  ? `شامل ${course.parts?.length || course.parts_count || 6} أجزاء تدريبية مصورة`
+                  : `Includes ${course.parts?.length || course.parts_count || 6} video modules`}
+              </span>
             </span>
             <span className="flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5 text-success" />
@@ -159,7 +182,9 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
           </button>
 
           <p className="text-[11px] text-content-muted text-center leading-relaxed">
-            يشمل جميع الأجزاء الـ 6 كاملة + 15 تذكرة سحب ترويجية مجانية على الجوائز الكبرى.
+            {locale === 'ar'
+              ? `يشمل جميع الأجزاء الـ ${course.parts?.length || course.parts_count || 6} كاملة + ${course.bundle_promotional_tickets} تذكرة سحب ترويجية مجانية على الجوائز الكبرى.`
+              : `Includes all ${course.parts?.length || course.parts_count || 6} parts + ${course.bundle_promotional_tickets} free promotional raffle tickets.`}
           </p>
         </div>
       </div>
@@ -181,6 +206,7 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
       {/* Sticky Bottom Progress & Buy Bar */}
       <CourseProgressBar
         courseTitle={title}
+        percentComplete={studentProgress}
         bundlePriceUsd={course.bundle_price_cents / 100}
         promotionalTickets={course.bundle_promotional_tickets}
         onBuyBundle={handleBundleCheckout}

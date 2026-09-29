@@ -3,15 +3,25 @@ import { ModelHit, SearchResult, SearchResponse, SortOption } from './types';
 import { formatTimestamp } from '@/lib/video';
 
 const COURSE_TITLES_AR: Record<string, string> = {
-  'auto-detailing': 'العناية المتقدمة بالسيارات والنانو سيراميك',
-  'phone-repair': 'صيانة الهواتف الذكية وتغيير المعالجات',
-  'freelance-design': 'تصميم واجهات المستخدم UI/UX والعمل الحر',
+  'auto-detailing': 'العناية المتقدمة بالسيارات وحماية النانو سيراميك',
+  'phone-repair': 'صيانة الهواتف الذكية واللحام الدقيق للميكروإلكترونيات',
+  'solar-installation': 'تصميم وتركيب منظومات الطاقة الشمسية الهجينة والمنفصلة عن الشبكة',
+  'freelance-design': 'تصميم الهويات البصرية والواجهات والعمل الحر في العراق',
+  'hvac-refrigeration': 'صيانة مكيفات الإنفرتر ومبردات الهواء وتشخيص ضواغط التبريد',
+  'cctv-smart-security': 'تمديد كاميرات المراقبة وأنظمة الإنذار',
+  'barber-styling': 'فنون الحلاقة الرجالية الحديثة والتدريج وتأسيس الصالون',
+  'specialty-coffee-barista': 'فن الباريستا واستخلاص القهوة المختصة',
 };
 
 const COURSE_TITLES_EN: Record<string, string> = {
-  'auto-detailing': 'Advanced Auto-Detailing & Nano Ceramic',
-  'phone-repair': 'Smartphone Hardware Repair & Micro-soldering',
-  'freelance-design': 'UI/UX Design & Freelance Mastery',
+  'auto-detailing': 'Advanced Auto Detailing & Nano-Ceramic Protection',
+  'phone-repair': 'Smartphones Hardware Repair & Microsoldering',
+  'solar-installation': 'Hybrid & Off-Grid Solar PV Systems Installation',
+  'freelance-design': 'Brand Identity, UI Design & Local Freelancing',
+  'hvac-refrigeration': 'Inverter Air Conditioning Diagnostics & Compressor Servicing',
+  'cctv-smart-security': 'IP CCTV & Smart Security Systems',
+  'barber-styling': "Modern Men's Haircutting, Fade Techniques & Barbershop Management",
+  'specialty-coffee-barista': 'Specialty Coffee Barista & Espresso Science',
 };
 
 /**
@@ -164,6 +174,36 @@ export function searchCatalog(query: string, sort: SortOption = 'relevance', loc
       if (
         (normalizedQuery.includes('فيجما') || normalizedQuery.includes('figma') || normalizedQuery.includes('واجه') || normalizedQuery.includes('ui') || normalizedQuery.includes('ux') || normalizedQuery.includes('فريلانس') || normalizedQuery.includes('عملا')) &&
         courseSlug === 'freelance-design'
+      ) {
+        score += 25;
+      }
+      if (
+        (normalizedQuery.includes('شمس') || normalizedQuery.includes('طاق') || normalizedQuery.includes('سولار') || normalizedQuery.includes('solar') || normalizedQuery.includes('إنفرتر') || normalizedQuery.includes('بطاري') || normalizedQuery.includes('لوح') || normalizedQuery.includes('bms')) &&
+        courseSlug === 'solar-installation'
+      ) {
+        score += 25;
+      }
+      if (
+        (normalizedQuery.includes('تكييف') || normalizedQuery.includes('سبلت') || normalizedQuery.includes('غاز') || normalizedQuery.includes('تبريد') || normalizedQuery.includes('ضاغط') || normalizedQuery.includes('hvac') || normalizedQuery.includes('r410')) &&
+        courseSlug === 'hvac-refrigeration'
+      ) {
+        score += 25;
+      }
+      if (
+        (normalizedQuery.includes('كامير') || normalizedQuery.includes('مراقب') || normalizedQuery.includes('cctv') || normalizedQuery.includes('nvr') || normalizedQuery.includes('إنذار') || normalizedQuery.includes('cat6') || normalizedQuery.includes('poe')) &&
+        courseSlug === 'cctv-smart-security'
+      ) {
+        score += 25;
+      }
+      if (
+        (normalizedQuery.includes('حلاق') || normalizedQuery.includes('شعر') || normalizedQuery.includes('لحية') || normalizedQuery.includes('تدريج') || normalizedQuery.includes('صالون') || normalizedQuery.includes('fade') || normalizedQuery.includes('موس')) &&
+        courseSlug === 'barber-styling'
+      ) {
+        score += 25;
+      }
+      if (
+        (normalizedQuery.includes('قهو') || normalizedQuery.includes('باريستا') || normalizedQuery.includes('إسبريسو') || normalizedQuery.includes('لاتيه') || normalizedQuery.includes('حليب') || normalizedQuery.includes('coffee') || normalizedQuery.includes('كافيه')) &&
+        courseSlug === 'specialty-coffee-barista'
       ) {
         score += 25;
       }

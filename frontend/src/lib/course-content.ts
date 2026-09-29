@@ -723,8 +723,14 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
   },
 };
 
+// Lazy/direct merge with additional realistic courses
+import { ADDITIONAL_COURSES_CONTENT } from '@/data/additional-course-content';
+
+Object.assign(VOCATIONAL_COURSES_CONTENT, ADDITIONAL_COURSES_CONTENT);
+
 export function getLessonContent(slug: string, partNumber: number): PartExtendedContent | null {
   const course = VOCATIONAL_COURSES_CONTENT[slug];
   if (!course) return null;
   return course.parts[partNumber] || null;
 }
+
