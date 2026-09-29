@@ -45,23 +45,23 @@ function CallbackContent() {
       <div className="p-8 max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl space-y-4">
         {isProcessing ? (
           <>
-            <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto" />
+            <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
             <h2 className="text-base font-bold text-slate-800 dark:text-white">
               جاري تسجيل الدخول وحفظ الجلسة...
             </h2>
           </>
         ) : (
           <>
-            <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
-            <h2 className="text-lg font-extrabold text-[#0B1E3A] dark:text-white">
+            <CheckCircle2 className="w-12 h-12 text-success mx-auto" />
+            <h2 className="text-lg font-extrabold text-secondary dark:text-white">
               تم تسجيل الدخول بنجاح!
             </h2>
           </>
         )}
 
         {mergedCount > 0 && (
-          <div className="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center gap-2 text-xs font-semibold text-blue-800 dark:text-blue-300 text-right">
-            <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
+          <div className="p-3.5 rounded-xl bg-primary-light/60 dark:bg-primary/10 border border-primary/20 flex items-center gap-2 text-xs font-semibold text-primary text-right">
+            <Sparkles className="w-4 h-4 text-primary shrink-0" />
             <span>
               تم دمج وتثبيت {mergedCount} طلب شراء سابق قمت به كزائر مع حسابك الموثق!
             </span>

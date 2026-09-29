@@ -32,12 +32,12 @@ export default function CatalogPage() {
     <div className="space-y-10 pb-12">
       {/* Hero Section */}
       <div className="relative text-center max-w-4xl mx-auto pt-4 sm:pt-8 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/40">
-          <Zap className="w-3.5 h-3.5 text-blue-600 fill-blue-600" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-light/60 dark:bg-primary/10 text-primary text-xs font-bold border border-primary/20">
+          <Zap className="w-3.5 h-3.5 text-primary fill-primary" />
           <span>التعليم المهني المصغر الأول في العراق مع هدايا ترويجية قانونية</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black text-[#0B1E3A] dark:text-white tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-5xl font-black text-secondary dark:text-white tracking-tight leading-tight">
           {t('heading')}
         </h1>
 
@@ -48,15 +48,15 @@ export default function CatalogPage() {
         {/* Value Proposition Highlights */}
         <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-600 dark:text-slate-400 font-semibold">
           <span className="flex items-center gap-1.5">
-            <Trophy className="w-4 h-4 text-amber-500" />
+            <Trophy className="w-4 h-4 text-accent" />
             <span>تذاكر سحب مجانية مرفقة مع كل عملية شراء</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <ShieldCheck className="w-4 h-4 text-success" />
             <span>تسعير دينار عراقي ثابت (سعر صرف 1,310)</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-blue-600" />
+            <Sparkles className="w-4 h-4 text-primary" />
             <span>شراء أجزاء منفصلة بـ 2$ أو الحقيبة بـ 10$</span>
           </span>
         </div>
@@ -65,7 +65,7 @@ export default function CatalogPage() {
       {/* State 1: Loading (muaz-skill mandatory state) */}
       {isLoading && (
         <div className="min-h-[40vh] flex flex-col items-center justify-center text-slate-500">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary mb-3" />
           <p className="text-sm font-semibold">{tCommon('loading')}</p>
         </div>
       )}

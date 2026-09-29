@@ -100,7 +100,7 @@ export default function CheckoutBottomSheet({
         <div className="w-full max-w-lg bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-2xl shadow-2xl p-6 max-h-[92vh] overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-[#0B1E3A] dark:text-white">
+            <h2 className="text-lg font-extrabold text-secondary dark:text-white">
               {t('title')}
             </h2>
             <button
@@ -121,7 +121,7 @@ export default function CheckoutBottomSheet({
                 {item.courseTitle}
               </div>
               {item.partTitle && (
-                <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-0.5">
+                <div className="text-xs text-primary font-medium mt-0.5">
                   {item.partTitle}
                 </div>
               )}
@@ -137,7 +137,7 @@ export default function CheckoutBottomSheet({
                     ({item.displayPriceLabel})
                   </span>
                 </div>
-                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/20">
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent/10 text-accent font-bold border border-accent/20">
                   <Ticket className="w-3.5 h-3.5" />
                   <span>{item.promotionalTickets} {tCommon('ticket')}</span>
                 </div>
@@ -157,13 +157,13 @@ export default function CheckoutBottomSheet({
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('emailPlaceholder')}
                   required
-                  className={`w-full px-3.5 py-2.5 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
+                  className={`w-full py-2.5 ltr:pl-3.5 ltr:pr-10 rtl:pr-3.5 rtl:pl-10 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
                     emailError
                       ? 'border-red-500 focus:ring-red-400/40'
-                      : 'border-slate-200 dark:border-slate-700 focus:ring-blue-500/40'
+                      : 'border-slate-200 dark:border-slate-700 focus:ring-primary/40'
                   }`}
                 />
-                <Mail className="absolute left-3 rtl:left-3 rtl:right-auto ltr:right-3 ltr:left-auto top-3 w-4 h-4 text-slate-400 pointer-events-none" />
+                <Mail className="absolute ltr:right-3 rtl:left-3 top-3 w-4 h-4 text-slate-400 pointer-events-none" />
               </div>
               {emailError && (
                 <p className="mt-1 text-xs font-semibold text-red-600">{emailError}</p>
@@ -172,9 +172,9 @@ export default function CheckoutBottomSheet({
             </div>
 
             {/* Anti-Piracy 3-Step Quiz Trigger */}
-            <div className="p-3.5 rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl border border-primary/20 bg-primary-light/50 dark:bg-primary/10 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                <ShieldAlert className="w-4 h-4 text-primary shrink-0" />
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                   {quizAnswers ? t('quizDone') : t('quizPrompt')}
                 </span>
@@ -182,9 +182,9 @@ export default function CheckoutBottomSheet({
               <button
                 type="button"
                 onClick={() => setIsQuizModalOpen(true)}
-                className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow transition-colors"
+                className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow transition-colors"
               >
-                {quizAnswers ? 'تعديل الإجابات' : t('takeQuiz')}
+                {quizAnswers ? (locale === 'ar' ? 'تعديل الإجابات' : 'Edit Answers') : t('takeQuiz')}
               </button>
             </div>
             {quizError && (
@@ -212,7 +212,7 @@ export default function CheckoutBottomSheet({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl bg-[#1877F2] hover:bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50 active:scale-[0.99]"
+              className="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50 active:scale-[0.99]"
             >
               {isLoading ? (
                 <>
@@ -221,7 +221,7 @@ export default function CheckoutBottomSheet({
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-yellow-300" />
+                  <Sparkles className="w-4 h-4 text-accent" />
                   <span>{t('confirmOrder')}</span>
                 </>
               )}

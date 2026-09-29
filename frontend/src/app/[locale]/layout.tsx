@@ -49,7 +49,7 @@ export default async function LocaleLayout({
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
               {children}
             </main>
-            <footer className="w-full bg-[#0B1E3A] border-t border-slate-800 text-slate-400 py-6 text-center text-xs">
+            <footer className="w-full bg-secondary border-t border-slate-800 text-slate-400 py-6 text-center text-xs">
               <div className="max-w-7xl mx-auto px-4">
                 <p>© 2026 كَنزين (KNZiN). جميع الحقوق محفوظة. منصة تعليمية مهنية مرخصة في العراق.</p>
                 <p className="mt-1 text-slate-500">

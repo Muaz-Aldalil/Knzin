@@ -18,11 +18,12 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={toggleLanguage}
-      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/60 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+      className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-700/60 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary/40"
       aria-label="Toggle Language"
     >
-      <Globe className="w-3.5 h-3.5 text-blue-400" />
-      <span>{locale === 'ar' ? 'English' : 'العربية'}</span>
+      <Globe className="w-3.5 h-3.5 text-primary" />
+      <span className="hidden sm:inline">{locale === 'ar' ? 'English' : 'العربية'}</span>
+      <span className="sm:hidden">{locale === 'ar' ? 'EN' : 'ع'}</span>
     </button>
   );
 }

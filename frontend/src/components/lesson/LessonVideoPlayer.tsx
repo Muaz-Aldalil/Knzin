@@ -1,0 +1,175 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocale } from 'next-intl';
+import { parseVideoUrl, formatTimestamp } from '@/lib/video';
+import { Play, Lock, Sparkles, Ticket, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useWatchDepth } from '@/components/analytics/use-watch-depth';
+
+interface LessonVideoPlayerProps {
+  videoUrl: string;
+  durationSeconds: number;
+  partNumber: number;
+  partTitle: string;
+  courseTitle: string;
+  isUnlocked: boolean;
+  startSeconds?: number;
+  watermarkText?: string;
+  onBuyPart: () => void;
+  onBuyBundle: () => void;
+  onVideoStart?: (startSeconds: number) => void;
+}
+
+export function LessonVideoPlayer({
+  videoUrl,
+  durationSeconds,
+  partNumber,
+  partTitle,
+  courseTitle,
+  isUnlocked,
+  startSeconds = 0,
+  watermarkText = 'KNZIN-LEARNER',
+  onBuyPart,
+  onBuyBundle,
+  onVideoStart,
+}: LessonVideoPlayerProps) {
+  const locale = useLocale();
+  const [isPlaying, setIsPlaying] = useState(startSeconds > 0 && isUnlocked);
+  const parsedVideo = parseVideoUrl(videoUrl, startSeconds);
+
+  // Watch depth tracking
+  const { depth, isCompleted } = useWatchDepth({
+    durationSeconds,
+    isPlaying: isPlaying && isUnlocked,
+    startSeconds,
+    onMilestone: (milestone) => {
+      // Telemetry hook
+    },
+  });
+
+  const handleStartPlay = () => {
+    setIsPlaying(true);
+    onVideoStart?.(startSeconds);
+  };
+
+  // Autoplay if startSeconds was provided
+  useEffect(() => {
+    if (startSeconds > 0 && isUnlocked) {
+      setIsPlaying(true);
+    }
+  }, [startSeconds, isUnlocked]);
+
+  // Locked State
+  if (!isUnlocked) {
+    return (
+      <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col items-center justify-center p-6 text-center">
+        {/* Subtle background ambient graphic */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-secondary/80 via-slate-950/90 to-primary/20 pointer-events-none" />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-md space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500 flex items-center justify-center mx-auto shadow-inner">
+            <Lock className="w-7 h-7" />
+          </div>
+
+          <div className="space-y-1.5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 text-accent text-xs font-black">
+              <Ticket className="w-3.5 h-3.5" />
+              <span>1 {locale === 'ar' ? 'تذكرة سحب ترويجية مجانية' : 'Promotional Ticket'}</span>
+            </span>
+
+            <h3 className="text-lg sm:text-xl font-black text-white">
+              {locale === 'ar'
+                ? `هذا الجزء التدريبي (#${partNumber}) محمي`
+                : `This Training Part (#${partNumber}) is Protected`}
+            </h3>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              {locale === 'ar'
+                ? 'احصل على المحتوى الكامل، الفيديو بدقة عالية، والملفات المرفقة بـ 2$ فقط (2,000 د.ع) بدون أي اشتراكات دورية.'
+                : 'Get full access, high-definition video, and downloadable resources for only $2.00 (2,000 IQD) with lifetime access.'}
+            </p>
+          </div>
+
+          {/* Action CTAs */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={onBuyPart}
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
+              <span>{locale === 'ar' ? 'فتح هذا الجزء (2$ / 2,000 د.ع)' : 'Unlock This Part ($2.00)'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onBuyBundle}
+              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-accent" />
+              <span>{locale === 'ar' ? 'الباقة كاملة 10$ (15 تذكرة)' : 'Full Bundle $10 (15 Tickets)'}</span>
+            </button>
+          </div>
+
+          <p className="text-[11px] text-slate-400">
+            {locale === 'ar'
+              ? 'مشمول بدرع الحماية القانوني وضمان الوصول الفوري'
+              : 'Backed by the Canonical Legal Shield & Instant Access'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800 shadow-2xl group">
+      {/* Dynamic Watermark Stamp (Anti-piracy invariant 3) */}
+      <div className="absolute top-4 left-4 z-20 pointer-events-none opacity-30 select-none text-[10px] font-mono text-white/70 bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm">
+        {watermarkText} • {new Date().toISOString().slice(0, 10)}
+      </div>
+
+      {isPlaying && parsedVideo.embedUrl ? (
+        <iframe
+          src={parsedVideo.embedUrl}
+          title={partTitle}
+          className="w-full h-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      ) : (
+        /* Poster Frame Pre-render */
+        <div className="relative w-full h-full bg-slate-900 flex items-center justify-center cursor-pointer select-none" onClick={handleStartPlay}>
+          {/* Subtle gradient backdrop simulating real video poster */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-slate-900/80 to-slate-950 flex flex-col justify-end p-6" />
+
+          {/* Centered Play Button */}
+          <button
+            type="button"
+            aria-label="Play video"
+            className="relative z-10 w-20 h-20 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center shadow-2xl shadow-primary/50 transition-all transform group-hover:scale-110 active:scale-95"
+          >
+            <Play className="w-9 h-9 fill-current rtl:rotate-180 translate-x-0.5" />
+          </button>
+
+          {/* Bottom Video Meta Bar */}
+          <div className="absolute bottom-4 inset-x-4 z-10 flex items-center justify-between text-xs text-white">
+            <span className="font-bold drop-shadow-md truncate max-w-[70%]">
+              {partTitle}
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-black/80 font-mono text-xs border border-white/10">
+              {formatTimestamp(durationSeconds)}
+            </span>
+          </div>
+
+          {startSeconds > 0 && (
+            <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full bg-accent text-secondary text-xs font-black shadow-lg">
+              {locale === 'ar' ? `البدء من ${formatTimestamp(startSeconds)}` : `Starts at ${formatTimestamp(startSeconds)}`}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

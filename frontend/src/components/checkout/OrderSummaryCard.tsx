@@ -22,7 +22,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
   return (
     <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden">
       {/* Top Success Banner */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 text-white text-center">
+      <div className="bg-gradient-to-r from-success to-emerald-700 p-6 text-white text-center">
         <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
           <CheckCircle2 className="w-8 h-8 text-white" />
         </div>
@@ -42,7 +42,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
             <span className="text-xs text-slate-500 font-medium block">
               {t('orderNumber')}
             </span>
-            <span className="text-sm font-extrabold text-[#0B1E3A] dark:text-blue-400 font-mono">
+            <span className="text-sm font-extrabold text-secondary dark:text-primary-light font-mono">
               {order.order_number}
             </span>
           </div>
@@ -55,7 +55,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
               <span className="text-base font-extrabold text-slate-900 dark:text-white">
                 ${(order.total_amount_cents / 100).toFixed(2)}
               </span>
-              <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+              <span className="text-xs font-bold text-primary dark:text-primary-light">
                 ({order.paid_amount_gateway.toLocaleString()} د.ع)
               </span>
             </div>
@@ -65,17 +65,17 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
               {t('ticketsReserved')}
             </span>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 font-extrabold text-xs border border-amber-500/30">
-              <Ticket className="w-4 h-4" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-accent/15 text-accent font-extrabold text-xs border border-accent/30">
+              <Ticket className="w-4 h-4 text-accent" />
               <span>{order.promotional_tickets_granted} {tCommon('ticket')}</span>
             </div>
           </div>
         </div>
 
         {/* 48-Hour TTL Expiration Notice */}
-        <div className="p-4 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs">
+        <div className="p-4 rounded-xl bg-accent-light/50 dark:bg-amber-950/20 border border-accent/40 text-amber-950 dark:text-amber-200 text-xs">
           <div className="flex items-center gap-2 font-bold mb-1">
-            <Clock className="w-4 h-4 text-amber-600" />
+            <Clock className="w-4 h-4 text-accent" />
             <span>مهلة صلاحية الفاتورة (48 ساعة)</span>
           </div>
           <p className="leading-relaxed">
@@ -85,18 +85,18 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
 
         {/* Local Payment Instructions (Iraq) */}
         <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-3.5">
-          <h3 className="text-sm font-bold text-[#0B1E3A] dark:text-white flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-blue-600" />
+          <h3 className="text-sm font-bold text-secondary dark:text-white flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-primary" />
             <span>{t('paymentInstructionsTitle')}</span>
           </h3>
 
           <div className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
             <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center gap-3">
-              <Smartphone className="w-4 h-4 text-emerald-600 shrink-0" />
+              <Smartphone className="w-4 h-4 text-success shrink-0" />
               <span>{t('zainCash')}</span>
             </div>
             <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center gap-3">
-              <CreditCard className="w-4 h-4 text-blue-600 shrink-0" />
+              <CreditCard className="w-4 h-4 text-primary shrink-0" />
               <span>{t('qiCard')}</span>
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
 
         {/* Personalization Stamp */}
         <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 text-xs font-semibold">
-          <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
+          <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
           <span>تم تخصيص هذه النسخة المبرمجة حصرياً لبياناتك</span>
         </div>
 
@@ -116,10 +116,10 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
         <div className="text-center pt-2">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-secondary hover:bg-slate-800 text-white text-xs font-bold transition-colors"
           >
             <span>{t('backToCatalog')}</span>
-            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+            <ArrowRight className="w-4 h-4 rtl:rotate-0 ltr:rotate-180" />
           </Link>
         </div>
       </div>

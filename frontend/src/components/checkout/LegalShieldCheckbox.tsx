@@ -21,12 +21,12 @@ export default function LegalShieldCheckbox({
       error
         ? 'border-red-500/80 bg-red-50/50 dark:bg-red-950/20'
         : checked
-        ? 'border-blue-500/60 bg-blue-50/40 dark:bg-blue-950/20'
+        ? 'border-primary/60 bg-primary-light/40 dark:bg-blue-950/20'
         : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
     }`}>
       <label
         htmlFor="legal_terms_agreed"
-        className="flex items-start gap-3 cursor-pointer select-none text-right"
+        className="flex items-start gap-3 cursor-pointer select-none text-start"
       >
         <div className="flex items-center h-5 mt-0.5">
           <input
@@ -37,12 +37,12 @@ export default function LegalShieldCheckbox({
             onChange={(e) => onChange(e.target.checked)}
             required
             aria-required="true"
-            className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 focus:ring-2 cursor-pointer"
+            className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary focus:ring-2 cursor-pointer"
           />
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
             <span>إقرار قانوني صريح وإخلاء مسؤولية</span>
           </div>
           <p className="text-xs leading-relaxed text-slate-700 dark:text-slate-300 font-medium">

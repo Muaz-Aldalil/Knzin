@@ -8,6 +8,8 @@ import { apiClient } from '@/lib/api-client';
 import { CourseData } from '@/components/catalog/CourseCard';
 import CoursePartList, { CoursePartData } from '@/components/catalog/CoursePartList';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
+import { LearningOutcomes } from '@/components/course/LearningOutcomes';
+import { CourseProgressBar } from '@/components/course/CourseProgressBar';
 import { useCourseDetail } from '@/hooks/useCatalog';
 import { Loader2, AlertCircle, Ticket, Sparkles, ArrowRight, ShieldCheck, Check } from 'lucide-react';
 import { Link } from '@/i18n/routing';
@@ -89,7 +91,7 @@ export default function CourseDetailPage() {
       <div>
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-primary transition-colors"
         >
           <ArrowRight className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
           <span>العودة لجميع الدورات</span>
@@ -100,12 +102,12 @@ export default function CourseDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Course Info (2 cols) */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light/60 dark:bg-primary/10 text-primary text-xs font-bold border border-primary/20">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
             <span>منهج مهني تدريبي معتمد</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0B1E3A] dark:text-white leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-secondary dark:text-white leading-tight">
             {title}
           </h1>
 
@@ -115,27 +117,27 @@ export default function CourseDetailPage() {
 
           <div className="pt-2 flex flex-wrap gap-4 text-xs font-medium text-slate-500">
             <span className="flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-emerald-600" />
+              <Check className="w-4 h-4 text-success" />
               <span>شامل 6 أجزاء تدريبية مصورة</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-emerald-600" />
+              <Check className="w-4 h-4 text-success" />
               <span>ملفات عمل ومخططات قابلة للتحميل</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-emerald-600" />
+              <Check className="w-4 h-4 text-success" />
               <span>دخول فوري مدى الحياة بدون اشتراك شهري</span>
             </span>
           </div>
         </div>
 
         {/* Full Bundle Purchase Card (1 col) */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-[#0B1E3A] to-slate-900 text-white shadow-xl border border-slate-800 space-y-4">
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-secondary to-secondary-surface text-white shadow-xl border border-secondary-surface space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-blue-300 uppercase tracking-wider">
+            <span className="text-xs font-bold text-primary-light uppercase tracking-wider">
               {t('bundleOffer')}
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-black flex items-center gap-1">
+            <span className="px-2.5 py-1 rounded-full bg-accent/20 text-accent border border-accent/30 text-xs font-black flex items-center gap-1">
               <Ticket className="w-3.5 h-3.5" />
               <span>{course.bundle_promotional_tickets} تذكرة</span>
             </span>
@@ -146,20 +148,20 @@ export default function CourseDetailPage() {
               <span className="text-3xl font-black text-white">
                 ${(course.bundle_price_cents / 100).toFixed(2)}
               </span>
-              <span className="text-sm font-semibold text-blue-300">
+              <span className="text-sm font-semibold text-primary-light">
                 ({course.display_price_label})
               </span>
             </div>
-            <p className="mt-1 text-xs text-emerald-400 font-semibold">
+            <p className="mt-1 text-xs text-success font-semibold">
               {t('bundleSavings')}
             </p>
           </div>
 
           <button
             onClick={handleBundleCheckout}
-            className="w-full py-3.5 px-4 rounded-xl bg-[#1877F2] hover:bg-blue-600 text-white text-sm font-extrabold shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            className="w-full py-3.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-extrabold shadow-lg shadow-primary/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
           >
-            <Sparkles className="w-4 h-4 text-yellow-300" />
+            <Sparkles className="w-4 h-4 text-accent" />
             <span>{t('buyBundle')}</span>
           </button>
 
@@ -169,15 +171,27 @@ export default function CourseDetailPage() {
         </div>
       </div>
 
+      {/* What You'll Learn: Vocational Outcomes Panel */}
+      <LearningOutcomes slug={slug} />
+
       {/* Curriculum Syllabus & Modular Parts Explorer */}
-      <div className="pt-4">
+      <div className="pt-2">
         <CoursePartList
           courseId={course.id}
           courseTitle={title}
+          courseSlug={course.slug}
           parts={course.parts || []}
           onSelectPart={handlePartCheckout}
         />
       </div>
+
+      {/* Sticky Bottom Progress & Buy Bar */}
+      <CourseProgressBar
+        courseTitle={title}
+        bundlePriceUsd={course.bundle_price_cents / 100}
+        promotionalTickets={course.bundle_promotional_tickets}
+        onBuyBundle={handleBundleCheckout}
+      />
 
       {/* Checkout Bottom Sheet */}
       {checkoutItem && (

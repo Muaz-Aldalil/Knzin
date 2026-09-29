@@ -167,7 +167,7 @@ export default function AntiPiracyModal({
           <button
             type="button"
             onClick={handleNext}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#1877F2] hover:bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all active:scale-95"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-md shadow-primary/25 transition-all active:scale-95"
           >
             <span>{step === 3 ? t('submit') : t('next')}</span>
             <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" />
