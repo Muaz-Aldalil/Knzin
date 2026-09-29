@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import CourseCard, { CourseData } from '@/components/catalog/CourseCard';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 import { ResumeHeroCard } from '@/components/course/ResumeHeroCard';
+import { HeroGrandPrizeCountdown } from '@/components/draws/HeroGrandPrizeCountdown';
 import { useCatalog } from '@/hooks/useCatalog';
 import { Loader2, AlertCircle } from 'lucide-react';
 
@@ -46,6 +47,9 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
         </p>
       </div>
 
+      {/* Grand Prize Marquee Countdown Hero (Feature 003) */}
+      <HeroGrandPrizeCountdown />
+
       {/* Scrimba-Style Resume & Continuation Hero Banner */}
       <ResumeHeroCard />
 
@@ -85,7 +89,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
 
       {/* State 4: Courses Grid (Instant render from frame 1) */}
       {!isLoading && !isError && courses && courses.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="catalog" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 scroll-mt-20">
           {courses.map((course) => (
             <CourseCard
               key={course.id}

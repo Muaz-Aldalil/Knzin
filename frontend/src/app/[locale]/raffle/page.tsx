@@ -20,6 +20,7 @@ import {
   AccordionContent
 } from '@/components/ui/accordion';
 import { CANONICAL_LEGAL_SHIELD } from '@/components/checkout/LegalShieldCheckbox';
+import { DrawsArena } from '@/components/draws/DrawsArena';
 
 export default async function RafflePage({
   params,
@@ -31,7 +32,12 @@ export default async function RafflePage({
   const isRtl = locale === 'ar';
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10 pb-16">
+    <div className="max-w-6xl mx-auto space-y-12 pb-16">
+      {/* 3-Tier Promotional Draws Arena with Live Countdowns & Hall of Fame (Feature 003) */}
+      <DrawsArena />
+
+      <Separator className="my-8" />
+
       {/* Hero Transparency Section */}
       <div className="rounded-2xl bg-surface-primary border border-border-subtle p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">

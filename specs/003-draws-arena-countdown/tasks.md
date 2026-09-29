@@ -60,22 +60,22 @@
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Create backend feature test for active draws endpoint asserting JSend envelope, server UTC timestamp, and computed lock state in backend/tests/Feature/DrawApiTest.php
+- [X] T010 [P] [US1] Create backend feature test for active draws endpoint asserting JSend envelope, server UTC timestamp, and computed lock state in backend/tests/Feature/DrawApiTest.php
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Implement DrawResource formatting active draw payloads, computing dynamic locked status (ends_at <= now), and emitting trust badge labels in backend/app/Http/Resources/DrawResource.php
-- [ ] T012 [US1] Implement DrawController with active method filtering draws with 15-minute grace window in backend/app/Http/Controllers/DrawController.php
-- [ ] T013 [US1] Register GET /api/v1/draws/active route in backend/routes/api.php
-- [ ] T014 [P] [US1] Implement useCountdown hook with client-to-server offset drift math and visibilitychange mobile wake listener in frontend/src/hooks/useCountdown.ts
-- [ ] T015 [P] [US1] Implement useDraws hook with TanStack React Query caching (30s staleTime) and offline fallback in frontend/src/hooks/useDraws.ts
-- [ ] T016 [P] [US1] Implement CountdownClock component rendering monospace tabular digit slots (tabular-nums) wrapped in bdi dir="ltr" in frontend/src/components/draws/CountdownClock.tsx
-- [ ] T017 [P] [US1] Implement PulsatingLockBadge component branching between automated electronic audit spinner and YouTube Live stream trigger in frontend/src/components/draws/PulsatingLockBadge.tsx
-- [ ] T018 [US1] Implement DrawCard component rendering prize imagery, tier badges, countdown clock, trust badge, and course CTA in frontend/src/components/draws/DrawCard.tsx
-- [ ] T019 [US1] Implement HeroGrandPrizeCountdown marquee banner for the Monthly Grand Draw in frontend/src/components/draws/HeroGrandPrizeCountdown.tsx
-- [ ] T020 [US1] Embed HeroGrandPrizeCountdown above the course catalog in frontend/src/components/catalog/CatalogClientView.tsx
-- [ ] T021 [US1] Implement DrawsArena container component with active draws grid in frontend/src/components/draws/DrawsArena.tsx
-- [ ] T022 [US1] Mount DrawsArena on the dedicated raffle page anchored above the legal shield in frontend/src/app/[locale]/raffle/page.tsx
+- [X] T011 [US1] Implement DrawResource formatting active draw payloads, computing dynamic locked status (ends_at <= now), and emitting trust badge labels in backend/app/Http/Resources/DrawResource.php
+- [X] T012 [US1] Implement DrawController with active method filtering draws with 15-minute grace window in backend/app/Http/Controllers/DrawController.php
+- [X] T013 [US1] Register GET /api/v1/draws/active route in backend/routes/api.php
+- [X] T014 [P] [US1] Implement useCountdown hook with client-to-server offset drift math and visibilitychange mobile wake listener in frontend/src/hooks/useCountdown.ts
+- [X] T015 [P] [US1] Implement useDraws hook with TanStack React Query caching (30s staleTime) and offline fallback in frontend/src/hooks/useDraws.ts
+- [X] T016 [P] [US1] Implement CountdownClock component rendering monospace tabular digit slots (tabular-nums) wrapped in bdi dir="ltr" in frontend/src/components/draws/CountdownClock.tsx
+- [X] T017 [P] [US1] Implement PulsatingLockBadge component branching between automated electronic audit spinner and YouTube Live stream trigger in frontend/src/components/draws/PulsatingLockBadge.tsx
+- [X] T018 [US1] Implement DrawCard component rendering prize imagery, tier badges, countdown clock, trust badge, and course CTA in frontend/src/components/draws/DrawCard.tsx
+- [X] T019 [US1] Implement HeroGrandPrizeCountdown marquee banner for the Monthly Grand Draw in frontend/src/components/draws/HeroGrandPrizeCountdown.tsx
+- [X] T020 [US1] Embed HeroGrandPrizeCountdown above the course catalog in frontend/src/components/catalog/CatalogClientView.tsx
+- [X] T021 [US1] Implement DrawsArena container component with active draws grid in frontend/src/components/draws/DrawsArena.tsx
+- [X] T022 [US1] Mount DrawsArena on the dedicated raffle page anchored above the legal shield in frontend/src/app/[locale]/raffle/page.tsx
 
 **Checkpoint**: User Story 1 is fully functional and independently testable end-to-end. Visitors can explore synchronized active draws across Homepage and Raffle surfaces.
 
@@ -89,8 +89,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T023 [P] [US2] Implement DrawTermsAccordion collapsible drawer explaining tier-specific ticket lifecycle and educational promotional rules in frontend/src/components/draws/DrawTermsAccordion.tsx
-- [ ] T024 [US2] Integrate DrawTermsAccordion into DrawCard component in frontend/src/components/draws/DrawCard.tsx
+- [X] T023 [P] [US2] Implement DrawTermsAccordion collapsible drawer explaining tier-specific ticket lifecycle and educational promotional rules in frontend/src/components/draws/DrawTermsAccordion.tsx
+- [X] T024 [US2] Integrate DrawTermsAccordion into DrawCard component in frontend/src/components/draws/DrawCard.tsx
 
 **Checkpoint**: User Stories 1 AND 2 are functional. Complete transparency and ticket lifecycle terms are verifiable on every draw card.
 
@@ -104,10 +104,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T025 [P] [US3] Implement DrawWinnerResource serializing privacy-masked winners, ticket serials, and broadcast replay URLs in backend/app/Http/Resources/DrawWinnerResource.php
-- [ ] T026 [US3] Implement concluded method in DrawController and register GET /api/v1/draws/concluded route in backend/routes/api.php
-- [ ] T027 [P] [US3] Implement ConcludedDrawsList component rendering Hall of Fame cards with ticket serials, winner governorates, and YouTube replay actions in frontend/src/components/draws/ConcludedDrawsList.tsx
-- [ ] T028 [US3] Integrate active vs. concluded tab switching in DrawsArena component in frontend/src/components/draws/DrawsArena.tsx
+- [X] T025 [P] [US3] Implement DrawWinnerResource serializing privacy-masked winners, ticket serials, and broadcast replay URLs in backend/app/Http/Resources/DrawWinnerResource.php
+- [X] T026 [US3] Implement concluded method in DrawController and register GET /api/v1/draws/concluded route in backend/routes/api.php
+- [X] T027 [P] [US3] Implement ConcludedDrawsList component rendering Hall of Fame cards with ticket serials, winner governorates, and YouTube replay actions in frontend/src/components/draws/ConcludedDrawsList.tsx
+- [X] T028 [US3] Integrate active vs. concluded tab switching in DrawsArena component in frontend/src/components/draws/DrawsArena.tsx
 
 **Checkpoint**: All 3 user stories are complete and fully operational. The complete active-to-concluded promotional lifecycle is functional.
 
@@ -117,9 +117,9 @@
 
 **Purpose**: Automated test execution, quickstart validation, and cross-cutting responsive layout certification.
 
-- [ ] T029 Execute automated backend feature tests verifying status transitions, lock windows, and privacy masking in backend/tests/Feature/DrawApiTest.php
-- [ ] T030 [P] Audit bidirectional RTL/LTR layout mirroring and typography across mobile (375px) to desktop (1920px) viewports in frontend/src/app/[locale]/raffle/page.tsx
-- [ ] T031 Execute and document all 5 verification scenarios from quickstart.md in specs/003-draws-arena-countdown/quickstart.md
+- [X] T029 Execute automated backend feature tests verifying status transitions, lock windows, and privacy masking in backend/tests/Feature/DrawApiTest.php
+- [X] T030 [P] Audit bidirectional RTL/LTR layout mirroring and typography across mobile (375px) to desktop (1920px) viewports in frontend/src/app/[locale]/raffle/page.tsx
+- [X] T031 Execute and document all 5 verification scenarios from quickstart.md in specs/003-draws-arena-countdown/quickstart.md
 
 ---
 

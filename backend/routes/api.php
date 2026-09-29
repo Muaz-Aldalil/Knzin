@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\DrawController;
 use App\Http\Controllers\ProgressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,10 @@ Route::prefix('v1')->group(function () {
     // Catalog Endpoints (US2)
     Route::get('/catalog/courses', [CatalogController::class, 'index']);
     Route::get('/catalog/courses/{slug}', [CatalogController::class, 'show']);
+
+    // Promotional Draws Endpoints (US1 & US3)
+    Route::get('/draws/active', [DrawController::class, 'active']);
+    Route::get('/draws/concluded', [DrawController::class, 'concluded']);
 
     // Checkout Endpoints (US1)
     Route::post('/checkout/orders', [CheckoutController::class, 'store']);
