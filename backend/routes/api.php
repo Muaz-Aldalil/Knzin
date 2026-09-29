@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ProgressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,4 +24,9 @@ Route::prefix('v1')->group(function () {
     // Checkout Endpoints (US1)
     Route::post('/checkout/orders', [CheckoutController::class, 'store']);
     Route::get('/checkout/orders/{orderNumber}', [CheckoutController::class, 'show']);
+
+    // Progress & Continuation Endpoints (Scrimba & Vertex Alignment)
+    Route::post('/progress', [ProgressController::class, 'recordProgress'])->middleware('auth:sanctum');
+    Route::get('/user/active-learning', [ProgressController::class, 'getActiveLearning'])->middleware('auth:sanctum');
+    Route::get('/courses/{slug}/progress', [ProgressController::class, 'getCourseProgress'])->middleware('auth:sanctum');
 });

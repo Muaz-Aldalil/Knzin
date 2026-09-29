@@ -6,15 +6,18 @@ import {
   FileText,
   Lightbulb,
   CheckCircle2,
-  Download,
   FolderArchive,
   Save,
   PenLine,
-  ExternalLink,
   Sparkles,
-  Info
+  ClipboardCheck,
+  ShieldCheck,
+  AlertTriangle
 } from 'lucide-react';
 import { LessonResource } from '@/lib/course-content';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 
 interface LessonTabsProps {
   summary: string;
@@ -38,19 +41,31 @@ export function LessonTabs({
 }: LessonTabsProps) {
   const locale = useLocale();
   const isRtl = locale === 'ar';
-  const [activeTab, setActiveTab] = useState<'content' | 'resources' | 'notes'>('content');
   const [userNote, setUserNote] = useState('');
   const [isSaved, setIsSaved] = useState(false);
+
+  // Vocational checklist state
+  const checklistKey = `knzin_checklist_${courseSlug}_part_${partNumber}`;
+  const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({});
 
   // Local storage for learner's private notes
   const storageKey = `knzin_note_${courseSlug}_part_${partNumber}`;
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) setUserNote(saved);
+      const savedNote = localStorage.getItem(storageKey);
+      if (savedNote) setUserNote(savedNote);
+
+      const savedChecklist = localStorage.getItem(checklistKey);
+      if (savedChecklist) {
+        try {
+          setCheckedItems(JSON.parse(savedChecklist));
+        } catch {
+          // ignore parsing error
+        }
+      }
     }
-  }, [storageKey]);
+  }, [storageKey, checklistKey]);
 
   const handleSaveNote = () => {
     if (typeof window !== 'undefined') {
@@ -60,189 +75,304 @@ export function LessonTabs({
     }
   };
 
+  const toggleChecklistItem = (index: number) => {
+    const updated = { ...checkedItems, [index]: !checkedItems[index] };
+    setCheckedItems(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(checklistKey, JSON.stringify(updated));
+    }
+  };
+
+  // Get vocational specific checklist items
+  const getChecklistTasks = () => {
+    if (courseSlug.includes('phone') || courseSlug.includes('smart')) {
+      return [
+        {
+          title: isRtl ? 'التأريض وتفريغ الشحنات الساكنة (ESD)' : 'ESD Grounding & Static Discharge',
+          desc: isRtl ? 'ارتداء سوار تفريغ الشحنة ووضع الجهاز على بساط السيليكون المانع للشحنات.' : 'Wear ESD wristband and place device on heat-resistant antistatic mat.',
+        },
+        {
+          title: isRtl ? 'فصل قطب البطارية أولاً' : 'Disconnect Battery Connector First',
+          desc: isRtl ? 'قبل فك أي شيلد أو مسمار في اللوحة، افصل تغذية البطارية بأداة بلاستيكية غير موصلة.' : 'Isolate power with plastic spudger before removing shields or micro-screws.',
+        },
+        {
+          title: isRtl ? 'خريطة المسامير (Screw Map)' : 'Screw Organization Map',
+          desc: isRtl ? 'فرز المسامير حسب الأطوال لتجنب تلف مسارات اللوحة بطول خاطئ (Long Screw Damage).' : 'Organize screws by length to prevent motherboard trace damage.',
+        },
+        {
+          title: isRtl ? 'فحص الميكروسكوب والحرارة' : 'Microscope & Thermal Inspection',
+          desc: isRtl ? 'التأكد من عدم وجود شوائب لحام أو تماسات قبل إعادة تركيب الهيكل واختبار التشغيل.' : 'Check for solder bridges and ensure no shorts before final assembly.',
+        },
+      ];
+    }
+    if (courseSlug.includes('detail') || courseSlug.includes('auto')) {
+      return [
+        {
+          title: isRtl ? 'غسيل العجلات والجنوط مسبقاً' : 'Decontaminate Wheels First',
+          desc: isRtl ? 'تنظيف الجنوط بمزيل برادة الحديد لمنع تطاير الراسب الخشن على طلاء الهيكل.' : 'Clean wheels and brake dust before washing body panels to prevent swirling.',
+        },
+        {
+          title: isRtl ? 'طريقة الدلوين مع شبكة العزل' : 'Two-Bucket Method with Grit Guard',
+          desc: isRtl ? 'دلو للشامبو ودلو لشطف القفاز مع فلتر قاع لمنع تدوير الأوساخ على الطلاء.' : 'Separate wash and rinse buckets with grit guards to trap abrasive dirt.',
+        },
+        {
+          title: isRtl ? 'قياس سماكة الورنيش (Paint Gauge)' : 'Paint Depth Measurement',
+          desc: isRtl ? 'فحص سماكة الطبقة الشفافة بالمايكرون في 4 نقاط على اللوح قبل اختيار درجة الباد والمعجون.' : 'Measure clear coat thickness before selecting compound and cutting pad.',
+        },
+        {
+          title: isRtl ? 'مسحة إزالة الزيوت (IPA Wipe)' : 'Panel Wipe / IPA Degreasing',
+          desc: isRtl ? 'إزالة زيوت التلميع بالكامل للتأكد من زوال الخدوش الحقيقي قبل تطبيق حماية السيراميك.' : 'Wipe panel with alcohol to inspect true correction before ceramic coating.',
+        },
+      ];
+    }
+    // Default UI/Freelance or general trade
+    return [
+      {
+        title: isRtl ? 'ضبط شبكة المحاذاة (Grid 8pt)' : 'Establish 8pt Spatial Grid',
+        desc: isRtl ? 'تطبيق مقياس تباعد موحد لجميع العناصر والحشوات الداخلية والخارجية.' : 'Apply unified spacing multiples for all elements, cards, and layouts.',
+      },
+      {
+        title: isRtl ? 'فحص معايير التباين والسهولة (WCAG AA)' : 'Contrast Ratio Audit (WCAG AA)',
+        desc: isRtl ? 'التأكد من أن نسبة تباين النصوص مع الخلفية لا تقل عن 4.5:1 للمحتوى العادي.' : 'Verify text and interactive controls achieve at least 4.5:1 contrast.',
+      },
+      {
+        title: isRtl ? 'تجربة المحاذاة على شاشة الجوال (Mobile Testing)' : 'Real Device Preview',
+        desc: isRtl ? 'معاينة الواجهة على شاشات هواتف متعددة واختبار أزرار اللمس بحجم 44px كحد أدنى.' : 'Test tap targets (min 44x44px) and readability on real smartphone displays.',
+      },
+      {
+        title: isRtl ? 'تصدير الرموز والملفات المهنية' : 'Asset & Design Spec Handoff',
+        desc: isRtl ? 'تنظيم طبقات الفيجما وتسمية المكونات بالإنجليزية وتصدير الأيقونات بصيغة SVG نظيفة.' : 'Name design tokens, clean up layer hierarchy, and export vector SVGs.',
+      },
+    ];
+  };
+
+  const tasks = getChecklistTasks();
+  const completedTasksCount = tasks.filter((_, idx) => checkedItems[idx]).length;
+
   return (
     <div className="space-y-6">
-      {/* Tabs Header */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-px">
-        <button
-          type="button"
-          onClick={() => setActiveTab('content')}
-          className={`py-3 px-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
-            activeTab === 'content'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
-          }`}
-        >
-          <FileText className="w-4 h-4" />
-          <span>{locale === 'ar' ? 'محتوى الدرس' : 'Lesson Content'}</span>
-        </button>
+      <Tabs defaultValue="content" className="w-full">
+        {/* shadcn TabsList */}
+        <TabsList className="w-full justify-start h-12 p-1 bg-surface-secondary border border-border-subtle rounded-xl overflow-x-auto scrollbar-none">
+          <TabsTrigger value="content" className="gap-2 px-4 py-2">
+            <FileText className="w-4 h-4 text-primary" />
+            <span>{isRtl ? 'محتوى الدرس' : 'Lesson Content'}</span>
+          </TabsTrigger>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('resources')}
-          className={`py-3 px-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
-            activeTab === 'resources'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
-          }`}
-        >
-          <FolderArchive className="w-4 h-4" />
-          <span>{locale === 'ar' ? 'الملفات والمخططات' : 'Resources'}</span>
-          {resources.length > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-              {resources.length}
-            </span>
-          )}
-        </button>
+          <TabsTrigger value="checklist" className="gap-2 px-4 py-2">
+            <ClipboardCheck className="w-4 h-4 text-accent" />
+            <span>{isRtl ? 'قائمة الفحص المهني' : 'Safety Checklist'}</span>
+            <Badge variant="accent" size="sm" className="px-1.5 py-0 text-[10px] font-black">
+              {completedTasksCount}/{tasks.length}
+            </Badge>
+          </TabsTrigger>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('notes')}
-          className={`py-3 px-4 text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
-            activeTab === 'notes'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
-          }`}
-        >
-          <PenLine className="w-4 h-4" />
-          <span>{locale === 'ar' ? 'ملاحظاتي' : 'My Notes'}</span>
-        </button>
-      </div>
-
-      {/* Tab 1: Content */}
-      {activeTab === 'content' && (
-        <div className="space-y-8 animate-fadeIn">
-          {/* Overview text */}
-          <div className="space-y-3">
-            <h3 className="text-base font-bold text-secondary dark:text-white">
-              {locale === 'ar' ? 'نظرة عامة على الجزء' : 'Part Overview'}
-            </h3>
-            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-              {summary}
-            </p>
-          </div>
-
-          {/* In this lesson you will learn */}
-          <div className="space-y-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <h4 className="text-sm font-black text-secondary dark:text-white flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span>{locale === 'ar' ? 'في هذا الدرس ستتعلم وتتقن:' : 'In this lesson you will master:'}</span>
-            </h4>
-
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {keyPoints.map((point, idx) => (
-                <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-normal">
-                  <CheckCircle2 className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Vocational Pro Tip in Knzin Accent Gold */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-accent/10 border-2 border-accent/40 shadow-sm space-y-2 relative overflow-hidden">
-            <div className="flex items-center gap-2 text-amber-800 dark:text-accent font-black text-sm">
-              <Lightbulb className="w-5 h-5 text-accent fill-accent/20" />
-              <span>{proTip.title}</span>
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
-              {proTip.content}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 2: Resources */}
-      {activeTab === 'resources' && (
-        <div className="space-y-4 animate-fadeIn">
-          <h3 className="text-base font-bold text-secondary dark:text-white">
-            {locale === 'ar' ? 'المخططات والكتيبات المرفقة' : 'Downloadable Resources'}
-          </h3>
-
-          {resources.length === 0 ? (
-            <div className="p-8 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-slate-500 text-sm">
-              {locale === 'ar' ? 'لا توجد ملفات مرفقة لهذا الجزء.' : 'No downloadable resources for this part.'}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {resources.map((res) => (
-                <div
-                  key={res.id}
-                  className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 hover:border-primary/40 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary-light dark:bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                      <FileText className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
-                        {locale === 'ar' ? res.title_ar : res.title_en}
-                      </h4>
-                      <span className="text-[11px] text-slate-400 font-medium">
-                        {res.size} • {res.type.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-
-                  <a
-                    href={res.url}
-                    download
-                    className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary hover:text-white text-slate-600 dark:text-slate-300 transition-colors shrink-0"
-                    title={locale === 'ar' ? 'تحميل الملف' : 'Download file'}
-                  >
-                    <Download className="w-4 h-4" />
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab 3: Notes */}
-      {activeTab === 'notes' && (
-        <div className="space-y-4 animate-fadeIn">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-secondary dark:text-white">
-              {locale === 'ar' ? 'ملاحظاتي التدريبية الخاصة' : 'My Personal Training Notes'}
-            </h3>
-            {isSaved && (
-              <span className="text-xs font-bold text-success flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>{locale === 'ar' ? 'تم الحفظ' : 'Saved'}</span>
+          <TabsTrigger value="resources" className="gap-2 px-4 py-2">
+            <FolderArchive className="w-4 h-4 text-content-secondary" />
+            <span>{isRtl ? 'الملفات والمخططات' : 'Resources'}</span>
+            {resources.length > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-surface text-content-secondary border border-border-subtle">
+                {resources.length}
               </span>
             )}
-          </div>
+          </TabsTrigger>
 
-          <p className="text-xs text-slate-500">
-            {locale === 'ar'
-              ? 'دون ملاحظاتك وأرقام القياسات أثناء متابعة الفيديو، تُحفظ تلقائياً على متصفحك.'
-              : 'Write your notes and measurements while watching the video. Saved locally in your browser.'}
-          </p>
+          <TabsTrigger value="notes" className="gap-2 px-4 py-2">
+            <PenLine className="w-4 h-4 text-content-secondary" />
+            <span>{isRtl ? 'ملاحظاتي الخاصة' : 'My Notes'}</span>
+          </TabsTrigger>
+        </TabsList>
 
-          <textarea
-            value={userNote}
-            onChange={(e) => setUserNote(e.target.value)}
-            rows={6}
-            placeholder={
-              locale === 'ar'
-                ? 'اكتب ملاحظاتك المهنية هنا (مثل: درجة حرارة الهوت إير المناسبة، رقم البولش، إلخ)...'
-                : 'Write your professional notes here...'
-            }
-            className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/40 leading-relaxed resize-y"
-          />
+        {/* Tab 1: Lesson Content */}
+        <TabsContent value="content" className="space-y-6 mt-4">
+          {/* Summary Box */}
+          <Card className="p-6 border border-border-subtle bg-surface">
+            <h3 className="text-base sm:text-lg font-black text-content-primary mb-3">
+              {isRtl ? 'ملخص هذا الجزء التدريبي' : 'Training Part Summary'}
+            </h3>
+            <p className="text-sm text-content-secondary leading-relaxed font-medium">
+              {summary}
+            </p>
+          </Card>
 
-          <button
-            type="button"
-            onClick={handleSaveNote}
-            className="px-4 py-2 rounded-xl bg-secondary hover:bg-secondary-surface text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>{locale === 'ar' ? 'حفظ الملاحظات' : 'Save Notes'}</span>
-          </button>
-        </div>
-      )}
+          {/* Key Points */}
+          {keyPoints && keyPoints.length > 0 && (
+            <Card className="p-6 border border-border-subtle bg-surface">
+              <h4 className="text-sm sm:text-base font-black text-content-primary mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-success" />
+                <span>{isRtl ? 'المخرجات والمهارات العملية' : 'Hands-on Skills & Takeaways'}</span>
+              </h4>
+              <ul className="space-y-3">
+                {keyPoints.map((point, index) => (
+                  <li key={index} className="flex items-start gap-3 text-xs sm:text-sm text-content-secondary">
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-success/10 text-success text-[11px] font-bold mt-0.5">
+                      {index + 1}
+                    </span>
+                    <span className="leading-relaxed">{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+
+          {/* Pro Tip Card */}
+          {proTip && (
+            <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-950 dark:text-amber-100 flex items-start gap-4 shadow-sm">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-accent shrink-0 mt-0.5">
+                <Lightbulb className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-accent">
+                    {isRtl ? 'سر المهنة' : 'Pro Trade Secret'}
+                  </span>
+                </div>
+                <h5 className="text-sm font-bold">{proTip.title}</h5>
+                <p className="text-xs sm:text-sm text-content-secondary leading-relaxed">
+                  {proTip.content}
+                </p>
+              </div>
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Tab 2: Vocational Safety Checklist (Scrimba Hands-on pattern) */}
+        <TabsContent value="checklist" className="space-y-4 mt-4">
+          <Card className="p-6 border border-border-subtle bg-surface">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 border-b border-border-subtle pb-4">
+              <div>
+                <h3 className="text-base sm:text-lg font-black text-content-primary flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-success" />
+                  <span>{isRtl ? 'خطوات الفحص والتطبيق العملي' : 'Vocational Safety & Quality Checklist'}</span>
+                </h3>
+                <p className="text-xs text-content-secondary mt-1">
+                  {isRtl
+                    ? 'تحقق من تنفيذ معايير الجودة والسلامة قبل إنهاء هذا الجزء المهني.'
+                    : 'Verify practical quality and safety steps before concluding this part.'}
+                </p>
+              </div>
+              <Badge variant={completedTasksCount === tasks.length ? 'success' : 'accent'} size="md">
+                {completedTasksCount === tasks.length
+                  ? isRtl ? 'تم التحقق بالكامل ✓' : 'All Checked ✓'
+                  : `${completedTasksCount} / ${tasks.length} ${isRtl ? 'منجز' : 'Done'}`}
+              </Badge>
+            </div>
+
+            <div className="space-y-3">
+              {tasks.map((task, idx) => {
+                const isChecked = !!checkedItems[idx];
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => toggleChecklistItem(idx)}
+                    className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-4 select-none ${
+                      isChecked
+                        ? 'bg-success/5 border-success/30'
+                        : 'bg-surface-secondary/40 border-border-subtle hover:border-primary/40'
+                    }`}
+                  >
+                    <div
+                      className={`size-6 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                        isChecked
+                          ? 'bg-success border-success text-white'
+                          : 'border-border-strong bg-surface'
+                      }`}
+                    >
+                      {isChecked && <CheckCircle2 className="w-4 h-4" />}
+                    </div>
+
+                    <div className="flex-1">
+                      <h5
+                        className={`text-sm font-bold ${
+                          isChecked ? 'line-through text-content-muted' : 'text-content-primary'
+                        }`}
+                      >
+                        {task.title}
+                      </h5>
+                      <p className="text-xs text-content-secondary mt-0.5 leading-relaxed">
+                        {task.desc}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 3: Resources */}
+        <TabsContent value="resources" className="space-y-4 mt-4">
+          <Card className="p-6 border border-border-subtle bg-surface">
+            <h3 className="text-base sm:text-lg font-black text-content-primary mb-4">
+              {isRtl ? 'الملفات والمخططات الملحقة' : 'Downloadable Schematics & Resources'}
+            </h3>
+
+            {resources && resources.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {resources.map((res, idx) => (
+                  <a
+                    key={idx}
+                    href={res.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-4 rounded-xl border border-border-subtle bg-surface-secondary/50 hover:bg-surface-secondary hover:border-primary/40 transition-all flex items-center justify-between gap-3 group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform">
+                        <FolderArchive className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h5 className="text-xs sm:text-sm font-bold text-content-primary group-hover:text-primary transition-colors">
+                          {isRtl ? res.title_ar : res.title_en}
+                        </h5>
+                        <span className="text-[11px] font-mono text-content-muted">
+                          {res.type.toUpperCase()} • {res.size}
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-content-muted py-6 text-center">
+                {isRtl ? 'لا توجد ملفات مرفقة لهذا الجزء.' : 'No downloadable resources attached to this part.'}
+              </p>
+            )}
+          </Card>
+        </TabsContent>
+
+        {/* Tab 4: Private Notes */}
+        <TabsContent value="notes" className="space-y-4 mt-4">
+          <Card className="p-6 border border-border-subtle bg-surface">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h3 className="text-base sm:text-lg font-black text-content-primary flex items-center gap-2">
+                <PenLine className="w-5 h-5 text-primary" />
+                <span>{isRtl ? 'دفتر الملاحظات المهني الخاص بك' : 'Your Personal Trade Notes'}</span>
+              </h3>
+              <button
+                type="button"
+                onClick={handleSaveNote}
+                className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>{isSaved ? (isRtl ? 'تم الحفظ!' : 'Saved!') : isRtl ? 'حفظ' : 'Save'}</span>
+              </button>
+            </div>
+
+            <textarea
+              value={userNote}
+              onChange={(e) => setUserNote(e.target.value)}
+              placeholder={
+                isRtl
+                  ? 'سجّل هنا ملاحظاتك حول هذا الجزء، أطوال المسامير، درجات الحرارة أو خلطات المواد للرجوع إليها لاحقاً...'
+                  : 'Write your private notes, torque specs, temperatures, or procedural reminders here...'
+              }
+              rows={6}
+              className="w-full p-4 rounded-xl border border-border-subtle bg-input-bg text-content-primary text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all resize-y"
+            />
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

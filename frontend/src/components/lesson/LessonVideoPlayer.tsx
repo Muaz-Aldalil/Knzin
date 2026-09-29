@@ -1,12 +1,11 @@
-'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { parseVideoUrl, formatTimestamp } from '@/lib/video';
-import { Play, Lock, Sparkles, Ticket, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Play, Lock, Sparkles, Ticket, ShieldCheck, RefreshCw, CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useWatchDepth } from '@/components/analytics/use-watch-depth';
+import { Link } from '@/i18n/routing';
 
 interface LessonVideoPlayerProps {
   videoUrl: string;
@@ -14,9 +13,11 @@ interface LessonVideoPlayerProps {
   partNumber: number;
   partTitle: string;
   courseTitle: string;
+  courseSlug?: string;
   isUnlocked: boolean;
   startSeconds?: number;
   watermarkText?: string;
+  nextPart?: { part_number: number; title: string; duration_minutes: number } | null;
   onBuyPart: () => void;
   onBuyBundle: () => void;
   onVideoStart?: (startSeconds: number) => void;
@@ -28,25 +29,28 @@ export function LessonVideoPlayer({
   partNumber,
   partTitle,
   courseTitle,
+  courseSlug,
   isUnlocked,
   startSeconds = 0,
   watermarkText = 'KNZIN-LEARNER',
+  nextPart,
   onBuyPart,
   onBuyBundle,
   onVideoStart,
 }: LessonVideoPlayerProps) {
   const locale = useLocale();
+  const isRtl = locale === 'ar';
   const [isPlaying, setIsPlaying] = useState(startSeconds > 0 && isUnlocked);
+  const [dismissCompletionCard, setDismissCompletionCard] = useState(false);
   const parsedVideo = parseVideoUrl(videoUrl, startSeconds);
 
-  // Watch depth tracking
+  // Watch depth tracking & MySQL database persistence
   const { depth, isCompleted } = useWatchDepth({
     durationSeconds,
     isPlaying: isPlaying && isUnlocked,
     startSeconds,
-    onMilestone: (milestone) => {
-      // Telemetry hook
-    },
+    courseSlug,
+    partNumber,
   });
 
   const handleStartPlay = () => {
@@ -166,6 +170,64 @@ export function LessonVideoPlayer({
           {startSeconds > 0 && (
             <div className="absolute top-4 right-4 z-10 px-3 py-1 rounded-full bg-accent text-secondary text-xs font-black shadow-lg">
               {locale === 'ar' ? `البدء من ${formatTimestamp(startSeconds)}` : `Starts at ${formatTimestamp(startSeconds)}`}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Scrimba-style Celebratory "Up Next" Overlay */}
+      {(isCompleted || depth >= 95) && !dismissCompletionCard && (
+        <div className="absolute inset-0 z-30 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in-0 duration-300">
+          <div className="flex size-14 items-center justify-center rounded-full bg-success/20 border border-success/40 text-success mb-3 shadow-lg">
+            <CheckCircle2 className="w-8 h-8" />
+          </div>
+
+          <Badge variant="accent" size="sm" className="mb-2 font-black">
+            {isRtl ? 'اكتمل هذا الجزء بنجاح!' : 'Part Completed!'}
+          </Badge>
+
+          <h3 className="text-lg sm:text-xl font-black text-white max-w-md">
+            {partTitle}
+          </h3>
+
+          {nextPart ? (
+            <div className="mt-4 p-4 rounded-xl bg-slate-900/80 border border-slate-800 max-w-sm w-full">
+              <span className="text-xs text-slate-400 block mb-1">
+                {isRtl ? 'الدرس التالي مباشرة:' : 'Next Up:'}
+              </span>
+              <p className="text-sm font-bold text-white line-clamp-1">
+                {nextPart.title}
+              </p>
+              <div className="mt-3 flex items-center justify-center gap-2">
+                <Link
+                  href={`/lessons/${courseSlug || ''}-part-${nextPart.part_number}`}
+                  className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black transition-all flex items-center gap-2 shadow-lg shadow-primary/30"
+                >
+                  <span>{isRtl ? 'الانتقال للدرس التالي' : 'Continue to Next Lesson'}</span>
+                  {isRtl ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setDismissCompletionCard(true)}
+                  className="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-colors"
+                  title={isRtl ? 'إعادة المشاهدة' : 'Replay'}
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4">
+              <p className="text-sm text-slate-300">
+                {isRtl ? 'تهانينا! لقد أنهيت جميع أجزاء هذه الدورة المهنية بنجاح.' : 'Congratulations! You have completed all parts of this course.'}
+              </p>
+              <button
+                type="button"
+                onClick={() => setDismissCompletionCard(true)}
+                className="mt-3 px-4 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold hover:bg-slate-700 transition-colors"
+              >
+                {isRtl ? 'إغلاق' : 'Close'}
+              </button>
             </div>
           )}
         </div>

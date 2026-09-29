@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import CourseCard from '@/components/catalog/CourseCard';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
+import { ResumeHeroCard } from '@/components/course/ResumeHeroCard';
 import { useCatalog } from '@/hooks/useCatalog';
 import { Loader2, AlertCircle, Sparkles, Trophy, ShieldCheck, Zap } from 'lucide-react';
 
@@ -61,6 +62,9 @@ export default function CatalogPage() {
           </span>
         </div>
       </div>
+
+      {/* Scrimba-Style Resume & Continuation Hero Banner */}
+      <ResumeHeroCard />
 
       {/* State 1: Loading (muaz-skill mandatory state) */}
       {isLoading && (

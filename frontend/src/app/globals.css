@@ -34,6 +34,18 @@
 
   --color-input-bg: var(--input-bg);
   --color-input-border: var(--input-border);
+
+  /* shadcn/ui Standard Theme Tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
 }
 
 :root {
@@ -60,6 +72,28 @@
 
   --overlay-backdrop: rgba(11, 30, 58, 0.6);
   --shadow-elevation: 0 4px 20px -2px rgba(11, 30, 58, 0.08), 0 2px 6px -1px rgba(11, 30, 58, 0.04);
+
+  /* shadcn Light Variables */
+  --background: var(--bg-app);
+  --foreground: var(--text-primary);
+  --card: var(--surface-primary);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-elevated);
+  --popover-foreground: var(--text-primary);
+  --primary-token: #1877f2;
+  --primary-foreground: #ffffff;
+  --secondary-token: var(--surface-secondary);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface-secondary);
+  --muted-foreground: var(--text-muted);
+  --accent-token: #f5b301;
+  --accent-foreground: #0b1e3a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: #1877f2;
+  --radius: 0.75rem;
 }
 
 .dark {
@@ -84,6 +118,27 @@
 
   --overlay-backdrop: rgba(3, 7, 18, 0.8);
   --shadow-elevation: 0 8px 30px -4px rgba(0, 0, 0, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.3);
+
+  /* shadcn Dark Variables */
+  --background: var(--bg-app);
+  --foreground: var(--text-primary);
+  --card: var(--surface-primary);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-elevated);
+  --popover-foreground: var(--text-primary);
+  --primary-token: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary-token: var(--surface-secondary);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface-secondary);
+  --muted-foreground: var(--text-muted);
+  --accent-token: #fbbf24;
+  --accent-foreground: #070e1b;
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --border: var(--border-subtle);
+  --input: var(--border-subtle);
+  --ring: #3b82f6;
 }
 
 html {
@@ -138,4 +193,23 @@ body {
 
 [dir="rtl"] .animate-marquee {
   animation: marquee-rtl 30s linear infinite;
+}
+
+/* Radix UI Accordion Animations */
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+.animate-accordion-down {
+  animation: accordion-down 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-accordion-up {
+  animation: accordion-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }

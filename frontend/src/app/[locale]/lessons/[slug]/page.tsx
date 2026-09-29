@@ -204,8 +204,10 @@ function LessonPlayerContent() {
             partNumber={partNumber}
             partTitle={partTitle}
             courseTitle={courseTitle}
+            courseSlug={slug}
             isUnlocked={isUnlocked}
             startSeconds={startSeconds}
+            nextPart={nextPart}
             onBuyPart={handleBuyPart}
             onBuyBundle={handleBuyBundle}
           />

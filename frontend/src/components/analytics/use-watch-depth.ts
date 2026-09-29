@@ -1,11 +1,12 @@
-'use client';
-
 import { useState, useEffect, useRef } from 'react';
+import { saveLessonProgress } from '@/lib/progress';
 
 interface UseWatchDepthProps {
   durationSeconds: number;
   isPlaying: boolean;
   startSeconds?: number;
+  courseSlug?: string;
+  partNumber?: number;
   onMilestone?: (milestone: 25 | 50 | 75 | 95) => void;
 }
 
@@ -13,6 +14,8 @@ export function useWatchDepth({
   durationSeconds,
   isPlaying,
   startSeconds = 0,
+  courseSlug,
+  partNumber,
   onMilestone,
 }: UseWatchDepthProps) {
   const [depth, setDepth] = useState<number>(0);
@@ -21,6 +24,7 @@ export function useWatchDepth({
   const accumulatedSecondsRef = useRef<number>(startSeconds);
   const lastTickRef = useRef<number | null>(null);
   const reachedMilestonesRef = useRef<Set<number>>(new Set());
+  const lastSavedDepthRef = useRef<number>(0);
 
   useEffect(() => {
     if (!isPlaying || durationSeconds <= 0) {
@@ -58,7 +62,16 @@ export function useWatchDepth({
             if (m === 95) {
               setIsCompleted(true);
             }
+            if (courseSlug && partNumber) {
+              saveLessonProgress(courseSlug, partNumber, accumulatedSecondsRef.current, currentDepth);
+            }
           }
+        }
+
+        // Heartbeat persistence every 10%
+        if (courseSlug && partNumber && currentDepth >= lastSavedDepthRef.current + 10) {
+          lastSavedDepthRef.current = currentDepth;
+          saveLessonProgress(courseSlug, partNumber, accumulatedSecondsRef.current, currentDepth);
         }
       }
       lastTickRef.current = now;
