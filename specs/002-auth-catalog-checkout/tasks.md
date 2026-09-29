@@ -137,14 +137,14 @@
 
 ### Tests for User Story 4
 
-- [ ] T046 [P] [US4] Create frontend unit test for 3-step quiz flow asserting retake-before-confirm overwrites answers and renders personalization stamp in frontend/src/tests/AntiPiracyQuiz.test.tsx
+- [X] T046 [P] [US4] Create frontend unit test for 3-step quiz flow asserting retake-before-confirm overwrites answers and renders personalization stamp in frontend/src/tests/AntiPiracyQuiz.test.tsx
 
 ### Implementation for User Story 4
 
-- [ ] T047 [P] [US4] Implement QuizStep component rendering single-choice vocational goal, study commitment, and skill level options in frontend/src/components/quiz/QuizStep.tsx
-- [ ] T048 [P] [US4] Implement AntiPiracyModal component managing 3-step progression, retake navigation, and completion state in frontend/src/components/quiz/AntiPiracyModal.tsx
-- [ ] T049 [US4] Implement PersonalizationBadge component rendering dynamic personalization watermark text with customer details in frontend/src/components/quiz/PersonalizationBadge.tsx
-- [ ] T050 [US4] Integrate anti-piracy quiz completion trigger before opening checkout bottom-sheet in frontend/src/hooks/useCheckout.ts
+- [X] T047 [P] [US4] Implement QuizStep component rendering single-choice vocational goal, study commitment, and skill level options in frontend/src/components/quiz/QuizStep.tsx
+- [X] T048 [P] [US4] Implement AntiPiracyModal component managing 3-step progression, retake navigation, and completion state in frontend/src/components/quiz/AntiPiracyModal.tsx
+- [X] T049 [US4] Implement PersonalizationBadge component rendering dynamic personalization watermark text with customer details in frontend/src/components/quiz/PersonalizationBadge.tsx
+- [X] T050 [US4] Integrate anti-piracy quiz completion trigger before opening checkout bottom-sheet in frontend/src/hooks/useCheckout.ts
 
 **Checkpoint**: All 4 user stories are fully implemented and integrated. The complete pre-purchase to pending order lifecycle is functional.
 
@@ -154,10 +154,10 @@
 
 **Purpose**: Scheduled auto-expiration of pending orders, quickstart end-to-end verification, and cross-cutting responsive polishing.
 
-- [ ] T051 Implement artisan console command orders:expire-pending auto-expiring pending orders older than 48 hours to failed in backend/app/Console/Commands/ExpirePendingOrdersCommand.php
-- [ ] T052 Register orders:expire-pending scheduled hourly run in backend/routes/console.php
-- [ ] T053 [P] Verify responsive bottom-sheet and modal layout across mobile viewports (375px) to desktop (1920px) with zero horizontal overflow in frontend/src/app/globals.css
-- [ ] T054 Execute and document all 5 validation scenarios from quickstart.md (Guest Checkout, Legal Shield Tamper, Idempotency Dedup, Google Merge, Dual-Currency) in specs/002-auth-catalog-checkout/quickstart.md
+- [X] T051 Implement artisan console command orders:expire-pending auto-expiring pending orders older than 48 hours to failed in backend/app/Console/Commands/ExpirePendingOrdersCommand.php
+- [X] T052 Register orders:expire-pending scheduled hourly run in backend/routes/console.php
+- [X] T053 [P] Verify responsive bottom-sheet and modal layout across mobile viewports (375px) to desktop (1920px) with zero horizontal overflow in frontend/src/app/globals.css
+- [X] T054 Execute and document all 5 validation scenarios from quickstart.md (Guest Checkout, Legal Shield Tamper, Idempotency Dedup, Google Merge, Dual-Currency) in specs/002-auth-catalog-checkout/quickstart.md
 
 ---
 

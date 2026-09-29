@@ -1,13 +1,13 @@
 /**
  * Catalog Display & Pricing Tests
- * Uses native Node.js test runner for zero-dependency execution.
+ * Uses native Node.js test runner for deterministic execution.
  */
 
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { CANONICAL_LEGAL_SHIELD } from '../components/checkout/LegalShieldCheckbox';
-import arMessages from '../../messages/ar.json';
-import enMessages from '../../messages/en.json';
+import arMessages from '../../messages/ar.json' with { type: 'json' };
+import enMessages from '../../messages/en.json' with { type: 'json' };
 
 describe('CatalogDisplay & Pricing Invariants', () => {
   it('part micro-pricing is exactly $2.00 (200 cents) and yields 1 promotional ticket', () => {

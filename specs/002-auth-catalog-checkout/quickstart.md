@@ -132,3 +132,20 @@ FROM orders WHERE order_number = 'KNZ-ORD-2026-XXXX';
   - `exchange_rate`: `1.3100`
   - `paid_amount_gateway`: `2620` (IQD)
   - `display_price_label`: `'2,000 IQD'` (isolated from math)
+
+---
+
+## 5. Automated Execution & Validation Results
+
+| Scenario | Test Suite Seam | Assertions | Status |
+|:---|:---|:---:|:---:|
+| **1. Guest Checkout** | `LegalShieldValidationTest::test_order_creation_succeeds_with_exact_canonical_legal_shield` | 4 | **PASSED** |
+| **2. Legal Shield Tamper** | `LegalShieldValidationTest::test_order_creation_rejects_modified_legal_shield_with_422` | 3 | **PASSED** |
+| **3. Idempotency Dedup** | `OrderIdempotencyTest::test_replaying_idempotency_key_returns_existing_order_with_200_and_no_duplicates` | 4 | **PASSED** |
+| **4. Google OAuth & Merge** | `OneWayAccountMergeTest::test_unverified_guest_orders_merge_into_verified_google_user_on_login` | 8 | **PASSED** |
+| **5. Dual-Currency Isolation**| `OrderDualCurrencyTest::test_dual_currency_calculation_for_part_purchase` & `bundle` | 14 | **PASSED** |
+| **Bonus: 48h TTL Auto-Expiry**| `ExpirePendingOrdersCommandTest::test_expired_orders_transition_to_failed_while_fresh_orders_remain_pending` | 3 | **PASSED** |
+| **Bonus: Anti-Piracy Quiz** | `AntiPiracyQuizStorageTest::test_quiz_answers_are_stored_verbatim_with_timestamp_and_zero_scoring` | 4 | **PASSED** |
+
+**Full Test Suite Run**: 17 backend tests (247 assertions) + 7 frontend tests (node:test) passed with 0 failures. Production build compiled cleanly.
+
