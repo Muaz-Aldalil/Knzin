@@ -28,6 +28,7 @@ export function ActivityTicker() {
   return (
     <div
       role="region"
+      dir={locale === 'ar' ? 'rtl' : 'ltr'}
       aria-label={locale === 'ar' ? 'شريط النشاط المباشر' : 'Live Activity Ticker'}
       className="h-10 w-full bg-surface-secondary/85 backdrop-blur-xs border-b border-border-subtle overflow-hidden relative flex items-center group z-30 select-none"
     >

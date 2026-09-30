@@ -132,6 +132,7 @@ export default function HeaderHUD() {
 
   return (
     <header
+      dir={isRtl ? 'rtl' : 'ltr'}
       className={`sticky top-0 z-40 w-full text-content-primary transition-colors duration-150 border-b ${
         isScrolled
           ? 'bg-surface/85 dark:bg-surface/85 border-border-subtle shadow-2xs'

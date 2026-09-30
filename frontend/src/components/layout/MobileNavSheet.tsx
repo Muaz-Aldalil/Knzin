@@ -66,6 +66,7 @@ export default function MobileNavSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side={isRtl ? 'right' : 'left'}
+        dir={isRtl ? 'rtl' : 'ltr'}
         className="w-[85vw] sm:max-w-sm flex flex-col justify-between p-6 bg-surface border-border-subtle"
       >
         <div className="space-y-6">

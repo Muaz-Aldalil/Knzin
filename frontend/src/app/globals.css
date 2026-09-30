@@ -253,3 +253,13 @@ body {
     animation: none;
   }
 }
+
+/* Decoupled language & text direction:
+   When locale is English, text content (paragraphs, headings, inputs, descriptions, lists)
+   renders with natural LTR reading direction, while surrounding layout, grids, and columns
+   remain structurally stable.
+*/
+html[lang="en"] main :where(p, h1, h2, h3, h4, h5, h6, input, textarea, select, .prose, label, li) {
+  direction: ltr;
+}
+
