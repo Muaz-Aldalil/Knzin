@@ -14,8 +14,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('v1')->group(function () {
-    // Auth Endpoints (US3)
-    Route::post('/auth/guest', [AuthController::class, 'guest']);
+    // Auth Endpoints (US3) - Throttled 60 req/min (DEF-02G)
+    Route::post('/auth/guest', [AuthController::class, 'guest'])->middleware('throttle:60,1');
     Route::get('/auth/google/redirect', [AuthController::class, 'googleRedirect']);
     Route::get('/auth/google/callback', [AuthController::class, 'googleCallback']);
 
@@ -30,8 +30,8 @@ Route::prefix('v1')->group(function () {
     // Public Activity Feed Endpoints (US3 - Feature 004)
     Route::get('/activity/recent', [ActivityController::class, 'recent']);
 
-    // Checkout Endpoints (US1)
-    Route::post('/checkout/orders', [CheckoutController::class, 'store']);
+    // Checkout Endpoints (US1) - Throttled 60 req/min (DEF-02G)
+    Route::post('/checkout/orders', [CheckoutController::class, 'store'])->middleware('throttle:60,1');
     Route::get('/checkout/orders/{orderNumber}', [CheckoutController::class, 'show']);
 
     // Progress & Continuation Endpoints (Scrimba & Vertex Alignment)

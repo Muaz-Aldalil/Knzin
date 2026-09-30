@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateOrderRequest;
+use App\Http\Resources\OrderResource;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,7 @@ class CheckoutController extends ApiController
 
         $httpStatus = $result['is_duplicate'] ? Response::HTTP_OK : Response::HTTP_CREATED;
 
-        return $this->successResponse($result['order'], $httpStatus);
+        return $this->successResponse(new OrderResource($result['order']), $httpStatus);
     }
 
     /**
@@ -44,6 +45,6 @@ class CheckoutController extends ApiController
             );
         }
 
-        return $this->successResponse($order);
+        return $this->successResponse(new OrderResource($order));
     }
 }

@@ -102,13 +102,13 @@ class Draw extends Model
     }
 
     /**
-     * Scope for draws within the 15-minute grace window for real-time display.
+     * Scope for draws within the active/rolling window for real-time display.
+     * Prevents post-deadline black-hole disappearance before conclusion (DEF-04B).
      */
     public function scopeRollingWindow(Builder $query): Builder
     {
         $now = Carbon::now();
         return $query->where('starts_at', '<=', $now)
-            ->where('ends_at', '>', $now->copy()->subMinutes(15))
             ->where('status', '!=', 'completed');
     }
 

@@ -22,4 +22,20 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'Unauthenticated or session expired.',
             ], 401);
         });
+
+        $exceptions->render(function (\Illuminate\Database\Eloquent\ModelNotFoundException $e, \Illuminate\Http\Request $request) {
+            return response()->json([
+                'status' => 'fail',
+                'code' => 'ERR_NOT_FOUND',
+                'message' => 'Requested resource not found.',
+            ], 404);
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e, \Illuminate\Http\Request $request) {
+            return response()->json([
+                'status' => 'fail',
+                'code' => 'ERR_TOO_MANY_REQUESTS',
+                'message' => 'Too many requests. Please slow down.',
+            ], 429);
+        });
     })->create();

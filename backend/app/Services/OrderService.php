@@ -19,65 +19,59 @@ class OrderService
      */
     public function createOrder(array $data, ?string $clientIp = '127.0.0.1'): array
     {
-        // 1. Idempotency Fast-Path: Return existing order if key was already submitted
-        $existingOrder = Order::with(['items', 'user'])
-            ->where('idempotency_key', $data['idempotency_key'])
-            ->first();
+        return DB::transaction(function () use ($data, $clientIp) {
+            // 1. Strict Idempotency Check with Row Lock inside transaction (DEF-01E)
+            $existingOrder = Order::with(['items', 'user'])
+                ->where('idempotency_key', $data['idempotency_key'])
+                ->lockForUpdate()
+                ->first();
 
-        if ($existingOrder) {
-            return [
-                'order' => $existingOrder,
-                'is_duplicate' => true,
-            ];
-        }
+            if ($existingOrder) {
+                return [
+                    'order' => $existingOrder,
+                    'is_duplicate' => true,
+                ];
+            }
 
-        // 2. Resolve User (authenticated user or resolve guest by lowercase email)
-        $email = strtolower(trim($data['email']));
-        $user = User::where('email', $email)->where('status', 'active')->first();
+            // 2. Resolve User with Lock to prevent OAuth merge concurrency race (DEF-03B)
+            $email = strtolower(trim($data['email']));
+            $user = User::where('email', $email)
+                ->where('status', 'active')
+                ->lockForUpdate()
+                ->first();
 
-        if (!$user) {
-            $user = User::create([
-                'email' => $email,
-                'display_name' => 'ضيف',
-                'auth_provider' => 'guest',
-                'status' => 'active',
-            ]);
-        }
+            if (!$user) {
+                $user = User::create([
+                    'email' => $email,
+                    'display_name' => 'ضيف',
+                    'auth_provider' => 'guest',
+                    'status' => 'active',
+                ]);
+            }
 
-        // 3. Resolve Course and Pricing
-        $course = Course::findOrFail($data['course_id']);
-        $itemType = $data['item_type'];
-        $coursePart = null;
+            // 3. Resolve Course and Pricing
+            $course = Course::findOrFail($data['course_id']);
+            $itemType = $data['item_type'];
+            $coursePart = null;
 
-        if ($itemType === 'part') {
-            $coursePart = CoursePart::where('course_id', $course->id)
-                ->where('id', $data['course_part_id'])
-                ->firstOrFail();
+            if ($itemType === 'part') {
+                $coursePart = CoursePart::where('course_id', $course->id)
+                    ->where('id', $data['course_part_id'])
+                    ->firstOrFail();
 
-            $totalAmountCents = $coursePart->part_price_cents;
-            $promotionalTickets = $coursePart->part_promotional_tickets;
-            $displayPriceLabel = $coursePart->display_price_label;
-            $paidAmountGateway = (int) round($totalAmountCents * 13.10); // 200 * 13.10 = 2620 IQD
-        } else {
-            $totalAmountCents = $course->bundle_price_cents;
-            $promotionalTickets = $course->bundle_promotional_tickets;
-            $displayPriceLabel = $course->display_price_label;
-            $paidAmountGateway = (int) round($totalAmountCents * 13.10); // 1000 * 13.10 = 13100 IQD
-        }
+                $totalAmountCents = $coursePart->part_price_cents;
+                $promotionalTickets = $coursePart->part_promotional_tickets;
+                $displayPriceLabel = $coursePart->display_price_label;
+            } else {
+                $totalAmountCents = $course->bundle_price_cents;
+                $promotionalTickets = $course->bundle_promotional_tickets;
+                $displayPriceLabel = $course->display_price_label;
+            }
 
-        // 4. Create Order inside Transaction
-        $order = DB::transaction(function () use (
-            $data,
-            $user,
-            $course,
-            $coursePart,
-            $itemType,
-            $totalAmountCents,
-            $promotionalTickets,
-            $displayPriceLabel,
-            $paidAmountGateway,
-            $clientIp
-        ) {
+            // Integer arithmetic: 1 USD = 100 cents = 1,310 IQD => (cents * 131) / 10 (DEF-01C)
+            $paidAmountGateway = intdiv($totalAmountCents * 131, 10);
+
+            // 4. Create Order and OrderItem
             $orderNumber = 'KNZ-ORD-' . date('Y') . '-' . strtoupper(Str::random(6));
 
             $order = Order::create([
@@ -108,13 +102,11 @@ class OrderService
                 'promotional_tickets_granted' => $promotionalTickets,
             ]);
 
-            return $order->load(['items', 'user']);
+            return [
+                'order' => $order->load(['items', 'user']),
+                'is_duplicate' => false,
+            ];
         });
-
-        return [
-            'order' => $order,
-            'is_duplicate' => false,
-        ];
     }
 
     /**

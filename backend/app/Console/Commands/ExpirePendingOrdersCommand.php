@@ -27,12 +27,22 @@ class ExpirePendingOrdersCommand extends Command
     public function handle(): int
     {
         $now = now();
+        $expiredCount = 0;
 
-        $expiredCount = Order::where('status', 'pending')
-            ->where('expires_at', '<=', $now)
-            ->update([
-                'status' => 'failed',
-            ]);
+        // Process in bounded batches to avoid unbounded next-key table/index locks (DEF-03D)
+        do {
+            $orderIds = Order::where('status', 'pending')
+                ->where('expires_at', '<=', $now)
+                ->limit(500)
+                ->pluck('id');
+
+            if ($orderIds->isEmpty()) {
+                break;
+            }
+
+            $affected = Order::whereIn('id', $orderIds)->update(['status' => 'failed']);
+            $expiredCount += $affected;
+        } while ($orderIds->count() === 500);
 
         $this->info("Expired {$expiredCount} pending order(s) past their 48-hour TTL.");
 

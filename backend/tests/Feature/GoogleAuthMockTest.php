@@ -65,4 +65,24 @@ class GoogleAuthMockTest extends TestCase
 
         $this->assertEquals('guest_student@example.com', $response->json('data.user.email'));
     }
+
+    public function test_guest_auth_endpoint_rejects_verified_google_account_takeover(): void
+    {
+        // Create verified Google user
+        User::create([
+            'email' => 'google_owner@example.com',
+            'display_name' => 'Owner',
+            'auth_provider' => 'google',
+            'status' => 'active',
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this->postJson('/api/v1/auth/guest', [
+            'email' => 'google_owner@example.com',
+        ]);
+
+        $response->assertStatus(409)
+            ->assertJsonPath('status', 'fail')
+            ->assertJsonPath('code', 'AUTH_GOOGLE_ACCOUNT_EXISTS');
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ActivityController extends ApiController
 {
@@ -18,52 +19,58 @@ class ActivityController extends ApiController
      */
     public function recent(Request $request): JsonResponse
     {
-        $now = Carbon::now('UTC');
+        $cacheTtl = app()->environment('testing') ? 0 : 15;
 
-        // Fetch recent completed orders (limit 10)
-        $orders = Order::with(['items.course'])
-            ->where('status', 'completed')
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
+        $cachedPayload = Cache::remember('knzin_activity_feed', $cacheTtl, function () {
+            $now = Carbon::now('UTC');
 
-        // Fetch scheduled/active upcoming draws (limit 3)
-        $draws = Draw::whereIn('status', ['upcoming', 'active'])
-            ->where('ends_at', '>', $now)
-            ->orderBy('ends_at', 'asc')
-            ->limit(3)
-            ->get();
+            // Fetch recent completed orders (limit 10)
+            $orders = Order::with(['items.course'])
+                ->where('status', 'completed')
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get();
 
-        $hasLiveOrders = $orders->isNotEmpty();
-        $events = collect();
+            // Fetch scheduled/active upcoming draws (limit 3)
+            $draws = Draw::whereIn('status', ['upcoming', 'active'])
+                ->where('ends_at', '>', $now)
+                ->orderBy('ends_at', 'asc')
+                ->limit(3)
+                ->get();
 
-        // Include upcoming draw urgency alarms first
-        foreach ($draws as $draw) {
-            $events->push($draw);
-        }
+            $hasLiveOrders = $orders->isNotEmpty();
+            $events = collect();
 
-        if ($hasLiveOrders) {
-            foreach ($orders as $order) {
-                $events->push($order);
+            // Include upcoming draw urgency alarms first
+            foreach ($draws as $draw) {
+                $events->push($draw);
             }
-        } else {
-            // Quiet-period fallback: inject curated educational bulletins
-            $bulletins = $this->getCuratedBulletins($now);
-            foreach ($bulletins as $bulletin) {
-                $events->push($bulletin);
-            }
-        }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'events' => ActivityEventResource::collection($events),
+            if ($hasLiveOrders) {
+                foreach ($orders as $order) {
+                    $events->push($order);
+                }
+            } else {
+                // Quiet-period fallback: inject curated educational bulletins
+                $bulletins = $this->getCuratedBulletins($now);
+                foreach ($bulletins as $bulletin) {
+                    $events->push($bulletin);
+                }
+            }
+
+            return [
+                'events' => ActivityEventResource::collection($events)->resolve(),
                 'meta' => [
                     'total' => $events->count(),
                     'has_live_orders' => $hasLiveOrders,
                     'polled_at' => $now->toIso8601String(),
                 ],
-            ],
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $cachedPayload,
         ], 200, [
             'Cache-Control' => 'public, max-age=15, stale-while-revalidate=30',
         ]);

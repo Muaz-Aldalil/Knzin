@@ -62,9 +62,10 @@ class OneWayAccountMergeTest extends TestCase
         $reloadedOrder1 = Order::find($order1->id);
         $this->assertEquals($googleUser->id, $reloadedOrder1->user_id);
 
-        // 5. Assert guest user is deactivated with merged_into audit pointer
+        // 5. Assert guest user is deactivated with merged_into audit pointer and tokens revoked (DEF-02C)
         $reloadedGuestUser = User::find($guestUser->id);
         $this->assertEquals('deactivated', $reloadedGuestUser->status);
         $this->assertEquals($googleUser->id, $reloadedGuestUser->merged_into_user_id);
+        $this->assertCount(0, $reloadedGuestUser->tokens);
     }
 }

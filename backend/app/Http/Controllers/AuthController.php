@@ -30,7 +30,16 @@ class AuthController extends ApiController
             ->where('status', 'active')
             ->first();
 
-        if (!$user) {
+        if ($user) {
+            if ($user->auth_provider === 'google' || $user->isVerified()) {
+                return $this->failResponse(
+                    'AUTH_GOOGLE_ACCOUNT_EXISTS',
+                    'هذا البريد الإلكتروني مسجل بحساب Google مفعل. يرجى تسجيل الدخول عبر Google.',
+                    [],
+                    Response::HTTP_CONFLICT
+                );
+            }
+        } else {
             $user = User::create([
                 'email' => $email,
                 'display_name' => 'ضيف',
