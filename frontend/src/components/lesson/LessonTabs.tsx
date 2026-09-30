@@ -28,6 +28,7 @@ interface LessonTabsProps {
   resources: LessonResource[];
   courseSlug: string;
   partNumber: number;
+  isUnlocked?: boolean;
 }
 
 export function LessonTabs({
@@ -37,6 +38,7 @@ export function LessonTabs({
   resources,
   courseSlug,
   partNumber,
+  isUnlocked = true,
 }: LessonTabsProps) {
   const locale = useLocale();
   const isRtl = locale === 'ar';
@@ -301,7 +303,19 @@ export function LessonTabs({
             {isRtl ? 'الملفات والمخططات الملحقة' : 'Downloadable Schematics & Resources'}
           </h3>
 
-          {resources && resources.length > 0 ? (
+          {!isUnlocked ? (
+            <div className="p-8 rounded-xl border border-dashed border-border-strong text-center space-y-3 bg-surface-secondary/40">
+              <FolderArchive className="w-10 h-10 text-content-muted mx-auto" />
+              <h4 className="text-xs sm:text-sm font-bold text-content-primary">
+                {isRtl ? 'الملفات والمخططات مقفلة' : 'Resources Locked'}
+              </h4>
+              <p className="text-xs text-content-secondary max-w-sm mx-auto leading-relaxed">
+                {isRtl
+                  ? 'الملفات الهندسية والمخططات ونماذج العمل قابلة للتحميل بعد شراء هذا الجزء أو الباقة الكاملة.'
+                  : 'Downloadable PDFs, schematics, and trade templates become available after unlocking this training part.'}
+              </p>
+            </div>
+          ) : resources && resources.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {resources.map((res, idx) => (
                 <a

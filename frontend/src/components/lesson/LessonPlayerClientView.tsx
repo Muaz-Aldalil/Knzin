@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { DetailedCourse, useCourseDetail } from '@/hooks/useCatalog';
@@ -33,13 +33,45 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItemData | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-  // Track purchased parts in session (Part 1 is free preview by default)
-  const [purchasedParts, setPurchasedParts] = useState<Set<number>>(new Set([1]));
+  // Track purchased parts in session (Part 1 is free preview by default) (DEF-05C)
+  const [purchasedParts, setPurchasedParts] = useState<Set<number>>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const storedBySlug = localStorage.getItem(`knzin_purchased_parts_${slug}`);
+        const storedById = initialCourse ? localStorage.getItem(`knzin_purchased_parts_${initialCourse.id}`) : null;
+        const stored = storedBySlug || storedById;
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            return new Set([1, ...parsed]);
+          }
+        }
+      } catch {}
+    }
+    return new Set([1]);
+  });
 
   const { data: course, isLoading, isError, error } = useCourseDetail(
     slug,
     initialCourse || undefined
   );
+
+  // Synchronize purchased parts when course resolves (DEF-05C)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && course) {
+      try {
+        const stored =
+          localStorage.getItem(`knzin_purchased_parts_${course.id}`) ||
+          localStorage.getItem(`knzin_purchased_parts_${slug}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setPurchasedParts((prev) => new Set([...prev, ...parsed]));
+          }
+        }
+      } catch {}
+    }
+  }, [course, slug]);
 
   // State 1: Loading (only when no initialCourse is present)
   if (isLoading && !course) {
@@ -225,6 +257,7 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
             resources={extendedContent?.resources || []}
             courseSlug={slug}
             partNumber={partNumber}
+            isUnlocked={isUnlocked}
           />
 
           <LessonFooterNav

@@ -47,14 +47,14 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} className={tajawal.variable} suppressHydrationWarning>
-      <body className={`${tajawal.className} min-h-screen bg-app-bg text-content-primary antialiased flex flex-col font-sans transition-colors duration-200`}>
+      <body className={`${tajawal.className} min-h-screen bg-app-bg text-content-primary antialiased flex flex-col font-sans transition-colors duration-200 overflow-x-clip`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <QueryProvider>
               <NavigationProgressBar />
               <HeaderHUD />
               <ActivityTicker />
-              <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8" dir="rtl">
+              <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {children}
               </main>
               <Footer />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, ShieldAlert, Award, ArrowLeft, ArrowRight, X } from 'lucide-react';
 
@@ -30,6 +30,20 @@ export default function AntiPiracyQuizModal({
   const [weeklyHours, setWeeklyHours] = useState<string>(initialAnswers?.weekly_hours || '6_to_10');
   const [isFinished, setIsFinished] = useState<boolean>(!!initialAnswers);
 
+  // Keyboard accessibility: Escape key closes modal (DEF-10B)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleNext = () => {
@@ -52,9 +66,21 @@ export default function AntiPiracyQuizModal({
     }
   };
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="quiz-modal-title"
+      onClick={handleBackdropClick}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+    >
+      <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-h-[90dvh] flex flex-col overflow-hidden">
         {/* Close Button (Logical End Corner) */}
         <button
           onClick={onClose}
@@ -69,7 +95,7 @@ export default function AntiPiracyQuizModal({
             <ShieldAlert className="w-3.5 h-3.5 text-primary" />
             <span>{t('step', { current: step, total: 3 })}</span>
           </div>
-          <h3 className="text-lg font-bold text-secondary dark:text-white">
+          <h3 id="quiz-modal-title" className="text-lg font-bold text-secondary dark:text-white">
             {t('title')}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
