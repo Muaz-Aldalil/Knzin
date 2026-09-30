@@ -1,0 +1,184 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "KNZiN Public Activity Feed API",
+    "version": "1.0.0",
+    "description": "Public unauthenticated endpoint providing sanitized, non-PII recent course enrollments, upcoming draw countdown urgency alarms, and platform educational bulletins."
+  },
+  "paths": {
+    "/api/v1/activity/recent": {
+      "get": {
+        "summary": "Fetch recent platform activity events",
+        "description": "Returns up to 10 recent non-PII course enrollment events and upcoming scheduled draw countdown alarms. Gracefully falls back to static educational bulletins when live completed orders are zero.",
+        "operationId": "getRecentActivity",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "JSend success envelope with sanitized non-PII activity events",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "example": "public, max-age=15, stale-while-revalidate=30"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityFeedEnvelope"
+                },
+                "example": {
+                  "status": "success",
+                  "data": {
+                    "events": [
+                      {
+                        "id": "evt_ord_a1b2c3d4e5f6",
+                        "type": "enrollment",
+                        "text_ar": "انضمام متعلم جديد إلى كورس غسل السيارات — تم منح تذكرة مجانية!",
+                        "text_en": "New learner enrolled in Car Detailing — Free promotional ticket granted!",
+                        "highlight_label_ar": "تسجيل جديد",
+                        "highlight_label_en": "New Enrollment",
+                        "timestamp": "2026-09-30T03:15:00Z"
+                      },
+                      {
+                        "id": "evt_drw_f6e5d4c3b2a1",
+                        "type": "countdown_alert",
+                        "text_ar": "سحب تمويل المصنع ($100,000) يقترب — لا تفوّت فرصتك!",
+                        "text_en": "Factory Funding Draw ($100,000) is approaching — Don't miss out!",
+                        "highlight_label_ar": "تنبيه السحب",
+                        "highlight_label_en": "Draw Urgency",
+                        "timestamp": "2026-09-30T03:20:00Z"
+                      },
+                      {
+                        "id": "evt_blt_001",
+                        "type": "bulletin",
+                        "text_ar": "أكثر من 1,200 ساعة تدريبية مهنية مكتملة هذا الأسبوع في كَنزين!",
+                        "text_en": "Over 1,200 vocational training hours completed this week on KNZiN!",
+                        "highlight_label_ar": "إعلان تعليمي",
+                        "highlight_label_en": "Platform Bulletin",
+                        "timestamp": "2026-09-30T00:00:00Z"
+                      }
+                    ],
+                    "meta": {
+                      "total": 3,
+                      "has_live_orders": true,
+                      "polled_at": "2026-09-30T03:30:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error fallback with static educational bulletins",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActivityFeedEnvelope": {
+        "type": "object",
+        "required": ["status", "data"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success"]
+          },
+          "data": {
+            "type": "object",
+            "required": ["events", "meta"],
+            "properties": {
+              "events": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ActivityEvent"
+                }
+              },
+              "meta": {
+                "type": "object",
+                "required": ["total", "has_live_orders", "polled_at"],
+                "properties": {
+                  "total": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "has_live_orders": {
+                    "type": "boolean"
+                  },
+                  "polled_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ActivityEvent": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "text_ar",
+          "text_en",
+          "highlight_label_ar",
+          "highlight_label_en",
+          "timestamp"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_(ord|drw|blt)_[a-f0-9]{12}$",
+            "description": "Masked event identifier guaranteeing zero exposure of internal database auto-increments or order UUIDs."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["enrollment", "countdown_alert", "bulletin"]
+          },
+          "text_ar": {
+            "type": "string",
+            "description": "Pre-formatted Arabic event text with non-PII phrasing."
+          },
+          "text_en": {
+            "type": "string",
+            "description": "Pre-formatted English event text with non-PII phrasing."
+          },
+          "highlight_label_ar": {
+            "type": "string"
+          },
+          "highlight_label_en": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["error", "fail"]
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
