@@ -9,24 +9,31 @@
 
 ## Clarifications & Ground Truth Alignment
 
-### Session 2026-09-30
+### Session 2026-09-30 (Clarifications Gate)
 
-- **Q: Where does the "The Hook / Vision Narrative" section belong on the homepage, and what is its verbatim text?**  
-  → **A:** The Hook is positioned prominently on the homepage between the Hero Grand Prize Countdown and the Vocational Course Catalog. It must communicate the verbatim Arabic founder philosophy from Page 2 and Page 6 of the master brief:  
+- **Q: How should the Activity Ticker fetch and refresh recent platform events on the frontend? (FR-006, FR-010)**  
+  → **A:** Use lightweight periodic client polling (every 30–60s) to fetch recent public events, with verified static educational announcements as fallback during quiet periods.
+
+- **Q: Where should the "How It Works" (كيف تعمل كَنزين؟) trigger be placed on mobile viewports (<1024px)? (FR-003)**  
+  → **A:** Include a dedicated prominent button inside the mobile navigation drawer AND a compact question-mark icon shortcut in the sticky mobile header HUD.
+
+- **Q: What default behavior and message should occur when a user clicks the floating WhatsApp support button? (FR-013)**  
+  → **A:** Open WhatsApp directly with a pre-filled greeting: *"مرحباً، لدي استفسار حول منصة كَنزين"* (English: *"Hello, I have an inquiry about KNZiN"*), opening externally in a new tab without obstructing drawers.
+
+- **Q: How should the public FAQ accordion items be displayed when first loaded? (FR-015)**  
+  → **A:** The first question in each category is expanded by default to invite reading and demonstrate interactivity, with remaining questions collapsed.
+
+- **Q: Where should the Winner KYC Verification Disclaimer card be primarily displayed? (FR-018)**  
+  → **A:** Embedded within the Raffle Transparency section on `/raffle` AND highlighted as a compliance callout inside the FAQ Prize Claims category.
+
+- **Q: Where does the "The Hook / Vision Narrative" section belong on the homepage, and what is its verbatim text? (FR-001, FR-002)**  
+  → **A:** Positioned on the homepage between the Hero Grand Prize Countdown and the Course Showcase. It communicates the verbatim Arabic founder philosophy from the master brief:  
   *«نحن نؤمن بأن الشباب يحتاجون إلى المهارة ورأس المال معاً. لذلك، نحن نعلمك مهارات العمل الحر، ونمنحك فرصة لربح تمويل مشروعك في نفس الوقت.»*  
   (English: *"We believe youth need both skill and capital together. Therefore, we teach you freelance skills, while giving you the chance to win funding for your project at the same time."*).
 
-- **Q: How does the "How It Works" 3-step experience trigger and behave?**  
-  → **A:** Triggered via a dedicated, persistent button in the Sticky Header HUD navigation labeled *"كيف تعمل كَنزين؟"* (How It Works) and accessible on mobile via the navigation drawer. Clicking opens an accessible dialog displaying the canonical 3-step flow:  
-  `1. اختر الكورس (Choose Course) ➔ 2. استلم تذكرتك المجانية (Receive Free Ticket) ➔ 3. تابع السحب المباشر (Follow Live Draw)`.
+- **Q: What is the destination phone number and URL for the floating WhatsApp button? (FR-011)**  
+  → **A:** The WhatsApp destination MUST be configured via an environment variable (`NEXT_PUBLIC_WHATSAPP_SUPPORT_URL` / `NEXT_PUBLIC_SUPPORT_PHONE_NUMBER`) with an accessible pre-configured fallback drawer or contact link.
 
-- **Q: Does the Activity Ticker stream strictly real database events or simulated promotional broadcasts?**  
-  → **A:** The master brief (lines 60 & 71–79) specifies displaying high-momentum social proof (e.g. *"تم بيع 15 نسخة في آخر 10 دقائق"* and *"علي من بغداد اشترى الجزء الأول"*). To maintain absolute legal compliance and prevent deceptive marketing under Constitution Principle I & VI:  
-  1. The ticker MUST stream authenticated, verified public events (anonymized recent orders and real countdown alerts) when recent activity exists.  
-  2. When platform event volume is low or in offline/fallback mode, the ticker MUST render verified static educational announcements and live countdown alarms without fabricating deceptive fake identities.
-
-- **Q: What is the destination phone number and URL for the floating WhatsApp button?**  
-  → **A:** The master brief specifies a persistent floating WhatsApp button to handle pre-sales and payment questions immediately (line 224), but omits a hardcoded phone number. To avoid inventing non-existent credentials, the WhatsApp destination MUST be configured via an environment variable (`NEXT_PUBLIC_WHATSAPP_SUPPORT_URL` / `NEXT_PUBLIC_SUPPORT_PHONE_NUMBER`) with an accessible pre-configured fallback drawer or contact link.
 
 ---
 
@@ -170,22 +177,22 @@ So that I know upfront what identity documents are required to claim a prize and
 
 - **FR-001**: System MUST display The Hook Vision Narrative on the homepage positioned between the Hero Grand Prize Countdown and the Course Showcase.
 - **FR-002**: The Hook Vision Narrative MUST display the canonical Arabic text: *«نحن نؤمن بأن الشباب يحتاجون إلى المهارة ورأس المال معاً. لذلك، نحن نعلمك مهارات العمل الحر، ونمنحك فرصة لربح تمويل مشروعك في نفس الوقت.»* with corresponding high-fidelity English localization on `/en`.
-- **FR-003**: System MUST provide an accessible *"كيف تعمل كَنزين؟"* (How It Works) trigger button in the persistent Header HUD navigation.
+- **FR-003**: System MUST provide an accessible *"كيف تعمل كَنزين؟"* (How It Works) trigger button in the persistent Header HUD navigation on desktop, mirrored on mobile (<1024px) as both a dedicated button inside the mobile navigation drawer AND a compact question-mark shortcut icon in the sticky mobile header.
 - **FR-004**: Clicking the "How It Works" trigger MUST open a modal dialog presenting the 3 canonical steps: `(1. اختر الكورس ➔ 2. استلم تذكرتك المجانية ➔ 3. تابع السحب المباشر)` with illustrative icons and brief explanatory copy.
 - **FR-005**: The "How It Works" modal MUST implement full keyboard accessibility: trapping focus inside the dialog, closing upon `Escape` keypress, and returning focus to the trigger upon dismissal.
-- **FR-006**: System MUST render an Activity Ticker streaming recent educational purchases, promotional ticket issuances, and upcoming draw countdown alarms.
+- **FR-006**: System MUST render an Activity Ticker streaming recent educational purchases, promotional ticket issuances, and upcoming draw countdown alarms, fetched via lightweight periodic client polling (every 30–60s) of public recent events.
 - **FR-007**: Activity Ticker items MUST be semantically isolated using `<bdi>` tags to guarantee correct bidirectional text shaping for mixed Arabic, English, and numeric content.
 - **FR-008**: Activity Ticker MUST immediately pause animation when hovered by a mouse cursor or focused via keyboard.
 - **FR-009**: Activity Ticker MUST respect `prefers-reduced-motion: reduce`, replacing continuous scrolling with static or manual navigation.
 - **FR-010**: Activity Ticker MUST gracefully fall back to verified platform announcements and draw urgency alerts when dynamic order volume is insufficient, strictly prohibiting deceptive marketing.
 - **FR-011**: System MUST render a persistent floating WhatsApp customer care button visible across all public routes (`/ar`, `/en`, `/courses/*`, `/raffle`).
 - **FR-012**: Floating WhatsApp button MUST be positioned at the inline-end of the viewport using CSS logical properties (`bottom-6 end-6`), mirroring automatically between Arabic (bottom-left) and English (bottom-right).
-- **FR-013**: Floating WhatsApp button MUST read its destination endpoint from configuration (`NEXT_PUBLIC_WHATSAPP_SUPPORT_URL`), opening in a new tab with `rel="noopener noreferrer"`.
+- **FR-013**: Floating WhatsApp button MUST read its destination endpoint from configuration (`NEXT_PUBLIC_WHATSAPP_SUPPORT_URL`), opening directly in a new tab with `rel="noopener noreferrer"` and pre-filling the greeting: *"مرحباً، لدي استفسار حول منصة كَنزين"* (English: *"Hello, I have an inquiry about KNZiN"*).
 - **FR-014**: System MUST gracefully handle missing WhatsApp configuration without broken links or application errors.
-- **FR-015**: System MUST provide an accessible FAQ Accordion section on the homepage and/or dedicated view answering core objection-handling topics from the master brief.
+- **FR-015**: System MUST provide an accessible FAQ Accordion section on the homepage and/or dedicated view answering core objection-handling topics from the master brief, with the first question in each category expanded by default and remaining questions collapsed.
 - **FR-016**: FAQ Accordion MUST organize questions into logical groups: Platform Model, Course Downloads, Draw Audits, Referral System, and Prize Claims.
 - **FR-017**: FAQ Accordion MUST support deep-link hash navigation (`/#faq`) with sticky-header scroll clearance of at least `80px`.
-- **FR-018**: System MUST display a prominent Winner KYC Disclaimer card in the transparency area of `/raffle` and within the FAQ.
+- **FR-018**: System MUST display a prominent Winner KYC Disclaimer card embedded within the Raffle Transparency section on `/raffle` AND highlighted as a compliance callout inside the FAQ Prize Claims category.
 - **FR-019**: Winner KYC Disclaimer MUST render the verbatim requirement: *«شرط تسليم الجوائز: يُلزم الفائز بتقديم إثبات هوية رسمي يطابق البيانات الأساسية (مثل البريد الإلكتروني) التي تم الشراء بها، وللإدارة الحق في حجب الجائزة في حال ثبوت تلاعب أو استخدام بطاقات دفع مسروقة.»*
 - **FR-020**: All new UI components MUST be fully responsive across mobile (375px+), tablet, and desktop (up to 1920px).
 - **FR-021**: All text, badges, and controls MUST support bilingual localization (Arabic `dir="rtl"` primary, English `dir="ltr"` secondary) adhering strictly to the Google Tajawal font family.
