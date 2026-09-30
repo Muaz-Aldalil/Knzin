@@ -56,10 +56,10 @@ describe('Promotional Draws & Countdown Invariants (Feature 003)', () => {
       assert.ok(MOCK_CONCLUDED_DRAWS.length >= 3);
 
       for (const draw of MOCK_CONCLUDED_DRAWS) {
-        assert.ok(draw.winner.winning_ticket_serial.startsWith('#KNZ-'));
-        assert.ok(draw.winner.masked_name.length > 0);
-        assert.ok(draw.winner.governorate.length > 0);
-        assert.equal(typeof draw.winner.prize_delivered, 'boolean');
+        assert.ok(draw.winner?.winning_ticket_serial.startsWith('#KNZ-'));
+        assert.ok(draw.winner && draw.winner.masked_name.length > 0);
+        assert.ok(draw.winner && draw.winner.governorate.length > 0);
+        assert.equal(typeof draw.winner?.prize_delivered, 'boolean');
       }
     });
   });

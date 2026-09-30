@@ -5,9 +5,12 @@ import { useState, useEffect, useCallback } from 'react';
 export interface AuthUser {
   id: string;
   email: string;
-  displayName: string | null;
-  authProvider: string;
+  displayName?: string | null;
+  display_name?: string | null;
+  authProvider?: string;
+  auth_provider?: string;
   isVerified?: boolean;
+  is_verified?: boolean;
 }
 
 export function useAuth() {

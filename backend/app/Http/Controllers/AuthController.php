@@ -56,8 +56,11 @@ class AuthController extends ApiController
                 'id' => $user->id,
                 'email' => $user->email,
                 'display_name' => $user->display_name,
+                'displayName' => $user->display_name,
                 'auth_provider' => $user->auth_provider,
+                'authProvider' => $user->auth_provider,
                 'is_verified' => $user->isVerified(),
+                'isVerified' => $user->isVerified(),
             ],
         ]);
     }

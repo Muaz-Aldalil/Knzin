@@ -11,7 +11,7 @@ export function useActiveDraws(initialData?: ActiveDrawsData) {
     queryFn: async () => {
       try {
         const result = await apiClient<ActiveDrawsData>('/draws/active');
-        if (result && Array.isArray(result.draws) && result.draws.length > 0) {
+        if (result && Array.isArray(result.draws)) {
           return result;
         }
         return {
@@ -53,7 +53,7 @@ export function useConcludedDraws(initialData?: ConcludedDrawsData) {
     queryFn: async () => {
       try {
         const result = await apiClient<ConcludedDrawsData>('/draws/concluded');
-        if (result && Array.isArray(result.draws) && result.draws.length > 0) {
+        if (result && Array.isArray(result.draws)) {
           return result;
         }
         return { draws: MOCK_CONCLUDED_DRAWS };

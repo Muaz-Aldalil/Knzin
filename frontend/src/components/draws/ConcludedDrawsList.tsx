@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ConcludedDrawItem } from '@/types/draws';
 import { Trophy, ExternalLink, CheckCircle2, Ticket, MapPin, Calendar } from 'lucide-react';
 
@@ -13,6 +13,7 @@ interface ConcludedDrawsListProps {
 
 export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsListProps) {
   const t = useTranslations('draws');
+  const locale = useLocale();
 
   if (!draws || draws.length === 0) {
     return (
@@ -67,7 +68,7 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
                   <span className="text-xs text-muted-foreground">{t('winnerTicketSerial')}</span>
                 </div>
                 <span className="font-mono font-bold text-sm text-primary tracking-wider">
-                  <bdi dir="ltr">{item.winner.winning_ticket_serial}</bdi>
+                  <bdi dir="ltr">{item.winner?.winning_ticket_serial ?? '---'}</bdi>
                 </span>
               </div>
 
@@ -75,7 +76,9 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">{t('winnerName')}</span>
-                  <span className="font-bold text-foreground">{item.winner.masked_name}</span>
+                  <span className="font-bold text-foreground">
+                    {item.winner?.masked_name ?? (locale === 'ar' ? 'سحب قيد المراجعة' : 'Verification pending')}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
@@ -83,7 +86,9 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
                     <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                     {t('winnerCity')}
                   </span>
-                  <span className="font-medium text-foreground">{item.winner.governorate}</span>
+                  <span className="font-medium text-foreground">
+                    {item.winner?.governorate ?? (locale === 'ar' ? 'العراق' : 'Iraq')}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
@@ -110,7 +115,7 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
             <div className="flex items-center justify-between pt-2">
               <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="h-4 w-4" />
-                {item.winner.prize_delivered ? t('prizeDelivered') : t('prizeProcessing')}
+                {item.winner?.prize_delivered ? t('prizeDelivered') : t('prizeProcessing')}
               </span>
 
               {item.broadcast_replay_url && (

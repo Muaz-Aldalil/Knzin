@@ -64,7 +64,7 @@ export interface ConcludedDrawItem {
     display_iqd_label: string;
     image_url: string;
   };
-  winner: ConcludedDrawWinner;
+  winner?: ConcludedDrawWinner | null;
 }
 
 export interface ConcludedDrawsData {
