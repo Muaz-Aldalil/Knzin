@@ -18,6 +18,7 @@ class DrawWinner extends Model
      */
     protected $fillable = [
         'draw_id',
+        'prize_id',
         'winning_ticket_serial',
         'winner_masked_name',
         'winner_governorate',
@@ -45,5 +46,13 @@ class DrawWinner extends Model
     public function draw(): BelongsTo
     {
         return $this->belongsTo(Draw::class);
+    }
+
+    /**
+     * The prize won by this participant.
+     */
+    public function prize(): BelongsTo
+    {
+        return $this->belongsTo(Prize::class);
     }
 }
