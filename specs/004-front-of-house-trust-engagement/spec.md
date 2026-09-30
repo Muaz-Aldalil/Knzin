@@ -9,33 +9,40 @@
 
 ## Clarifications & Ground Truth Alignment
 
-### Session 2026-09-30 (Rigorous Pre-Plan Clarification Gate)
+### Session 2026-09-30 (Final Pre-Plan Clarification Gate)
 
 - **Q: What privacy level and data format should the Activity Ticker use when presenting recent customer course enrollments? (FR-006, FR-007)**  
-  → **A:** Display first name with governorate only (e.g. *«أحمد من بغداد»*), strictly stripping email addresses, phone numbers, full surnames, and internal database order UUIDs to prevent personally identifiable information (PII) leakage.
+  → **A:** Because guest checkout collects only an email address and no customer consent exists for broadcasting names or locations, recent enrollments MUST be presented as non-PII events (e.g. *«انضمام متعلم جديد إلى كورس غسل السيارات — تم منح تذكرة مجانية!»* / English: *«New learner enrolled in Car Detailing — Free promotional ticket granted!»*). All personal names, email addresses, phone numbers, and order UUIDs are strictly excluded.
 
-- **Q: Can the Activity Ticker display simulated customer purchase events with generated names, or must customer notifications represent verified platform orders? (FR-010)**  
-  → **A:** Customer purchase notifications MUST represent strictly verified platform orders. Fabricated or simulated customer names are prohibited; during quiet or low-volume periods, the ticker gracefully falls back to static educational bulletins and live draw countdown alarms.
+- **Q: Can the Activity Ticker display simulated customer purchase events with generated names, or must customer notifications represent verified platform orders? (FR-011)**  
+  → **A:** Customer purchase notifications MUST represent strictly verified platform orders from the database. Fabricated or simulated customer names are prohibited; during quiet or low-volume periods, the ticker gracefully falls back to static educational bulletins and live draw countdown alarms.
 
-- **Q: What exact behavior should occur if the WhatsApp support URL configuration is missing or invalid in the environment? (FR-013, FR-014)**  
-  → **A:** Clicking the floating support button opens an accessible in-app fallback dialog providing the official platform contact email (`support@knzin.com`) and a direct link to the FAQ section (`#faq`), without fabricating phone numbers or failing silently.
+- **Q: How should Feature 004 handle the data source for the Activity Ticker given that production payment processing arrives in Feature 007? (FR-006)**  
+  → **A:** Feature 004 implements the lightweight, unauthenticated read-only Laravel endpoint (`GET /api/v1/activity/recent`) that queries existing `orders` (where status is completed) and `draws` (where status is scheduled) tables to return recent non-PII enrollment events and countdown urgency alarms. When completed order volume in the database is zero (e.g. fresh installation or quiet period), the endpoint and ticker automatically and gracefully fall back to static educational bulletins and live draw countdowns without fabricating customer activity.
 
-- **Q: When a user navigates to a section anchor (such as "/#faq" or "/#vision") from a subpage, how should the transition and scroll position be coordinated? (FR-017)**  
-  → **A:** Cross-route section navigation transitions to the homepage route, awaits component hydration/mounting, and smoothly scrolls to the target container with an explicit minimum 80px top clearance offset to clear the sticky Header HUD.
+- **Q: Since no official support email exists in repository evidence, what exact fallback behavior should occur when the WhatsApp URL is unconfigured? (FR-014, FR-015)**  
+  → **A:** Clicking the floating support button opens an accessible in-app fallback dialog explaining that live WhatsApp chat is currently offline and guiding the visitor to the FAQ section (`#faq`), without displaying any fabricated email addresses or phone numbers.
 
-- **Q: How should the Winner KYC requirement be bounded in Feature 004 to prevent scope leakage from later features? (FR-018, FR-019)**  
+- **Q: Should the public FAQ include informational answers about the 40% referral model and course downloads? (FR-016, FR-018)**  
+  → **A:** Yes. The FAQ provides clear, authoritative informational explanations of how the 40% referral co-prize and course downloads work, while strictly excluding any affiliate tracking or course library code implementation from Feature 004.
+
+- **Q: How should the Winner KYC requirement be bounded in Feature 004 to prevent scope leakage from later features? (FR-020, FR-021)**  
   → **A:** Feature 004's KYC requirement is strictly an informational, read-only legal transparency disclaimer card on `/raffle` and within the FAQ. Zero document-upload forms, file verification APIs, or identity storage workflows are implemented in this feature (reserved for Feature 008).
 
-- **Q: Where should the "How It Works" (كيف تعمل كَنزين؟) trigger be placed on mobile viewports (<1024px)? (FR-003)**  
+- **Q: When a user navigates to a section anchor (such as "/#faq" or "/#vision") from a subpage, how should the transition and scroll position be coordinated? (FR-019)**  
+  → **A:** Cross-route section navigation transitions to the homepage route, awaits component hydration/mounting, and smoothly scrolls to the target container with an explicit minimum 80px top clearance offset to clear the sticky Header HUD.
+
+- **Q: Where should the "How It Works" (كيف تعمل كَنزين؟) trigger be placed on mobile viewports (<1024px)? (FR-003, FR-025)**  
   → **A:** Dual-surface mounting: a dedicated prominent button inside the mobile navigation drawer AND a compact question-mark shortcut icon in the sticky mobile header HUD, guaranteeing 1-to-2 click access from any public screen.
 
-- **Q: How should the public FAQ accordion items be displayed when first loaded? (FR-015)**  
+- **Q: How should the public FAQ accordion items be displayed when first loaded? (FR-016, FR-017)**  
   → **A:** The first question in each category is expanded by default to invite reading and demonstrate interactivity, with remaining questions collapsed. Follows standard WAI-ARIA accordion keyboard accessibility (`Tab` to focus header, `Enter` or `Space` to toggle).
 
 - **Q: Where does the "The Hook / Vision Narrative" section belong on the homepage, and what is its verbatim text? (FR-001, FR-002)**  
   → **A:** Positioned on the homepage between the Hero Grand Prize Countdown and the Course Showcase. It communicates the verbatim Arabic founder philosophy from the master brief:  
   *«نحن نؤمن بأن الشباب يحتاجون إلى المهارة ورأس المال معاً. لذلك، نحن نعلمك مهارات العمل الحر، ونمنحك فرصة لربح تمويل مشروعك في نفس الوقت.»*  
   (English: *"We believe youth need both skill and capital together. Therefore, we teach you freelance skills, while giving you the chance to win funding for your project at the same time."*).
+
 
 
 
@@ -95,9 +102,9 @@ So that I experience community momentum, urgency, and social proof that encourag
 
 **Acceptance Scenarios**:
 1. **Given** a visitor views the homepage or catalog, **When** the Activity Ticker is rendered below the Header HUD, **Then** it continuously presents rotating activity items including:
-   - Recent course purchases & ticket awards (e.g. *«علي من بغداد اشترى الجزء الأول من كورس غسل السيارات وحصل على تذكرة!»*).
-   - Sales volume momentum (e.g. *«تم بيع 15 نسخة من البكج الكامل في آخر 10 دقائق»*).
-   - Draw countdown urgency alerts (e.g. *«تبقت ساعتان على سحب تمويل المصنع ($100,000)!»*).
+   - Verified recent course enrollments presented as non-PII events (e.g. *«انضمام متعلم جديد إلى كورس غسل السيارات — تم منح تذكرة مجانية!»* / English: *«New learner enrolled in Car Detailing — Free promotional ticket granted!»*).
+   - Educational community bulletins and platform milestones (e.g. *«أكثر من 1,200 ساعة تدريبية مكتملة هذا الأسبوع!»* / English: *«Over 1,200 vocational training hours completed this week!»*).
+   - Draw countdown urgency alerts (e.g. *«تبقت ساعتان على سحب تمويل المصنع ($100,000)!»* / English: *«2 hours remaining for Factory Funding Draw ($100,000)!»*).
 2. **Given** a visitor hovers their mouse pointer or focuses via keyboard on the ticker, **When** active, **Then** the scrolling animation pauses immediately to allow reading, resuming smoothly on blur/pointer leave.
 3. **Given** a user has `prefers-reduced-motion: reduce` enabled in their operating system, **When** viewing the ticker, **Then** continuous scrolling is disabled; items transition discretely or display as a static paginated bulletin.
 4. **Given** the user changes locale, **When** the ticker scrolls, **Then** Arabic text streams right-to-left and English text streams left-to-right with proper typography and numerical formatting.
@@ -166,9 +173,9 @@ So that I know upfront what identity documents are required to claim a prize and
 ## Edge Cases
 
 - **No Dynamic Social Proof Events**: When the platform has zero dynamic purchase events (e.g. new installation or quiet periods), the Activity Ticker MUST render verified static educational bulletins and draw countdown alerts rather than generating deceptive fake customer names or collapsing into an empty, jarring layout gap.
-- **Missing WhatsApp Configuration**: If `NEXT_PUBLIC_WHATSAPP_SUPPORT_URL` is unset or empty in the deployment environment, clicking the floating support button MUST open an accessible in-app fallback dialog displaying the official platform contact email (`support@knzin.com`) and a direct link to the FAQ section (`#faq`), without dead redirects or broken links.
+- **Missing WhatsApp Configuration**: If `NEXT_PUBLIC_WHATSAPP_SUPPORT_URL` is unset or empty in the deployment environment, clicking the floating support button MUST open an accessible in-app fallback dialog explaining that live WhatsApp chat is currently offline and guiding the visitor to the FAQ section (`#faq`), without displaying any fabricated email addresses or phone numbers.
 - **Modal Opened via Keyboard with Deep-Link Navigation**: When the "How It Works" modal is opened via keyboard `Enter` or `Space`, keyboard focus MUST remain trapped inside the modal until dismissed. Upon closing, focus MUST return precisely to the originating trigger button.
-- **RTL/LTR Text Inversion in Mixed Ticker Strings**: When ticker messages contain alphanumeric codes, currency amounts, or English trade terms mixed with Arabic text (e.g. *«اشترى كورس غسل السيارات وحصل على 15 تذكرة بقيمة $10»*), all mixed strings MUST be isolated with `<bdi>` elements to prevent punctuation and numeral flipping.
+- **RTL/LTR Text Inversion in Mixed Ticker Strings**: When ticker messages contain alphanumeric codes, currency amounts, or English trade terms mixed with Arabic text (e.g. *«انضمام متعلم جديد إلى كورس Car Detailing — تم منح 15 تذكرة مجانية بقيمة $10»*), all mixed strings MUST be isolated with `<bdi>` elements to prevent punctuation and numeral flipping.
 - **Viewport Resize While Modal is Open**: If a mobile visitor rotates their device or resizes their viewport while the "How It Works" dialog is open, the modal MUST maintain maximum viewport constraints (`max-w-lg`, `max-h-[85vh]`) with internal vertical scroll, preventing body scroll leakage.
 - **Cross-Route Section Navigation & Sticky Header Clearance**: When a user navigates to `/#faq` or `/#vision` from an external route (e.g. `/raffle` or `/courses/[slug]`) or from within the same page, the navigation MUST await component mount/hydration and smoothly scroll to the anchor element with an explicit minimum 80px top clearance offset to prevent the sticky Header HUD from obscuring headings.
 - **Reduced Motion Preference**: When `prefers-reduced-motion: reduce` is detected via CSS media queries, continuous marquee animations MUST cease immediately, switching to static display or discrete manual step controls.
@@ -184,19 +191,19 @@ So that I know upfront what identity documents are required to claim a prize and
 - **FR-003**: System MUST provide an accessible *"كيف تعمل كَنزين؟"* (How It Works) trigger button in the persistent Header HUD navigation on desktop, mirrored on mobile (<1024px) as both a dedicated button inside the mobile navigation drawer AND a compact question-mark shortcut icon in the sticky mobile header.
 - **FR-004**: Clicking the "How It Works" trigger MUST open a modal dialog presenting the 3 canonical steps: `(1. اختر الكورس ➔ 2. استلم تذكرتك المجانية ➔ 3. تابع السحب المباشر)` with illustrative icons and brief explanatory copy.
 - **FR-005**: The "How It Works" modal MUST implement full keyboard accessibility: trapping focus inside the dialog, closing upon `Escape` keypress, and returning focus to the trigger upon dismissal.
-- **FR-006**: System MUST render an Activity Ticker streaming recent educational purchases, promotional ticket issuances, and upcoming draw countdown alarms, fetched via lightweight periodic client polling (every 30–60s) of public recent events.
-- **FR-007**: Activity Ticker items presenting customer purchases MUST strictly preserve privacy by displaying customer first name and governorate only (e.g. *«أحمد من بغداد»*), strictly stripping email addresses, phone numbers, full surnames, and internal database order UUIDs.
+- **FR-006**: System MUST render an Activity Ticker streaming recent educational purchases, promotional ticket issuances, and upcoming draw countdown alarms, backed by a lightweight public read-only endpoint (`GET /api/v1/activity/recent`) polled by the client every 30–60s that queries completed `orders` and active `draws` tables, automatically falling back to static educational bulletins and countdown alerts when completed order volume is zero.
+- **FR-007**: Activity Ticker items presenting customer purchases MUST strictly preserve privacy by presenting non-PII events (e.g. *«انضمام متعلم جديد إلى كورس غسل السيارات — تم منح تذكرة مجانية!»* / English: *«New learner enrolled in Car Detailing — Free promotional ticket granted!»*), strictly excluding names, email addresses, phone numbers, and database order UUIDs.
 - **FR-008**: Activity Ticker items MUST be semantically isolated using `<bdi>` tags to guarantee correct bidirectional text shaping for mixed Arabic, English, and numeric content.
 - **FR-009**: Activity Ticker MUST immediately pause animation when hovered by a mouse cursor or focused via keyboard.
 - **FR-010**: Activity Ticker MUST respect `prefers-reduced-motion: reduce`, replacing continuous scrolling with static or manual navigation.
-- **FR-011**: Activity Ticker customer purchase notifications MUST represent strictly verified platform orders (no fabricated/simulated customer names); falling back to static educational bulletins and live countdown alarms during quiet periods.
+- **FR-011**: Activity Ticker customer purchase notifications MUST represent strictly verified platform orders from the database (no fabricated/simulated customer names); falling back to static educational bulletins and live countdown alarms during quiet periods.
 - **FR-012**: System MUST render a persistent floating WhatsApp customer care button visible across all public routes (`/ar`, `/en`, `/courses/*`, `/raffle`).
 - **FR-013**: Floating WhatsApp button MUST be positioned at the inline-end of the viewport using CSS logical properties (`bottom-6 end-6`), mirroring automatically between Arabic (bottom-left) and English (bottom-right).
 - **FR-014**: Floating WhatsApp button MUST read its destination endpoint from configuration (`NEXT_PUBLIC_WHATSAPP_SUPPORT_URL`), opening directly in a new tab with `rel="noopener noreferrer"` and pre-filling the greeting: *"مرحباً، لدي استفسار حول منصة كَنزين"* (English: *"Hello, I have an inquiry about KNZiN"*).
-- **FR-015**: If the WhatsApp support URL configuration is missing or invalid in the environment, clicking the button MUST open an accessible in-app fallback dialog displaying the official platform contact email (`support@knzin.com`) and a direct link to the FAQ section (`#faq`).
+- **FR-015**: If the WhatsApp support URL configuration is missing or invalid in the environment, clicking the button MUST open an accessible in-app fallback dialog explaining that live WhatsApp chat is currently offline and guiding the visitor to the FAQ section (`#faq`), without displaying any fabricated email addresses or phone numbers.
 - **FR-016**: System MUST provide an accessible FAQ Accordion section on the homepage and/or dedicated view answering core objection-handling topics from the master brief, with the first question in each category expanded by default and remaining questions collapsed.
 - **FR-017**: FAQ Accordion MUST follow standard WAI-ARIA accordion keyboard accessibility (`Tab` to focus header, `Enter` or `Space` to toggle, `ArrowUp`/`ArrowDown` for header navigation).
-- **FR-018**: FAQ Accordion MUST organize questions into logical groups: Platform Model, Course Downloads, Draw Audits, Referral System, and Prize Claims.
+- **FR-018**: FAQ Accordion MUST provide clear, authoritative informational explanations of how the platform model, course downloads, draw audits, 40% referral co-prize, and prize claims work, strictly excluding any affiliate tracking or course library code implementation from Feature 004.
 - **FR-019**: Same-page and cross-route navigation to section anchors (`/#faq`, `/#vision`) MUST await component hydration/mounting and smoothly scroll to the target container with an explicit minimum 80px top clearance offset to clear the sticky Header HUD.
 - **FR-020**: System MUST display a prominent Winner KYC Disclaimer card embedded within the Raffle Transparency section on `/raffle` AND highlighted as an official compliance callout inside the FAQ Prize Claims category.
 - **FR-021**: Winner KYC Disclaimer MUST be strictly an informational, read-only legal transparency notice rendering the verbatim requirement: *«شرط تسليم الجوائز: يُلزم الفائز بتقديم إثبات هوية رسمي يطابق البيانات الأساسية (مثل البريد الإلكتروني) التي تم الشراء بها، وللإدارة الحق في حجب الجائزة في حال ثبوت تلاعب أو استخدام بطاقات دفع مسروقة.»*; with zero document upload forms, verification endpoints, or identity storage workflows in Feature 004.
@@ -233,7 +240,7 @@ So that I know upfront what identity documents are required to claim a prize and
 
 - **Public Storefront Scope**: This feature is strictly front-of-house. Authenticated student dashboards, course video players, ticket serial database tables, and real payment processing belong to subsequent roadmap milestones.
 - **WhatsApp Support Destination**: The official WhatsApp phone number / link is configured via environment variables (`NEXT_PUBLIC_WHATSAPP_SUPPORT_URL`). A fallback message is used when unconfigured.
-- **Activity Ticker Source**: In Feature 004, the Activity Ticker reads from verified active draws data (countdown alarms) and authenticated recent course orders, augmented by static promotional announcements when live volume is sparse.
+- **Activity Ticker Source**: In Feature 004, the Activity Ticker reads from verified active draws data (countdown alarms) and verified completed orders from the existing `orders` table (with zero PII), augmented by static educational bulletins when live completed orders are zero.
 - **Localization Infrastructure**: Built on top of established `next-intl` routing, `messages/ar.json`, and `messages/en.json` dictionaries established in Feature 001–003.
 
 ---
