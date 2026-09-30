@@ -7,6 +7,8 @@ import { routing } from '@/i18n/routing';
 import QueryProvider from '@/components/providers/QueryProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import HeaderHUD from '@/components/layout/HeaderHUD';
+import { ActivityTicker } from '@/components/layout/ActivityTicker';
+import { FloatingWhatsAppButton } from '@/components/layout/FloatingWhatsAppButton';
 import NavigationProgressBar from '@/components/layout/NavigationProgressBar';
 import Footer from '@/components/layout/Footer';
 
@@ -71,10 +73,12 @@ export default async function LocaleLayout({
             <QueryProvider>
               <NavigationProgressBar />
               <HeaderHUD />
+              <ActivityTicker />
               <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {children}
               </main>
               <Footer />
+              <FloatingWhatsAppButton />
             </QueryProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

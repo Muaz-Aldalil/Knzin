@@ -447,10 +447,16 @@ def phase_card(num, name, sub, bullets, color, bg, inner_w, pad_x=7.0,
     badge = Pill(str(num), WHITE, color, size=12.0, height=18.0, radius=3.5,
                  fixed_w=20.0)
     title_st = ParagraphStyle("pt2", parent=S_SUB, leading=12.0)
+    # A one-line title gets a blank second line reserved so all three cards
+    # start their bullet lists on the same baseline.
+    title_w = avail - badge_w
+    reserve = []
+    if pdfmetrics.stringWidth(T(name), F_BOLD, 9.4) <= title_w:
+        reserve.append(Spacer(1, 12.0))
     hdr = left(Table(
-        [[badge, [Paragraph(T(name), title_st), Paragraph(T(sub), S_FOOT),
-                  Spacer(1, 12.0)]],   # reserve the 2nd title line
-        ], colWidths=[badge_w, avail - badge_w]))
+        [[badge, [Paragraph(T(name), title_st), Paragraph(T(sub), S_FOOT)]
+          + reserve]],
+        colWidths=[badge_w, title_w]))
     hdr.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ("LEFTPADDING", (0, 0), (-1, -1), 0),
@@ -756,7 +762,7 @@ def page_two():
          "spend."],
         GOLD, AMBER_BG, pw_, pad_y=8.5)
     p3 = phase_card(
-        3, "Admin Panel, Payments & Launch",
+        3, "Admin Panel & Payments",
         "Back office — go live",
         ["Admin panel, RNG draw button, payout zeroing, fraud bans.",
          "ZainCash / AsiaHawala webhooks + reconciliation engine.",

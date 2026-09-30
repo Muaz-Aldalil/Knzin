@@ -151,5 +151,72 @@
   "footer": {
     "copyright": "© 2026 KNZiN. All rights reserved. Licensed vocational learning platform in Iraq.",
     "disclaimer": "Raffle tickets included with courses are complimentary promotional gifts and non-refundable."
+  },
+  "theHook": {
+    "badge": "Our Vision & Mission",
+    "title": "Skill & Capital Together",
+    "quote": "We believe youth need both skill and capital together. Therefore, we teach you freelance skills, while giving you the chance to win funding for your project at the same time.",
+    "cta": "Browse Courses & Start Now"
+  },
+  "howItWorks": {
+    "trigger": "How It Works",
+    "title": "How Does KNZiN Work?",
+    "subtitle": "3 simple steps to master practical skills and enter transparent promotional draws",
+    "step1_title": "1. Choose Course & Skill",
+    "step1_desc": "Select a vocational skill part for $2 (2,000 IQD) or enroll in the complete 6-part bundle for $10 (13,000 IQD).",
+    "step1_badge": "$2 or $10",
+    "step2_title": "2. Receive Free Promotional Tickets",
+    "step2_desc": "Instantly receive 1 free promotional raffle ticket with each part, or 15 free promotional tickets with the complete bundle.",
+    "step2_badge": "100% Free Promotional Gift",
+    "step3_title": "3. Watch Transparent Live Draw",
+    "step3_desc": "Automatically qualify for instant cash prizes and the Grand Prize draw broadcast publicly on YouTube Live with provable fairness.",
+    "step3_badge": "YouTube Live Stream",
+    "close": "Close"
+  },
+  "ticker": {
+    "badge": "Live Update",
+    "paused": "Paused",
+    "newEnrollment": "New Enrollment",
+    "countdownAlert": "Draw Alert",
+    "bulletin": "Platform Bulletin",
+    "fallback1": "KNZiN Platform: 100% vocational practical education — raffle tickets are free promotional gifts.",
+    "fallback2": "All draws are broadcast live with transparent digital integrity on our official YouTube channel.",
+    "fallback3": "Enroll in any $2 educational part and instantly receive a free promotional raffle ticket."
+  },
+  "faq": {
+    "heading": "Frequently Asked Questions & Transparency",
+    "subheading": "Clear and direct answers regarding the platform model, digital access, and draw integrity",
+    "categoryModel": "Platform Model & Promotional Tickets",
+    "categoryDownloads": "Digital Course Access & Downloads",
+    "categoryDraws": "Draw Integrity & YouTube Live",
+    "categoryReferral": "40% Referral Co-Prize Model",
+    "categoryKyc": "Winner Verification & KYC Claims",
+    "q_model_1": "Why does KNZiN grant free promotional tickets with courses?",
+    "a_model_1": "KNZiN operates a lawful promotional model aimed at encouraging youth to master vocational skills. Tickets are complimentary gifts attached to educational digital content and can never be purchased independently.",
+    "q_model_2": "Can I purchase a raffle ticket without purchasing a course?",
+    "a_model_2": "No, standalone ticket purchases are strictly prohibited. KNZiN is a commercial vocational learning platform; promotional tickets are complimentary gifts awarded automatically with each educational part.",
+    "q_downloads_1": "How and when do I access the educational material after checkout?",
+    "a_downloads_1": "Access is granted immediately upon confirmed payment through your account, where you can stream videos and download practical PDF workbooks with permanent lifetime access.",
+    "q_draws_1": "How do you guarantee draw fairness and prevent tampering?",
+    "a_draws_1": "The platform relies on published cryptographic seed hashes with draws streamed live on our official YouTube channel, where winning numbers and winners are announced openly.",
+    "q_referral_1": "How does the 40% co-prize affiliate system work?",
+    "a_referral_1": "When you share your referral link and an invited friend enrolls in a course whose free ticket wins any major prize, you as the referring partner earn a bonus equivalent to 40% of the prize amount.",
+    "q_kyc_1": "What documents are required to claim cash or grand prizes?",
+    "a_kyc_1": "The winner is strictly required to present official national identification (Unified National Card or Passport) matching the primary email used during checkout to ensure lawful prize distribution."
+  },
+  "whatsapp": {
+    "buttonLabel": "Contact via WhatsApp",
+    "prefilledGreeting": "Hello, I have an inquiry about KNZiN",
+    "fallbackTitle": "Live Chat Support Currently Offline",
+    "fallbackDescription": "Direct WhatsApp support is currently offline in this environment. We invite you to visit our Frequently Asked Questions center to explore all platform, course, and draw details.",
+    "fallbackFaqCta": "Go to FAQs",
+    "fallbackClose": "Close"
+  },
+  "kyc": {
+    "badge": "Mandatory Legal Compliance",
+    "title": "Prize Claim Verification & Winner KYC",
+    "clause": "Prize Delivery Requirement: The winner is strictly required to present official national identification matching the primary contact details (such as the verified email) used during checkout. Platform administration reserves the legal right to withhold prizes if fraudulent activity or stolen payment methods are established.",
+    "lawCitation": "Pursuant to Iraqi Consumer Protection Law No. (1) of 2010 and applicable commercial regulations.",
+    "notice": "This measure protects genuine winners and ensures transparent, lawful prize distribution."
   }
 }

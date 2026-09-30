@@ -6,6 +6,8 @@ import CourseCard, { CourseData } from '@/components/catalog/CourseCard';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 import { ResumeHeroCard } from '@/components/course/ResumeHeroCard';
 import { HeroGrandPrizeCountdown } from '@/components/draws/HeroGrandPrizeCountdown';
+import { TheHookSection } from '@/components/home/TheHookSection';
+import { FaqAccordion } from '@/components/faq/FaqAccordion';
 import { useCatalog } from '@/hooks/useCatalog';
 import { Loader2, AlertCircle } from 'lucide-react';
 
@@ -53,6 +55,9 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
       {/* Scrimba-Style Resume & Continuation Hero Banner */}
       <ResumeHeroCard />
 
+      {/* The Hook / Vision Narrative Experience (Feature 004 - User Story 2) */}
+      <TheHookSection />
+
       {/* State 1: Loading (only active if no initialCourses and still fetching) */}
       {isLoading && (
         <div className="min-h-[40vh] flex flex-col items-center justify-center text-slate-500">
@@ -99,6 +104,9 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
           ))}
         </div>
       )}
+
+      {/* Public FAQ & Objection Handling Accordion (US4) */}
+      <FaqAccordion />
 
       {/* Checkout Bottom Sheet */}
       {checkoutItem && (

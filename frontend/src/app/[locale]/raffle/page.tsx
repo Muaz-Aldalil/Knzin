@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/accordion';
 import { CANONICAL_LEGAL_SHIELD } from '@/components/checkout/LegalShieldCheckbox';
 import { DrawsArena } from '@/components/draws/DrawsArena';
+import { WinnerKycCard } from '@/components/compliance/WinnerKycCard';
 
 export default async function RafflePage({
   params,
@@ -183,6 +184,9 @@ export default async function RafflePage({
           </span>
         </div>
       </div>
+
+      {/* Winner KYC Legal Compliance & National ID Claim Requirement (US6) */}
+      <WinnerKycCard variant="standalone" />
 
       {/* Transparency FAQ */}
       <div className="space-y-4">

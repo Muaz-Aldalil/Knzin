@@ -19,6 +19,7 @@ import {
   LogOut,
   Ticket,
   Wallet,
+  BookOpen,
 } from 'lucide-react';
 
 interface AuthUser {
@@ -36,6 +37,7 @@ interface MobileNavSheetProps {
   onLogout: () => void;
   onGoogleLogin: () => void;
   onOpenSearch: () => void;
+  onOpenHowItWorks?: () => void;
 }
 
 export default function MobileNavSheet({
@@ -45,9 +47,11 @@ export default function MobileNavSheet({
   onLogout,
   onGoogleLogin,
   onOpenSearch,
+  onOpenHowItWorks,
 }: MobileNavSheetProps) {
   const t = useTranslations('nav');
   const tCommon = useTranslations('common');
+  const tHowItWorks = useTranslations('howItWorks');
   const locale = useLocale();
   const pathname = usePathname();
   const isRtl = locale === 'ar';
@@ -139,6 +143,30 @@ export default function MobileNavSheet({
               <span>{t('designSystem')}</span>
               {isDesignSystemActive && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
             </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                close();
+                onOpenHowItWorks?.();
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-secondary/60 transition-colors text-start cursor-pointer border border-primary/20 bg-primary/5 mt-2"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <BookOpen className="w-4 h-4 text-primary shrink-0" />
+                <div className="truncate">
+                  <span className="font-semibold block text-sm text-content-primary truncate">
+                    {tHowItWorks('trigger')}
+                  </span>
+                  <span className="text-[11px] text-content-muted block truncate">
+                    {isRtl ? 'تعرف على آلية الدورات والتذاكر' : 'Understand courses & tickets'}
+                  </span>
+                </div>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/25 font-bold shrink-0 ms-2">
+                {isRtl ? '3 خطوات' : '3 Steps'}
+              </span>
+            </button>
           </nav>
 
           {/* Learner Account & Balances Section */}

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
@@ -25,6 +26,9 @@ Route::prefix('v1')->group(function () {
     // Promotional Draws Endpoints (US1 & US3)
     Route::get('/draws/active', [DrawController::class, 'active']);
     Route::get('/draws/concluded', [DrawController::class, 'concluded']);
+
+    // Public Activity Feed Endpoints (US3 - Feature 004)
+    Route::get('/activity/recent', [ActivityController::class, 'recent']);
 
     // Checkout Endpoints (US1)
     Route::post('/checkout/orders', [CheckoutController::class, 'store']);

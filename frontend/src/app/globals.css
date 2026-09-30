@@ -203,6 +203,16 @@ body {
   animation: marquee-rtl 30s linear infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  [dir="rtl"] .animate-marquee {
+    animation: none !important;
+  }
+  .ticker-viewport {
+    overflow-x: auto !important;
+  }
+}
+
 /* Radix UI Accordion Animations */
 @keyframes accordion-down {
   from { height: 0; }

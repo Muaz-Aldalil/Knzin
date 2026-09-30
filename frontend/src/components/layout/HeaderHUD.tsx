@@ -17,6 +17,7 @@ import {
   Menu,
   Sun,
   Moon,
+  HelpCircle,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -28,6 +29,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SearchCommandDialog } from '@/components/search/SearchCommandDialog';
 import MobileNavSheet from './MobileNavSheet';
+import { HowItWorksModal } from './HowItWorksModal';
 
 interface AuthUser {
   id: string;
@@ -52,6 +54,7 @@ function getFirstName(nameOrEmail?: string | null): string {
 export default function HeaderHUD() {
   const t = useTranslations('nav');
   const tCommon = useTranslations('common');
+  const tHowItWorks = useTranslations('howItWorks');
   const locale = useLocale();
   const pathname = usePathname();
   const isRtl = locale === 'ar';
@@ -62,6 +65,7 @@ export default function HeaderHUD() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -187,6 +191,16 @@ export default function HeaderHUD() {
               {t('designSystem')}
             </Link>
 
+            {/* How It Works Desktop 1-Click Trigger */}
+            <button
+              type="button"
+              onClick={() => setIsHowItWorksOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-primary hover:text-primary-hover hover:bg-primary/10 transition-colors text-xs font-semibold cursor-pointer border border-primary/20 bg-primary/5"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span>{tHowItWorks('trigger')}</span>
+            </button>
+
             {/* Global Search Bar (Accessible on all routes) */}
             <button
               type="button"
@@ -210,6 +224,17 @@ export default function HeaderHUD() {
 
         {/* Logical End: Language Toggle & Profile Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Mobile How It Works 1-click shortcut (< 1024px) */}
+          <button
+            type="button"
+            onClick={() => setIsHowItWorksOpen(true)}
+            className="lg:hidden p-2 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle text-primary transition-colors cursor-pointer"
+            aria-label={tHowItWorks('trigger')}
+            title={tHowItWorks('trigger')}
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
+
           {/* Mobile / Tablet search trigger (< 1024px) */}
           <button
             type="button"
@@ -365,6 +390,13 @@ export default function HeaderHUD() {
         onLogout={handleLogout}
         onGoogleLogin={handleGoogleLogin}
         onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+      />
+
+      {/* How It Works Onboarding Modal Dialog */}
+      <HowItWorksModal
+        open={isHowItWorksOpen}
+        onOpenChange={setIsHowItWorksOpen}
       />
     </header>
   );
