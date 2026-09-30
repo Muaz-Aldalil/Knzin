@@ -45,8 +45,8 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} className={tajawal.variable} suppressHydrationWarning>
-      <head>
-        {/* Anti-flash theme initialization */}
+      <body className={`${tajawal.className} min-h-screen bg-app-bg text-content-primary antialiased flex flex-col font-sans transition-colors duration-200`}>
+        {/* Anti-flash theme initialization script (runs before initial body paint) */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -66,8 +66,6 @@ export default async function LocaleLayout({
             `,
           }}
         />
-      </head>
-      <body className={`${tajawal.className} min-h-screen bg-app-bg text-content-primary antialiased flex flex-col font-sans transition-colors duration-200`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <QueryProvider>

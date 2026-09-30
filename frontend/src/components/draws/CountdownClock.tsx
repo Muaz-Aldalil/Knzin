@@ -43,7 +43,12 @@ export function CountdownClock({
   const labelSize = size === 'lg' ? 'text-xs' : 'text-[10px]';
 
   return (
-    <div className="inline-flex items-center gap-1.5 md:gap-2 select-none" role="timer" aria-live="polite">
+    <div
+      className="inline-flex items-center gap-1.5 md:gap-2 select-none"
+      role="timer"
+      aria-live="polite"
+      suppressHydrationWarning
+    >
       {/* Days Slot (only if showDays is true or days > 0) */}
       {(showDays || days > 0) && (
         <>
@@ -52,7 +57,7 @@ export function CountdownClock({
               className={`flex items-center justify-center rounded-lg bg-surface border border-border shadow-xs font-mono font-bold tracking-tight text-foreground ${slotWidth}`}
               style={{ fontVariantNumeric: 'tabular-nums' }}
             >
-              <bdi dir="ltr">{formattedDays}</bdi>
+              <bdi dir="ltr" suppressHydrationWarning>{formattedDays}</bdi>
             </div>
             <span className={`mt-1 font-medium text-muted-foreground uppercase ${labelSize}`}>
               {t('days')}
@@ -68,7 +73,7 @@ export function CountdownClock({
           className={`flex items-center justify-center rounded-lg bg-surface border border-border shadow-xs font-mono font-bold tracking-tight text-foreground ${slotWidth}`}
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
-          <bdi dir="ltr">{formattedHours}</bdi>
+          <bdi dir="ltr" suppressHydrationWarning>{formattedHours}</bdi>
         </div>
         <span className={`mt-1 font-medium text-muted-foreground uppercase ${labelSize}`}>
           {t('hours')}
@@ -83,7 +88,7 @@ export function CountdownClock({
           className={`flex items-center justify-center rounded-lg bg-surface border border-border shadow-xs font-mono font-bold tracking-tight text-foreground ${slotWidth}`}
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
-          <bdi dir="ltr">{formattedMinutes}</bdi>
+          <bdi dir="ltr" suppressHydrationWarning>{formattedMinutes}</bdi>
         </div>
         <span className={`mt-1 font-medium text-muted-foreground uppercase ${labelSize}`}>
           {t('minutes')}
@@ -98,7 +103,7 @@ export function CountdownClock({
           className={`flex items-center justify-center rounded-lg bg-surface border border-border shadow-xs font-mono font-bold tracking-tight text-primary ${slotWidth}`}
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
-          <bdi dir="ltr">{formattedSeconds}</bdi>
+          <bdi dir="ltr" suppressHydrationWarning>{formattedSeconds}</bdi>
         </div>
         <span className={`mt-1 font-medium text-muted-foreground uppercase ${labelSize}`}>
           {t('seconds')}
