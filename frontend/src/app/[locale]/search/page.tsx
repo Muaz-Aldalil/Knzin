@@ -284,8 +284,7 @@ function SearchResultsContent() {
                 >
                   <div className="space-y-2.5 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <Badge variant="video">
-                        <Play className="w-3 h-3 fill-current" />
+                      <Badge variant="video" icon={<Play className="w-3.5 h-3.5 fill-current shrink-0" />}>
                         <span>{locale === 'ar' ? 'فيديو تدريبي' : 'Video Moment'}</span>
                       </Badge>
 
@@ -336,8 +335,7 @@ function SearchResultsContent() {
               >
                 <div className="space-y-2.5 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="lesson">
-                      <FileText className="w-3 h-3" />
+                    <Badge variant="lesson" icon={<FileText className="w-3.5 h-3.5 shrink-0" />}>
                       <span>درس مهني</span>
                     </Badge>
 

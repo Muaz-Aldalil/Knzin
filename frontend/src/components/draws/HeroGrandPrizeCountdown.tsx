@@ -35,7 +35,7 @@ export function HeroGrandPrizeCountdown() {
               {t('heroMarqueeBadge')}
             </span>
 
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/60">
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
               {grandDraw.badge_label}
             </span>

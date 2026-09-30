@@ -316,13 +316,11 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
                     {/* Tags row */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {isVideo ? (
-                        <Badge variant="video" size="sm">
-                          <Play className="w-2.5 h-2.5 fill-current" />
+                        <Badge variant="video" size="sm" icon={<Play className="w-3 h-3 fill-current shrink-0" />}>
                           <span>{isRtl ? 'فيديو تدريبي' : 'Video Moment'}</span>
                         </Badge>
                       ) : (
-                        <Badge variant="lesson" size="sm">
-                          <FileText className="w-2.5 h-2.5" />
+                        <Badge variant="lesson" size="sm" icon={<FileText className="w-3 h-3 shrink-0" />}>
                           <span>{isRtl ? 'درس تطبيقي' : 'Lesson'}</span>
                         </Badge>
                       )}

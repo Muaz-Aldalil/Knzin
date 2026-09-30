@@ -43,12 +43,12 @@ export default async function RafflePage({
       <div className="rounded-2xl bg-surface-primary border border-border-subtle p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="space-y-3 max-w-xl">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-content-secondary border-border-subtle gap-1.5 font-medium text-xs">
+            <div className="flex items-center gap-3">
+              <Badge variant="outline" className="text-content-secondary gap-1.5 font-medium text-xs">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>{isRtl ? 'نظام السحوبات القانوني المرخص' : 'Licensed Promotional Draws'}</span>
               </Badge>
-              <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 text-xs font-medium">
+              <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 text-xs font-medium">
                 {isRtl ? 'شفافية 100%' : '100% Transparency'}
               </Badge>
             </div>

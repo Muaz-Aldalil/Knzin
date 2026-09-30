@@ -106,8 +106,7 @@ export default function CoursePartList({
                             <span>{isRtl ? 'معاينة مجانية' : 'Free Preview'}</span>
                           </Badge>
                         ) : (
-                          <Badge variant="outline" size="sm" className="font-medium gap-1 text-[11px]">
-                            <Lock className="w-3 h-3 text-content-muted" />
+                          <Badge variant="outline" size="sm" icon={<Lock className="w-3 h-3 text-content-muted shrink-0" />} className="font-medium text-[11px]">
                             <span>{isRtl ? `الجزء ${part.part_number}` : `Part ${part.part_number}`}</span>
                           </Badge>
                         )}
