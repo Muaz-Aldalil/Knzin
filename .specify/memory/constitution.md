@@ -1,4 +1,8 @@
-# KNZiN Constitution
+# KNZiN Technical Project Constitution
+
+> **Operating Rules Note**: This document defines domain, architectural, and database invariants for the KNZiN application. For agent behavioral rules, authority boundaries, and engineering operating standards, see the root [`AGENTS.md`](file:///d:/Work%20Projects/Knzin%20Project/AGENTS.md) and [`.agents/rules/agent-constitution.md`](file:///d:/Work%20Projects/Knzin%20Project/.agents/rules/agent-constitution.md).
+
+---
 
 ## Core Principles
 
@@ -152,11 +156,5 @@ Converge before declaring complete.
 
 ## Governance
 
-- **Supremacy**: This Constitution represents the supreme engineering policy for the KNZiN repository. It supersedes informal chat agreements, speculative designs, and unverified documentation. No pull request or code implementation may violate its principles.
-- **Amendment Procedure**: Amendments to this Constitution require:
-  1. Explicit justification and alignment documented in `DECISIONS.md`.
-  2. Formal increment of `CONSTITUTION_VERSION` following Semantic Versioning (MAJOR for structural governance or backward-incompatible principle changes, MINOR for principle additions, PATCH for clarifications).
-  3. A temporary Sync Impact Report prefixed to the file for review prior to git commit.
-- **Governance Review Policy**: All Spec Kit plans (`plan.md`) MUST verify compliance with these constitutional principles during the planning phase. Complexity or deviation from these principles MUST be explicitly justified.
-
-**Version**: 3.1.0 | **Ratified**: 2026-09-28 | **Last Amended**: 2026-09-29
+- **Supremacy**: This Constitution represents the technical engineering domain policy for the KNZiN repository. It operates under the overarching behavioral rules defined in [`AGENTS.md`](file:///d:/Work%20Projects/Knzin%20Project/AGENTS.md).
+- **Version**: 3.2.0 | **Ratified**: 2026-09-28 | **Reconciled**: 2026-09-30

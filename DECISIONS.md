@@ -71,11 +71,24 @@ Iraqi mobile networks are unreliable. Users will drop connection after USSD PIN 
 ---
 
 ## [DEC-005] Constitution v3.1.0 Ratification & Full-Stack Ownership
-**Status:** APPROVED
+**Status:** SUPERSEDED
 **Date:** 2026-09-29
 
 ### Decision
 1. **Full-Stack Ownership**: Codified the technical mandate that the autonomous coding agent owns the complete technical lifecycle (Frontend, Laravel Backend API, Database schema/migrations, Redis queues, Auth, API contracts, Testing, and Deployment). The project owner focuses on UI/UX, product intent, and business decisions without being required to direct backend or database implementation.
 2. **Evidence-First Brownfield Protocol**: Codified taxonomy of claims (*Intended behavior*, *Existing implementation*, *Verified behavior*, *Proposed behavior*, *Hypothesis*, *Unknown*, *Unresolved decision*, *Confirmed defect*) and mandatory cross-layer trace investigation.
 3. **Spec Kit Quality & Verification Gates**: Enforced mandatory pre-implementation Analyze gates, post-implementation Convergence gates, and strict Separation of Concerns in Spec Kit artifacts (`spec.md` for tech-agnostic requirements, `plan.md` for full-stack architecture, `tasks.md` for dependency-ordered execution).
+
+---
+
+## [DEC-006] KNZiN Agent Constitution v4.0.0 & Engineering Operating Rules Ratification
+**Status:** APPROVED
+**Date:** 2026-09-30
+
+### Decision
+Ratified the comprehensive 31-section KNZiN Agent Constitution and Engineering Operating Rules governing the partnership between the Human Product Owner and Senior Engineering Agent:
+1. **Authority Boundary**: Human owns product intent, outcomes, business rules, pricing, eligibility, rewards, and final acceptance. Agent owns engineering decisions within approved boundaries (architecture, database design, API design, validation, security, transactions, concurrency, idempotency, testing, refactoring).
+2. **Investigation Before Interrogation**: Agent must exhaust repository reality (code search, file inspection, symbol tracing, tests, Git history, runtime behavior) before asking questions. Ordinary engineering decisions must never be pushed back to the human.
+3. **Recommendation Discipline**: When a genuine product/business decision reaches the human, the agent must provide a structured recommendation: Decision, Evidence, Options, Recommendation, Reasoning, Trade-off, Downstream effect, Decision required.
+4. **Source of Truth & Financial Integrity**: Strict separation of authoritative state vs derived representations, zero floating-point math, server-to-server webhook authority, and atomic state transitions.
 
