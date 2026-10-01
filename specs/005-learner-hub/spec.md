@@ -59,7 +59,7 @@ So that I can see all my enrolled courses, resume my latest active lesson with o
 **Acceptance Scenarios**:
 1. **Given** a user with at least one confirmed course part or bundle purchase, **When** they navigate to `/[locale]/dashboard`, **Then** the page displays their personal library with course cards showing title, thumbnail, completed parts count, and total progress percentage.
 2. **Given** a visitor with zero purchased courses visits `/dashboard`, **When** the page renders, **Then** an inviting empty state renders explaining they have no active courses yet, with a prominent call to action to browse the course catalog (`/courses`).
-3. **Given** an unauthenticated visitor accesses `/dashboard`, **When** the page loads, **Then** it presents an accessible authentication prompt explaining how to access their courses via Google Login or guest email verification.
+3. **Given** an unauthenticated visitor accesses `/dashboard`, **When** the page loads, **Then** it presents an accessible authentication prompt explaining how to access their courses via Google Login or guest email session authentication.
 4. **Given** an enrolled learner clicks "متابعة التدريب" (Continue Learning) on a course card, **When** the action fires, **Then** they are routed directly to the exact lesson and part where they last left off.
 
 ---
@@ -139,7 +139,7 @@ So that I can resume seamlessly across devices and see my overall progress on th
    * *System Behavior*: `AccountMergeService` automatically transfers all `course_entitlements` and `tickets` from the guest identifier to the Google user identifier in a single atomic transaction. The learner loses zero progress, zero courses, and zero tickets, with zero duplicate rows created.
 2. **Upgrading from Single Part ($2) to Full Bundle ($10)**:
    * *Condition*: A student already owns Part 2 and subsequently purchases the Full Bundle.
-   * *System Behavior*: The bundle purchase creates a bundle entitlement (`course_part_id = null`), granting access to all course parts. The unique composite constraint on `(user_id, course_id, course_part_id)` prevents collision with the previous single-part record.
+   * *System Behavior*: The bundle purchase grants full course bundle entitlement, subsuming the previous single-part access into a single coherent effective access state. Business invariants guaranteed: at most one effective bundle entitlement per learner/course, at most one effective part entitlement per learner/course-part, and zero duplicate effective entitlements.
 3. **Simultaneous Draw Countdown Expiry**:
    * *Condition*: A student opens the ticket drawer when the countdown is at `00:00:05`. The timer reaches `00:00:00`.
    * *System Behavior*: The ticket status transitions visually to `"قيد إجراء السحب (Draw in Progress)"` without crashing or throwing null-pointer exceptions.
@@ -153,26 +153,30 @@ So that I can resume seamlessly across devices and see my overall progress on th
 
 ### 5.1 Functional Requirements
 
-* **FR-001**: System MUST create an explicit access entitlement record whenever a course order transitions to `completed`.
+* **FR-001**: System MUST create an explicit access entitlement record whenever a course order transitions to `completed`. The system MUST maintain the following business invariants: at most one effective bundle entitlement per learner/course, at most one effective part entitlement per learner/course-part, purchasing a bundle after individual parts produces one coherent effective access state, and zero duplicate effective entitlements may exist.
 * **FR-002**: System MUST permit access to Part 1 of every course to all visitors as a free introductory preview without requiring purchase or login.
 * **FR-003**: System MUST reject video streaming requests for all paid course parts (Part 2 and beyond) with an authorization error if the requesting user lacks an active entitlement for that specific part or the course bundle.
-* **FR-004**: System MUST serve video streaming metadata exclusively via backend API for paid parts, completely removing raw paid video URLs from public client JS bundles.
+* **FR-004**: System MUST protect paid lesson video playback by requiring authenticated, short-lived stream authorization from the server, completely eliminating direct or static public access to paid video streams. Part 1 preview MUST remain accessible as a free introductory preview without purchase or login.
 * **FR-005**: System MUST dynamically render an anti-piracy Canvas watermark over the video player displaying the authenticated learner's full normalized account email, short opaque learner identifier (e.g. `LRN-7K2M`), and playback date/time (`DD Mon YYYY HH:MM`). The watermark identity MUST be derived server-side from the playback authorization token. The watermark MUST NOT expose phone numbers, IP addresses, session tokens, full database UUIDs, or payment/KYC data.
 * **FR-006**: System MUST serve downloadable files via temporary signed URLs with a maximum lifespan of 15 minutes.
 * **FR-007**: System MUST mint exactly 1 ticket for a $2 part purchase and exactly 15 tickets for a $10 bundle purchase upon order fulfillment.
 * **FR-008**: System MUST format all ticket serial numbers using the canonical Crockford Base32 pattern: `^KNZ-[0-9]{2}-[0-9A-HJKMNP-Z]{4}-[0-9A-HJKMNP-Z]{4}$` (utilizing the canonical alphabet `0123456789ABCDEFGHJKMNPQRSTVWXYZ`, excluding ambiguous characters I, L, O, and U). Serials MUST be generated exclusively on the server upon order fulfillment, globally unique, immutable, and free of PII or course identifiers.
-* **FR-009**: System MUST evaluate promotional ticket eligibility dynamically across draw tiers: newly minted tickets are eligible for the active Hourly and Daily draws open at the time of issuance (expiring when those draws conclude), and remain active for the designated Monthly Grand Draw throughout its active calendar period. A ticket MUST NOT be permanently locked to a single draw identifier.
+* **FR-009**: System MUST evaluate promotional ticket eligibility dynamically across draw tiers: newly minted tickets are eligible for the active Hourly and Daily draws open at the time of issuance (expiring when those draws conclude), and remain active for the designated Monthly Grand Draw throughout its active calendar period. Permanent ticket records MUST survive the conclusion or expiry of any individual draw window, persisting indefinitely in the learner's ledger for transparency and auditability. A ticket MUST NOT be permanently locked to a single draw identifier.
 * **FR-010**: System MUST provide an accessible sliding drawer triggered from the ticket counter badge in the top navigation header on all desktop and mobile viewports.
 * **FR-011**: System MUST provide a dedicated route `/[locale]/dashboard` showing enrolled courses, syllabus completion meters, and continue-learning shortcuts.
-* **FR-012**: System MUST automatically transfer all guest entitlements, tickets, and lesson progress when a guest user registers or logs in with Google using the matching email address.
-* **FR-013**: System MUST provide an administrative fulfillment command (`php artisan order:fulfill {orderNumber}`) and a safe local development simulator to enable full end-to-end testing in non-production environments.
+* **FR-012**: System MUST automatically transfer all guest entitlements, tickets, and lesson progress when an unverified guest user logs in or registers with Google using the matching email address.
+* **FR-013**: System MUST provide an administrative fulfillment capability and safe local test simulator strictly for non-production environments to enable end-to-end testing of post-payment flows. Production fulfillment MUST rely solely on verified server-side payment confirmation.
+* **FR-014**: System MUST guarantee that order fulfillment processing is strictly idempotent. Repeated or duplicate processing of the same completed order MUST NOT mint duplicate promotional tickets or create duplicate effective entitlements.
+* **FR-015**: System MUST require authenticated access and an active verified course entitlement for all progress write requests on paid course parts (Part 2 and beyond). Unauthorized requests to record progress on paid parts MUST be rejected with an access-denied error.
+* **FR-016**: System MUST serve learner dashboard and lesson player progress exclusively from authoritative server-persisted state. Production interfaces MUST NOT fall back to or display demo/mock progress as real learner data.
+* **FR-017**: System MUST enforce monotonic progress persistence: subsequent lower watch depth or percentage reports MUST NOT regress recorded watch depth or percentage, and once a lesson part reaches the 95% completion threshold (`is_completed = true`), its completion status remains sticky and cannot be regressed or uncompleted.
 
 ---
 
 ### 5.2 Key Entities
 
-* **Course Entitlement**: Represents a learner's verified authorization to access a specific course part or full bundle. Attributes: identifier, user reference, course reference, optional course part reference (null denotes full bundle), originating order reference, access type (part or bundle), and status (active or revoked).
-* **Promotional Ticket**: Represents an individual verifiable entry in a promotional giveaway awarded with course purchases. Attributes: identifier, user reference, originating order reference, originating order item reference, unique human-readable serial number (`KNZ-YY-XXXX-YYYY`), issuance timestamp, and multi-tier draw eligibility status (active across qualifying draw windows, or concluded).
+* **Course Entitlement**: Represents a learner's verified authorization to access a specific course part or full bundle. Attributes: identifier, user reference, course reference, optional course part reference (null denotes full bundle), originating order reference, access type (part or bundle), and status (active or revoked). Guarantees at most one effective bundle entitlement per course and at most one effective part entitlement per course part.
+* **Promotional Ticket**: Represents an individual verifiable entry in a promotional giveaway awarded with course purchases. Attributes: identifier, user reference, originating order reference, originating order item reference, canonical serial number (`KNZ-YY-XXXX-YYYY`), issuance timestamp, and dynamic multi-tier draw eligibility status. Permanent ticket records survive draw conclusion for historical auditability and transparency.
 * **Lesson Progress**: Represents a learner's progression through a specific course lesson part. Attributes: identifier, user reference, course reference, course part reference, watch depth in seconds, completion percentage, completion flag, and timestamp of last activity.
 * **Promotional Draw**: Represents an active or concluded promotional sweepstakes event. Attributes: identifier, draw code, tier (hourly, daily, monthly), title, prize amount, eligibility window, status, and winning ticket references.
 
@@ -183,9 +187,11 @@ So that I can resume seamlessly across devices and see my overall progress on th
 * **SC-001**: 100% of attempts to stream paid course parts (Part 2 and beyond) without an active entitlement are rejected at the API layer with an access-denied error.
 * **SC-002**: 100% of completed course orders generate the exact ratio of tickets (1 ticket for $2 part, 15 tickets for $10 bundle) with zero duplicate serials.
 * **SC-003**: 100% of issued ticket serial numbers match the canonical format `KNZ-{yy}-XXXX-YYYY` and strict Crockford Base32 alphabet (`0123456789ABCDEFGHJKMNPQRSTVWXYZ`).
-* **SC-004**: Clicking the ticket counter in the navigation header opens the ticket drawer in under 150ms with zero layout shift (CLS = 0.00).
+* **SC-004**: Activating the ticket counter trigger in the navigation header reliably opens the ticket drawer on desktop and mobile viewports without page navigation, displaying all issued tickets, their active draw tier eligibility, and live countdown timers.
 * **SC-005**: All learner dashboard and lesson player views achieve 100% bilingual parity in Arabic (`dir="rtl"`) and English (`dir="ltr"`).
 * **SC-006**: An enrolled learner can resume their last watched lesson in under 2 clicks directly from the dashboard home.
+* **SC-007**: Repeated fulfillment calls on the same completed order produce exactly the same entitlement and ticket count without creating duplicate records.
+* **SC-008**: 100% of progress recording requests on paid lesson parts without an active entitlement or authentication are rejected at the API layer.
 
 ---
 
