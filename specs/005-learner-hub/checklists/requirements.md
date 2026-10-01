@@ -19,6 +19,7 @@
 - [x] Ticket serial format clarified: canonical Crockford Base32 `KNZ-YY-XXXX-YYYY` matching `^KNZ-[0-9]{2}-[0-9A-HJKMNP-Z]{4}-[0-9A-HJKMNP-Z]{4}$`
 - [x] Watermark identity policy clarified: full account email + opaque learner ID (`LRN-XXXX`) + playback date/time; server-authoritative playback context with zero PII leaks
 - [x] Course completion clarified: course-agnostic (evaluates all active published parts of a course, rather than hardcoding 6 parts)
+- [x] Course bundle commercial rule clarified: $10 grants complete course access across variable part counts (4, 6, 8+) with exactly 15 promotional tickets
 - [x] Authentication terminology verified: guest flow described as session lookup without falsely claiming ownership verification
 - [x] Entitlement invariants expressed as business rules: at most one effective bundle entitlement per course, at most one effective part entitlement per part, no duplicate effective entitlements
 - [x] Progress integrity verified: paid-part writes require authentication + entitlement; server state is sole truth; monotonic progress with sticky 95% completion threshold
@@ -36,9 +37,10 @@
 
 ## Review Summary
 
-- **Total Checklist Items Reviewed**: 18
-- **Total Checked `[x]`**: 18
+- **Total Checklist Items Reviewed**: 19
+- **Total Checked `[x]`**: 19
 - **Total Left Unchecked**: 0
 - **Status**: Specification complete in `Draft` state; verified against active codebase (Laravel 11 backend, Next.js 16 frontend, MariaDB schema). Ready for `/speckit-plan`.
+
 
 
