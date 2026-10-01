@@ -22,11 +22,11 @@ An empirical audit of the repository establishes the following ground truths:
 ### 2.1 Existing Capabilities Reused
 * **Course & Catalog Data**: `courses` and `course_parts` tables are established with bilingual metadata (`title_ar`, `title_en`, `slug`, `part_number`, `duration_minutes`).
 * **Order Baseline**: `orders` and `order_items` tables exist with monetary calculations in cents, exchange rates, and guest email association.
-* **Account Continuity**: `AccountMergeService` is proven to transfer orders and lesson progress from guest accounts to verified Google accounts with the same email.
+* **Account Continuity**: The existing guest-to-Google account merge flow is proven to transfer orders and lesson progress from guest accounts to verified Google accounts with the same email.
 * **Player UI Components**: Responsive video layout, syllabus sidebar, and lesson tabs exist in `frontend/src/components/lesson/`.
 
 ### 2.2 Critical Gaps & Vulnerabilities Replaced
-* **Absence of Server-Side Entitlement (`DEF-05A`)**: Currently, `ProgressController` permits progress writes if `status IN ('completed', 'pending')`, mistakenly allowing pending orders to unlock content. Feature 005 establishes explicit, immutable entitlement records where `status = 'completed'` is strictly required.
+* **Absence of Server-Side Entitlement (`DEF-05A`)**: Currently, progress write logic permits access if an order's status is `completed` or `pending`, mistakenly allowing pending orders to unlock content. Under Feature 005, only an order that has reached the authoritative completed/fulfilled state can create or activate an effective entitlement.
 * **Client-Side Fake Purchase State (`DEF-05B`)**: `LessonPlayerClientView.tsx` currently stores purchased parts in browser `localStorage`. Feature 005 replaces this with server-authoritative entitlement verification.
 * **Public Video URL Exposure (`DEF-05C`)**: Video streaming URLs are currently bundled directly in client JavaScript. Feature 005 strips paid video URLs from public bundles and gates playback behind an authorized API.
 * **Missing Individual Ticket Records (`DEF-05D`)**: Promotional tickets are currently recorded only as an aggregate integer count on orders. Feature 005 introduces individual minted ticket records with standardized human-readable serials.
@@ -76,7 +76,7 @@ While unauthorized visitors are prevented from streaming paid content, and illic
 
 **Acceptance Scenarios**:
 1. **Given** an unpaid visitor accesses Part 2 of any course, **When** the lesson player loads, **Then** the player displays a locked paywall overlay, and the "Resources & Downloads" tab displays a locked state with purchase triggers.
-2. **Given** a paying customer who bought Part 2 accesses the lesson, **When** the player loads, **Then** the backend returns an authorized playback stream, the video plays smoothly, and a semi-transparent dynamic Canvas watermark displaying the learner's full account email, short opaque learner ID (e.g. `LRN-7K2M`), and playback timestamp (`01 Oct 2026 14:32`) drifts across the player canvas at randomized intervals.
+2. **Given** a paying customer who bought Part 2 accesses the lesson, **When** the player loads, **Then** the backend returns an authorized signed playback stream valid for up to 15 minutes, the video plays smoothly, and a semi-transparent dynamic Canvas watermark displaying the learner's full account email, short opaque learner ID (e.g. `LRN-7K2M`), and playback timestamp (`01 Oct 2026 14:32`) drifts across the player canvas at randomized intervals.
 3. **Given** Part 1 of any course is opened by any visitor (guest or registered), **When** the lesson player loads, **Then** it plays immediately as a free introductory preview without requiring purchase or login.
 4. **Given** a customer bought a Single Part ($2), **When** they view the course part list, **Then** their purchased part is unlocked, while remaining parts show lock badges and offer an upgrade option.
 
@@ -136,7 +136,7 @@ So that I can resume seamlessly across devices and see my overall progress on th
 
 1. **Guest Checkout to Google Sign-In Transition**:
    * *Condition*: A guest buys a course bundle using `ahmed@gmail.com`. Later, they click "Sign in with Google" using that same email address.
-   * *System Behavior*: Building upon the existing `AccountMergeService` (which currently re-attributes orders and merges progress), Feature 005 extends the merge transaction to transfer newly introduced `course_entitlements` and `tickets` from the guest identifier to the verified Google user identifier in a single atomic transaction. The learner loses zero progress, zero courses, and zero tickets, with zero duplicate effective access states created.
+   * *System Behavior*: Building upon the existing guest-to-Google account merge flow (which currently re-attributes orders and merges progress), Feature 005 extends the merge transaction to transfer newly introduced course entitlements and promotional tickets from the guest identifier to the verified Google user identifier in a single atomic transaction. The learner loses zero progress, zero courses, and zero tickets, with zero duplicate effective access states created.
 2. **Upgrading from Single Part ($2) to Full Bundle ($10)**:
    * *Condition*: A student already owns Part 2 and subsequently purchases the Full Bundle.
    * *System Behavior*: The bundle purchase grants full course bundle entitlement, subsuming the previous single-part access into a single coherent effective access state. Business invariants guaranteed: no duplicate effective access, full bundle access across all course parts, and no conflicting access behavior with previous individual part records. (The underlying representation of historical records—whether merged, preserved with historical flags, or superseded—is an engineering design decision for Plan).
@@ -156,7 +156,7 @@ So that I can resume seamlessly across devices and see my overall progress on th
 * **FR-001**: System MUST create an explicit access entitlement record whenever a course order transitions to `completed`. The system MUST maintain the following business invariants: at most one effective bundle entitlement per learner/course, at most one effective part entitlement per learner/course-part, purchasing a bundle after individual parts produces one coherent effective access state, and zero duplicate effective entitlements may exist.
 * **FR-002**: System MUST permit access to Part 1 of every course to all visitors as a free introductory preview without requiring purchase or login.
 * **FR-003**: System MUST reject video streaming requests for all paid course parts (Part 2 and beyond) with an authorization error if the requesting user lacks an active entitlement for that specific part or the course bundle.
-* **FR-004**: System MUST protect paid lesson video playback by requiring authenticated, short-lived stream authorization from the server, completely eliminating direct or static public access to paid video streams. Part 1 preview MUST remain accessible as a free introductory preview without purchase or login.
+* **FR-004**: System MUST protect paid lesson video playback by requiring authenticated, signed stream authorization with a maximum validity window of 15 minutes, completely eliminating direct or static public access to paid video streams. Part 1 preview MUST remain accessible as a free introductory preview without purchase or login.
 * **FR-005**: System MUST dynamically render an anti-piracy Canvas watermark over the video player displaying the authenticated learner's full normalized account email, short opaque learner identifier (e.g. `LRN-7K2M`), and playback date/time (`DD Mon YYYY HH:MM`). Watermark identity values MUST originate strictly from the authoritative authenticated playback context on the server. Client-controlled `localStorage`, URL query parameters, or arbitrary browser-supplied identity data must never determine watermark identity. The watermark MUST NOT expose phone numbers, IP addresses, session tokens, full database UUIDs, or payment/KYC data.
 * **FR-006**: System MUST serve downloadable files via temporary signed URLs with a maximum lifespan of 15 minutes.
 * **FR-007**: System MUST mint exactly 1 ticket for a $2 part purchase and exactly 15 tickets for a $10 bundle purchase upon order fulfillment.
@@ -164,7 +164,7 @@ So that I can resume seamlessly across devices and see my overall progress on th
 * **FR-009**: System MUST evaluate promotional ticket eligibility dynamically across draw tiers: newly minted tickets are eligible for the active Hourly and Daily draws open at the time of issuance (expiring when those draws conclude), and remain active for the designated Monthly Grand Draw throughout its active calendar period. Permanent ticket records MUST survive the conclusion or expiry of any individual draw window, remaining available in the learner's ledger for auditability and history according to project retention policy. A ticket MUST NOT be permanently locked to a single draw identifier.
 * **FR-010**: System MUST provide an accessible sliding drawer triggered from the ticket counter badge in the top navigation header on all desktop and mobile viewports.
 * **FR-011**: System MUST provide a dedicated route `/[locale]/dashboard` showing enrolled courses, syllabus completion meters, and continue-learning shortcuts.
-* **FR-012**: System MUST extend the existing `AccountMergeService` to automatically transfer all guest course entitlements and tickets (in addition to existing order and progress transfers) when an unverified guest user logs in or registers with Google using the matching email address.
+* **FR-012**: System MUST extend the existing guest-to-Google account merge flow to automatically transfer all guest course entitlements and promotional tickets (in addition to existing order and progress transfers) when an unverified guest user logs in or registers with Google using the matching email address.
 * **FR-013**: System MUST provide an administrative fulfillment capability and safe local test simulator strictly for non-production environments to enable end-to-end testing of post-payment flows. Production fulfillment MUST rely solely on verified server-side payment confirmation.
 * **FR-014**: System MUST guarantee that order fulfillment processing is strictly idempotent. Repeated or duplicate processing of the same completed order MUST produce no additional effective entitlements and no additional promotional tickets beyond the exact quantity originally granted ($10 bundle yielding exactly 15 tickets total, $2 part yielding exactly 1 ticket total).
 * **FR-015**: System MUST require authenticated access and an active verified course entitlement for all progress write requests on paid course parts (Part 2 and beyond), applying strictly to the learner's own authorized course progress. Unauthorized requests to record progress on paid parts MUST be rejected with an access-denied error.
@@ -202,7 +202,7 @@ So that I can resume seamlessly across devices and see my overall progress on th
 * Authoritative entitlement service and database migration.
 * Hardened lesson playback API and dynamic watermark.
 * Gated downloadable assets with 15-minute expiring signed URLs.
-* Promotional ticket minting engine and global sliding drawer (`MyTicketsSheet`).
+* Promotional ticket minting engine and global learner ticket drawer.
 * Guest account merge extension for entitlements and tickets.
 * Development fulfillment simulator strictly for non-production environments.
 
