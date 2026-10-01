@@ -1,7 +1,7 @@
 # Specification Quality Checklist: Feature 005 — Learner Hub, Course Library & Ticket Ledger
 
 **Purpose**: Validate specification completeness, domain consistency, and requirements quality before proceeding to technical planning  
-**Last Updated**: 2026-10-01 (Final Narrow Consistency Pass)  
+**Last Updated**: 2026-10-01 (Final Governance & Asynchronous Invariant Pass)  
 **Feature**: [specs/005-learner-hub/spec.md](../spec.md)  
 **Branch**: `005-learner-hub`
 
@@ -20,27 +20,25 @@
 - [x] Watermark identity policy clarified: full account email + opaque learner ID (`LRN-XXXX`) + playback date/time; server-authoritative playback context with zero PII leaks
 - [x] Course completion clarified: course-agnostic (evaluates all active published parts of a course, rather than hardcoding 6 parts)
 - [x] Course bundle commercial rule clarified: $10 grants complete course access across variable part counts (4, 6, 8+) with exactly 15 promotional tickets
+- [x] Governance reconciliation explicitly tracked: Constitution's outdated "6 Parts" commercial phrasing documented with required documentation amendment follow-up while Feature 005 implements Owner Decision 4
 - [x] Authentication terminology verified: guest flow described as session lookup without falsely claiming ownership verification
 - [x] Entitlement invariants expressed as business rules: at most one effective bundle entitlement per course, at most one effective part entitlement per part, no duplicate effective entitlements
 - [x] Progress integrity verified: paid-part writes require authentication + entitlement; server state is sole truth; monotonic progress with sticky 95% completion threshold
-- [x] Fulfillment integrity verified: order fulfillment processing is strictly idempotent; dev fulfillment simulator is strictly non-production
+- [x] Fulfillment & async ticket generation verified: fulfillment establishes ticket entitlement while creation adheres to the project's asynchronous generation invariant; strictly idempotent with zero duplicate grants on retry or failure recovery
 - [x] Ticket persistence verified: permanent ticket ledger records survive draw conclusion for auditability while eligibility remains window-based
 - [x] Success criteria verified: technology-agnostic, objectively testable, and free of arbitrary latency/CLS targets
 - [x] Edge cases and boundaries explicitly defined (payment confirmation boundary vs Feature 007, affiliate exclusion vs Feature 006, RNG/execution exclusion vs Feature 008)
 
 ## Feature Readiness
 
-- [x] All functional requirements have measurable Given/When/Then acceptance criteria
+- [x] All functional requirements are testable and traceable to one or more acceptance scenarios, edge cases, or measurable success criteria
 - [x] User journeys cover all primary surfaces (Learner Dashboard, Hardened Player, Ticket Drawer, Download Links, Progress Sync)
 - [x] Brownfield repository defects explicitly identified and isolated (`DEF-05A` progress vulnerability, `DEF-05B` client fake ownership, `DEF-05C` public video URL exposure, `DEF-05D` missing ticket ledger)
 - [x] Specification is fully aligned with repository reality and ready for technical planning (`/speckit-plan`)
 
 ## Review Summary
 
-- **Total Checklist Items Reviewed**: 19
-- **Total Checked `[x]`**: 19
+- **Total Checklist Items Reviewed**: 22
+- **Total Checked `[x]`**: 22
 - **Total Left Unchecked**: 0
 - **Status**: Specification complete in `Draft` state; verified against active codebase (Laravel 11 backend, Next.js 16 frontend, MariaDB schema). Ready for `/speckit-plan`.
-
-
-
