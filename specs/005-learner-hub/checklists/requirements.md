@@ -17,7 +17,7 @@
 - [x] Zero unresolved `[NEEDS CLARIFICATION]` markers remaining
 - [x] Ticket / Draw eligibility model clarified: multi-tier window-based (active Hourly and Daily upon issuance, active Monthly throughout calendar period; not consumed on draw execution)
 - [x] Ticket serial format clarified: canonical Crockford Base32 `KNZ-YY-XXXX-YYYY` matching `^KNZ-[0-9]{2}-[0-9A-HJKMNP-Z]{4}-[0-9A-HJKMNP-Z]{4}$`
-- [x] Watermark identity policy clarified: full account email + opaque learner ID (`LRN-XXXX`) + playback date/time; server-authoritative token derivation with zero PII leaks
+- [x] Watermark identity policy clarified: full account email + opaque learner ID (`LRN-XXXX`) + playback date/time; server-authoritative playback context with zero PII leaks
 - [x] Course completion clarified: course-agnostic (evaluates all active published parts of a course, rather than hardcoding 6 parts)
 - [x] Authentication terminology verified: guest flow described as session lookup without falsely claiming ownership verification
 - [x] Entitlement invariants expressed as business rules: at most one effective bundle entitlement per course, at most one effective part entitlement per part, no duplicate effective entitlements

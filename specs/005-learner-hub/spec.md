@@ -39,7 +39,7 @@ An empirical audit of the repository establishes the following ground truths:
   1. Full normalized account email (e.g. `muaz@example.com`) for direct, human-readable ownership attribution.
   2. Short opaque learner identifier (e.g. `LRN-7K2M`) derived from the account to support incident investigation without exposing database primary keys, internal UUIDs, or authentication tokens.
   3. Playback date and time (e.g. `01 Oct 2026 14:32`).
-  *Authority Chain*: The watermark identity MUST be derived server-side from the authenticated playback authorization token (never from client-side `localStorage` or browser parameters).
+  *Authority Chain*: Watermark identity values MUST originate strictly from the authoritative authenticated playback context on the server. Client-controlled `localStorage`, URL query parameters, or arbitrary browser-supplied identity data must never determine watermark identity.
   *Strict Exclusions*: Phone numbers, IP addresses, session tokens, full database UUIDs, payment info, KYC data, and course/order details MUST NOT appear in the watermark.
 
 ---
@@ -136,16 +136,16 @@ So that I can resume seamlessly across devices and see my overall progress on th
 
 1. **Guest Checkout to Google Sign-In Transition**:
    * *Condition*: A guest buys a course bundle using `ahmed@gmail.com`. Later, they click "Sign in with Google" using that same email address.
-   * *System Behavior*: `AccountMergeService` automatically transfers all `course_entitlements` and `tickets` from the guest identifier to the Google user identifier in a single atomic transaction. The learner loses zero progress, zero courses, and zero tickets, with zero duplicate rows created.
+   * *System Behavior*: Building upon the existing `AccountMergeService` (which currently re-attributes orders and merges progress), Feature 005 extends the merge transaction to transfer newly introduced `course_entitlements` and `tickets` from the guest identifier to the verified Google user identifier in a single atomic transaction. The learner loses zero progress, zero courses, and zero tickets, with zero duplicate effective access states created.
 2. **Upgrading from Single Part ($2) to Full Bundle ($10)**:
    * *Condition*: A student already owns Part 2 and subsequently purchases the Full Bundle.
-   * *System Behavior*: The bundle purchase grants full course bundle entitlement, subsuming the previous single-part access into a single coherent effective access state. Business invariants guaranteed: at most one effective bundle entitlement per learner/course, at most one effective part entitlement per learner/course-part, and zero duplicate effective entitlements.
+   * *System Behavior*: The bundle purchase grants full course bundle entitlement, subsuming the previous single-part access into a single coherent effective access state. Business invariants guaranteed: no duplicate effective access, full bundle access across all course parts, and no conflicting access behavior with previous individual part records. (The underlying representation of historical records—whether merged, preserved with historical flags, or superseded—is an engineering design decision for Plan).
 3. **Simultaneous Draw Countdown Expiry**:
    * *Condition*: A student opens the ticket drawer when the countdown is at `00:00:05`. The timer reaches `00:00:00`.
-   * *System Behavior*: The ticket status transitions visually to `"قيد إجراء السحب (Draw in Progress)"` without crashing or throwing null-pointer exceptions.
+   * *System Behavior*: When a draw countdown reaches zero, the affected draw transitions to its concluded lifecycle state. The UI updates smoothly to reflect the draw conclusion; the affected draw window closes without consuming or invalidating the ticket itself. For tickets participating across multiple tiers, any remaining active windows (such as the active Monthly Grand Draw) remain fully active and intact.
 4. **Intermittent Connectivity on Progress Reporting**:
    * *Condition*: A student finishes a lesson while traveling with intermittent mobile connectivity.
-   * *System Behavior*: The frontend queues the progress update locally and synchronizes with the server once connectivity resumes.
+   * *System Behavior*: Intermittent connectivity must not cause already-persisted learner progress to regress or become corrupted; unsent progress should be recoverable according to the application's synchronization strategy without overwriting higher previously recorded progress.
 
 ---
 
@@ -157,28 +157,28 @@ So that I can resume seamlessly across devices and see my overall progress on th
 * **FR-002**: System MUST permit access to Part 1 of every course to all visitors as a free introductory preview without requiring purchase or login.
 * **FR-003**: System MUST reject video streaming requests for all paid course parts (Part 2 and beyond) with an authorization error if the requesting user lacks an active entitlement for that specific part or the course bundle.
 * **FR-004**: System MUST protect paid lesson video playback by requiring authenticated, short-lived stream authorization from the server, completely eliminating direct or static public access to paid video streams. Part 1 preview MUST remain accessible as a free introductory preview without purchase or login.
-* **FR-005**: System MUST dynamically render an anti-piracy Canvas watermark over the video player displaying the authenticated learner's full normalized account email, short opaque learner identifier (e.g. `LRN-7K2M`), and playback date/time (`DD Mon YYYY HH:MM`). The watermark identity MUST be derived server-side from the playback authorization token. The watermark MUST NOT expose phone numbers, IP addresses, session tokens, full database UUIDs, or payment/KYC data.
+* **FR-005**: System MUST dynamically render an anti-piracy Canvas watermark over the video player displaying the authenticated learner's full normalized account email, short opaque learner identifier (e.g. `LRN-7K2M`), and playback date/time (`DD Mon YYYY HH:MM`). Watermark identity values MUST originate strictly from the authoritative authenticated playback context on the server. Client-controlled `localStorage`, URL query parameters, or arbitrary browser-supplied identity data must never determine watermark identity. The watermark MUST NOT expose phone numbers, IP addresses, session tokens, full database UUIDs, or payment/KYC data.
 * **FR-006**: System MUST serve downloadable files via temporary signed URLs with a maximum lifespan of 15 minutes.
 * **FR-007**: System MUST mint exactly 1 ticket for a $2 part purchase and exactly 15 tickets for a $10 bundle purchase upon order fulfillment.
 * **FR-008**: System MUST format all ticket serial numbers using the canonical Crockford Base32 pattern: `^KNZ-[0-9]{2}-[0-9A-HJKMNP-Z]{4}-[0-9A-HJKMNP-Z]{4}$` (utilizing the canonical alphabet `0123456789ABCDEFGHJKMNPQRSTVWXYZ`, excluding ambiguous characters I, L, O, and U). Serials MUST be generated exclusively on the server upon order fulfillment, globally unique, immutable, and free of PII or course identifiers.
-* **FR-009**: System MUST evaluate promotional ticket eligibility dynamically across draw tiers: newly minted tickets are eligible for the active Hourly and Daily draws open at the time of issuance (expiring when those draws conclude), and remain active for the designated Monthly Grand Draw throughout its active calendar period. Permanent ticket records MUST survive the conclusion or expiry of any individual draw window, persisting indefinitely in the learner's ledger for transparency and auditability. A ticket MUST NOT be permanently locked to a single draw identifier.
+* **FR-009**: System MUST evaluate promotional ticket eligibility dynamically across draw tiers: newly minted tickets are eligible for the active Hourly and Daily draws open at the time of issuance (expiring when those draws conclude), and remain active for the designated Monthly Grand Draw throughout its active calendar period. Permanent ticket records MUST survive the conclusion or expiry of any individual draw window, remaining available in the learner's ledger for auditability and history according to project retention policy. A ticket MUST NOT be permanently locked to a single draw identifier.
 * **FR-010**: System MUST provide an accessible sliding drawer triggered from the ticket counter badge in the top navigation header on all desktop and mobile viewports.
 * **FR-011**: System MUST provide a dedicated route `/[locale]/dashboard` showing enrolled courses, syllabus completion meters, and continue-learning shortcuts.
-* **FR-012**: System MUST automatically transfer all guest entitlements, tickets, and lesson progress when an unverified guest user logs in or registers with Google using the matching email address.
+* **FR-012**: System MUST extend the existing `AccountMergeService` to automatically transfer all guest course entitlements and tickets (in addition to existing order and progress transfers) when an unverified guest user logs in or registers with Google using the matching email address.
 * **FR-013**: System MUST provide an administrative fulfillment capability and safe local test simulator strictly for non-production environments to enable end-to-end testing of post-payment flows. Production fulfillment MUST rely solely on verified server-side payment confirmation.
-* **FR-014**: System MUST guarantee that order fulfillment processing is strictly idempotent. Repeated or duplicate processing of the same completed order MUST NOT mint duplicate promotional tickets or create duplicate effective entitlements.
-* **FR-015**: System MUST require authenticated access and an active verified course entitlement for all progress write requests on paid course parts (Part 2 and beyond). Unauthorized requests to record progress on paid parts MUST be rejected with an access-denied error.
+* **FR-014**: System MUST guarantee that order fulfillment processing is strictly idempotent. Repeated or duplicate processing of the same completed order MUST produce no additional effective entitlements and no additional promotional tickets beyond the exact quantity originally granted ($10 bundle yielding exactly 15 tickets total, $2 part yielding exactly 1 ticket total).
+* **FR-015**: System MUST require authenticated access and an active verified course entitlement for all progress write requests on paid course parts (Part 2 and beyond), applying strictly to the learner's own authorized course progress. Unauthorized requests to record progress on paid parts MUST be rejected with an access-denied error.
 * **FR-016**: System MUST serve learner dashboard and lesson player progress exclusively from authoritative server-persisted state. Production interfaces MUST NOT fall back to or display demo/mock progress as real learner data.
-* **FR-017**: System MUST enforce monotonic progress persistence: subsequent lower watch depth or percentage reports MUST NOT regress recorded watch depth or percentage, and once a lesson part reaches the 95% completion threshold (`is_completed = true`), its completion status remains sticky and cannot be regressed or uncompleted.
+* **FR-017**: System MUST enforce monotonic progress persistence on the learner's authorized progress records: lower watch depth or percentage reports MUST NOT overwrite or regress higher previously recorded watch depth or percentage (progress monotonicity), and once a lesson part reaches the 95% completion threshold (`is_completed = true`), subsequent lower watch reports cannot unset or regress the completion flag (completion monotonicity). Non-progress metadata (such as last activity timestamps) update naturally without violating monotonicity.
 
 ---
 
 ### 5.2 Key Entities
 
 * **Course Entitlement**: Represents a learner's verified authorization to access a specific course part or full bundle. Attributes: identifier, user reference, course reference, optional course part reference (null denotes full bundle), originating order reference, access type (part or bundle), and status (active or revoked). Guarantees at most one effective bundle entitlement per course and at most one effective part entitlement per course part.
-* **Promotional Ticket**: Represents an individual verifiable entry in a promotional giveaway awarded with course purchases. Attributes: identifier, user reference, originating order reference, originating order item reference, canonical serial number (`KNZ-YY-XXXX-YYYY`), issuance timestamp, and dynamic multi-tier draw eligibility status. Permanent ticket records survive draw conclusion for historical auditability and transparency.
+* **Promotional Ticket**: Represents an individual verifiable entry in a promotional giveaway awarded with course purchases. Attributes: permanent identity (identifier, user reference, originating fulfilled order reference, originating order item reference, canonical serial number `KNZ-YY-XXXX-YYYY`, issuance timestamp) and dynamic eligibility evaluated against active draw windows. Permanent ticket records survive draw conclusion for historical auditability and transparency. A ticket is not consumed or deleted upon draw execution.
 * **Lesson Progress**: Represents a learner's progression through a specific course lesson part. Attributes: identifier, user reference, course reference, course part reference, watch depth in seconds, completion percentage, completion flag, and timestamp of last activity.
-* **Promotional Draw**: Represents an active or concluded promotional sweepstakes event. Attributes: identifier, draw code, tier (hourly, daily, monthly), title, prize amount, eligibility window, status, and winning ticket references.
+* **Promotional Draw**: Represents an active, upcoming, or concluded promotional sweepstakes event read by Feature 005 to evaluate ticket eligibility windows. Attributes: identifier, draw code, tier (hourly, daily, monthly), title, prize amount, eligibility window, and lifecycle status. (Draw execution, RNG certified selection, and winner resolution are owned by Feature 008).
 
 ---
 
@@ -190,7 +190,7 @@ So that I can resume seamlessly across devices and see my overall progress on th
 * **SC-004**: Activating the ticket counter trigger in the navigation header reliably opens the ticket drawer on desktop and mobile viewports without page navigation, displaying all issued tickets, their active draw tier eligibility, and live countdown timers.
 * **SC-005**: All learner dashboard and lesson player views achieve 100% bilingual parity in Arabic (`dir="rtl"`) and English (`dir="ltr"`).
 * **SC-006**: An enrolled learner can resume their last watched lesson in under 2 clicks directly from the dashboard home.
-* **SC-007**: Repeated fulfillment calls on the same completed order produce exactly the same entitlement and ticket count without creating duplicate records.
+* **SC-007**: Repeating fulfillment for the same completed order produces no additional effective entitlements and no additional promotional tickets beyond the exact quantity originally granted (verified for retried or duplicate processing of both $2 purchases yielding exactly 1 ticket total and $10 bundle purchases yielding exactly 15 tickets total).
 * **SC-008**: 100% of progress recording requests on paid lesson parts without an active entitlement or authentication are rejected at the API layer.
 
 ---
@@ -204,10 +204,10 @@ So that I can resume seamlessly across devices and see my overall progress on th
 * Gated downloadable assets with 15-minute expiring signed URLs.
 * Promotional ticket minting engine and global sliding drawer (`MyTicketsSheet`).
 * Guest account merge extension for entitlements and tickets.
-* Development fulfillment simulator and artisan command.
+* Development fulfillment simulator strictly for non-production environments.
 
 ### 7.2 Explicit Scope Exclusions (Deferred to Later Milestones)
-* Payment gateway merchant integrations (ZainCash, AsiaHawala) &rarr; Feature 007.
+* Payment gateway merchant integrations (ZainCash, AsiaHawala) &rarr; Feature 007 (Feature 005 does not implement production payment gateways or create a parallel payment confirmation path).
 * Affiliate link generation and 40% co-prize commissions &rarr; Feature 006.
-* Administrative draw execution, RNG triggers, and winner KYC forms &rarr; Feature 008.
+* Administrative draw execution, RNG certified selection, and winner resolution &rarr; Feature 008 (Feature 005 only evaluates draw window eligibility and surfaces ticket status).
 * Automated WhatsApp/Email push dispatchers &rarr; Feature 009.
