@@ -56,6 +56,23 @@ return [
             'throw' => false,
         ],
 
+        'protected-media' => env('PROTECTED_MEDIA_DISK', 'local') === 's3' ? [
+            'driver' => 's3',
+            'key' => env('PROTECTED_MEDIA_AWS_ACCESS_KEY_ID', env('AWS_ACCESS_KEY_ID')),
+            'secret' => env('PROTECTED_MEDIA_AWS_SECRET_ACCESS_KEY', env('AWS_SECRET_ACCESS_KEY')),
+            'region' => env('PROTECTED_MEDIA_AWS_DEFAULT_REGION', env('AWS_DEFAULT_REGION', 'us-east-1')),
+            'bucket' => env('PROTECTED_MEDIA_AWS_BUCKET'),
+            'endpoint' => env('PROTECTED_MEDIA_ENDPOINT'),
+            'use_path_style_endpoint' => env('PROTECTED_MEDIA_USE_PATH_STYLE_ENDPOINT', true),
+            'visibility' => 'private',
+            'throw' => false,
+        ] : [
+            'driver' => 'local',
+            'root' => storage_path('app/protected-media'),
+            'visibility' => 'private',
+            'throw' => false,
+        ],
+
     ],
 
     /*

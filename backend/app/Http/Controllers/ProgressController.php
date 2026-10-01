@@ -5,15 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\CoursePart;
 use App\Models\LessonProgress;
-use App\Models\Order;
+use App\Services\EntitlementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProgressController extends ApiController
 {
+    public function __construct(protected EntitlementService $entitlementService)
+    {
+    }
+
     /**
-     * Upsert watch depth and completion for a user and course part (DEF-05D, DEF-06A).
+     * Upsert watch depth and completion with strict server-side entitlement check,
+     * duration bounds, monotonicity, and sticky 95% completion (FR-015, FR-016, FR-017).
      */
     public function recordProgress(Request $request): JsonResponse
     {
@@ -28,7 +33,7 @@ class ProgressController extends ApiController
         if (!$user) {
             return $this->failResponse(
                 'ERR_UNAUTHORIZED',
-                'Unauthenticated',
+                'يرجى تسجيل الدخول لتسجيل التقدم.',
                 [],
                 Response::HTTP_UNAUTHORIZED
             );
@@ -57,20 +62,9 @@ class ProgressController extends ApiController
             );
         }
 
-        // Part 1 is free introductory preview. For parts > 1, verify user purchase entitlement (DEF-05D)
-        if ($part->part_number > 1) {
-            $hasPurchased = Order::where('user_id', $user->id)
-                ->whereIn('status', ['completed', 'pending'])
-                ->whereHas('items', function ($query) use ($course, $part) {
-                    $query->where('course_id', $course->id)
-                        ->where(function ($q) use ($part) {
-                            $q->where('item_type', 'bundle')
-                              ->orWhere('course_part_id', $part->id);
-                        });
-                })
-                ->exists();
-
-            if (!$hasPurchased) {
+        // Part 1 is free introductory preview. For parts > 1, verify active entitlement via EntitlementService
+        if ((int) $part->part_number > 1) {
+            if (!$this->entitlementService->hasAccess($user, $course, $part)) {
                 return $this->failResponse(
                     'ERR_PART_LOCKED',
                     'يجب شراء هذا الجزء أو الباقة الكاملة لتسجيل التقدم.',
@@ -80,7 +74,24 @@ class ProgressController extends ApiController
             }
         }
 
-        $isCompleted = $validated['percent_complete'] >= 95;
+        // Bound watch_seconds at part duration if duration is known
+        $inputWatchSeconds = (int) $validated['watch_seconds'];
+        if ($part->duration_seconds && (int) $part->duration_seconds > 0) {
+            $inputWatchSeconds = min((int) $part->duration_seconds, $inputWatchSeconds);
+        }
+
+        $inputPercentComplete = (int) $validated['percent_complete'];
+
+        $existing = LessonProgress::where('user_id', $user->id)
+            ->where('course_part_id', $part->id)
+            ->first();
+
+        // Enforce server-side monotonicity: lower watch depth or percentage reports cannot regress higher recorded values
+        $finalWatchSeconds = $existing ? max((int) $existing->watch_seconds, $inputWatchSeconds) : $inputWatchSeconds;
+        $finalPercentComplete = $existing ? max((int) $existing->percent_complete, $inputPercentComplete) : $inputPercentComplete;
+
+        // Enforce sticky completion: reaching 95% sets is_completed = true permanently
+        $isCompleted = ($existing && $existing->is_completed) || $finalPercentComplete >= 95;
 
         $progress = LessonProgress::updateOrCreate(
             [
@@ -89,8 +100,8 @@ class ProgressController extends ApiController
             ],
             [
                 'course_id' => $course->id,
-                'watch_seconds' => $validated['watch_seconds'],
-                'percent_complete' => $validated['percent_complete'],
+                'watch_seconds' => $finalWatchSeconds,
+                'percent_complete' => $finalPercentComplete,
                 'is_completed' => $isCompleted,
                 'last_watched_at' => now(),
             ]
@@ -99,9 +110,9 @@ class ProgressController extends ApiController
         return $this->successResponse([
             'progress' => [
                 'course_slug' => $course->slug,
-                'part_number' => $part->part_number,
-                'watch_seconds' => $progress->watch_seconds,
-                'percent_complete' => $progress->percent_complete,
+                'part_number' => (int) $part->part_number,
+                'watch_seconds' => (int) $progress->watch_seconds,
+                'percent_complete' => (int) $progress->percent_complete,
                 'is_completed' => (bool) $progress->is_completed,
             ],
         ]);
@@ -109,6 +120,7 @@ class ProgressController extends ApiController
 
     /**
      * Get the latest active course & part for Scrimba-style "Jump Back In" hero card.
+     * Serves exclusively authoritative server-persisted state with zero demo/mock fallback.
      */
     public function getActiveLearning(Request $request): JsonResponse
     {
@@ -132,11 +144,11 @@ class ProgressController extends ApiController
                 'course_title_ar' => $latest->course->title_ar,
                 'course_title_en' => $latest->course->title_en,
                 'cover_image_url' => $latest->course->cover_image_url,
-                'part_number' => $latest->coursePart->part_number,
+                'part_number' => (int) $latest->coursePart->part_number,
                 'part_title_ar' => $latest->coursePart->title_ar,
                 'part_title_en' => $latest->coursePart->title_en,
-                'watch_seconds' => $latest->watch_seconds,
-                'percent_complete' => $latest->percent_complete,
+                'watch_seconds' => (int) $latest->watch_seconds,
+                'percent_complete' => (int) $latest->percent_complete,
                 'is_completed' => (bool) $latest->is_completed,
                 'last_watched_at' => $latest->last_watched_at?->toIso8601String(),
             ],
@@ -165,10 +177,10 @@ class ProgressController extends ApiController
 
         $partsProgress = $progressRecords->mapWithKeys(function ($record) {
             return [
-                $record->coursePart->part_number => [
-                    'percent_complete' => $record->percent_complete,
+                (int) $record->coursePart->part_number => [
+                    'percent_complete' => (int) $record->percent_complete,
                     'is_completed' => (bool) $record->is_completed,
-                    'watch_seconds' => $record->watch_seconds,
+                    'watch_seconds' => (int) $record->watch_seconds,
                 ],
             ];
         });

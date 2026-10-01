@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { parseVideoUrl, formatTimestamp } from '@/lib/video';
-import { Play, Lock, Sparkles, Ticket, ShieldCheck, RefreshCw, CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Play, Lock, Sparkles, Ticket, ShieldCheck, RefreshCw, CheckCircle2, ArrowLeft, ArrowRight, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useWatchDepth } from '@/components/analytics/use-watch-depth';
 import { Link } from '@/i18n/routing';
+import { LessonWatermarkOverlay } from './LessonWatermarkOverlay';
+import { WatermarkData, PaywallPricing } from '@/hooks/useLessonPlayback';
 
 interface LessonVideoPlayerProps {
   videoUrl: string;
@@ -17,6 +19,8 @@ interface LessonVideoPlayerProps {
   isUnlocked: boolean;
   startSeconds?: number;
   watermarkText?: string;
+  watermarkData?: WatermarkData | null;
+  pricing?: PaywallPricing | null;
   nextPart?: { part_number: number; title: string; duration_minutes: number } | null;
   onBuyPart: () => void;
   onBuyBundle: () => void;
@@ -33,6 +37,8 @@ export function LessonVideoPlayer({
   isUnlocked,
   startSeconds = 0,
   watermarkText = 'KNZIN-LEARNER',
+  watermarkData,
+  pricing,
   nextPart,
   onBuyPart,
   onBuyBundle,
@@ -81,7 +87,7 @@ export function LessonVideoPlayer({
           <div className="space-y-1.5">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 text-accent text-xs font-black">
               <Ticket className="w-3.5 h-3.5" />
-              <span>1 {locale === 'ar' ? 'تذكرة سحب ترويجية مجانية' : 'Promotional Ticket'}</span>
+              <span>{pricing?.part_promotional_tickets ?? 1} {locale === 'ar' ? 'تذكرة سحب ترويجية مجانية' : 'Promotional Ticket'}</span>
             </span>
 
             <h3 className="text-lg sm:text-xl font-black text-white">
@@ -92,8 +98,8 @@ export function LessonVideoPlayer({
 
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               {locale === 'ar'
-                ? 'احصل على المحتوى الكامل، الفيديو بدقة عالية، والملفات المرفقة بـ 2$ فقط (2,000 د.ع) بدون أي اشتراكات دورية.'
-                : 'Get full access, high-definition video, and downloadable resources for only $2.00 (2,000 IQD) with lifetime access.'}
+                ? `احصل على المحتوى الكامل، الفيديو بدقة عالية، والملفات المرفقة بـ ${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)}$ فقط بدون أي اشتراكات دورية.`
+                : `Get full access, high-definition video, and downloadable resources for only $${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)} with lifetime access.`}
             </p>
           </div>
 
@@ -102,18 +108,26 @@ export function LessonVideoPlayer({
             <button
               type="button"
               onClick={onBuyPart}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>{locale === 'ar' ? 'فتح هذا الجزء (2$ / 2,000 د.ع)' : 'Unlock This Part ($2.00)'}</span>
+              <span>
+                {locale === 'ar'
+                  ? `فتح هذا الجزء (${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)}$)`
+                  : `Unlock This Part ($${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)})`}
+              </span>
             </button>
 
             <button
               type="button"
               onClick={onBuyBundle}
-              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-accent" />
-              <span>{locale === 'ar' ? 'الباقة كاملة 10$ (15 تذكرة)' : 'Full Bundle $10 (15 Tickets)'}</span>
+              <span>
+                {locale === 'ar'
+                  ? `الباقة كاملة ${((pricing?.bundle_price_cents ?? 1000) / 100).toFixed(2)}$ (${pricing?.bundle_promotional_tickets ?? 15} تذكرة)`
+                  : `Full Bundle $${((pricing?.bundle_price_cents ?? 1000) / 100).toFixed(2)} (${pricing?.bundle_promotional_tickets ?? 15} Tickets)`}
+              </span>
             </button>
           </div>
 
@@ -129,19 +143,34 @@ export function LessonVideoPlayer({
 
   return (
     <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800 shadow-2xl group">
-      {/* Dynamic Watermark Stamp (Anti-piracy invariant 3) */}
-      <div className="absolute top-4 start-4 z-20 pointer-events-none opacity-30 select-none text-[10px] font-mono text-white/70 bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm">
-        {watermarkText} • {new Date().toISOString().slice(0, 10)}
-      </div>
+      {/* Drifting HTML5 Canvas Anti-Piracy Watermark */}
+      <LessonWatermarkOverlay watermark={watermarkData ?? null} />
 
-      {isPlaying && parsedVideo.embedUrl ? (
-        <iframe
-          src={parsedVideo.embedUrl}
-          title={partTitle}
-          className="w-full h-full border-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
+      {/* Static Fallback Watermark */}
+      {!watermarkData && (
+        <div className="absolute top-4 start-4 z-20 pointer-events-none opacity-30 select-none text-[10px] font-mono text-white/70 bg-black/40 px-2 py-0.5 rounded backdrop-blur-xs">
+          {watermarkText} • {new Date().toISOString().slice(0, 10)}
+        </div>
+      )}
+
+      {isPlaying ? (
+        parsedVideo.embedUrl ? (
+          <iframe
+            src={parsedVideo.embedUrl}
+            title={partTitle}
+            className="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        ) : (
+          <video
+            src={videoUrl}
+            controls
+            autoPlay
+            playsInline
+            className="w-full h-full object-contain bg-black"
+          />
+        )
       ) : (
         /* Poster Frame Pre-render */
         <div className="relative w-full h-full bg-slate-900 flex items-center justify-center cursor-pointer select-none" onClick={handleStartPlay}>

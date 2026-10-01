@@ -12,11 +12,13 @@ import {
   Sparkles,
   ClipboardCheck,
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  Loader2,
 } from 'lucide-react';
 import { LessonResource } from '@/lib/course-content';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { apiClient } from '@/lib/api-client';
 
 interface LessonTabsProps {
   summary: string;
@@ -44,6 +46,31 @@ export function LessonTabs({
   const isRtl = locale === 'ar';
   const [userNote, setUserNote] = useState('');
   const [isSaved, setIsSaved] = useState(false);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  const handleDownloadResource = async (resourceId: string) => {
+    setDownloadingId(resourceId);
+    setDownloadError(null);
+
+    try {
+      const data = await apiClient<{
+        resource_id: string;
+        download_url: string;
+        filename: string;
+      }>(`/lessons/${courseSlug}/parts/${partNumber}/downloads/${resourceId}`, {
+        method: 'POST',
+      });
+
+      if (data?.download_url) {
+        window.open(data.download_url, '_blank');
+      }
+    } catch (err: any) {
+      setDownloadError(err?.message || (isRtl ? 'فشل تحميل الملف، يرجى المحاولة لاحقاً.' : 'Failed to download resource.'));
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   // Vocational checklist state
   const checklistKey = `knzin_checklist_${courseSlug}_part_${partNumber}`;
@@ -303,6 +330,12 @@ export function LessonTabs({
             {isRtl ? 'الملفات والمخططات الملحقة' : 'Downloadable Schematics & Resources'}
           </h3>
 
+          {downloadError && (
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-500/20 text-xs text-red-600">
+              {downloadError}
+            </div>
+          )}
+
           {!isUnlocked ? (
             <div className="p-8 rounded-xl border border-dashed border-border-strong text-center space-y-3 bg-surface-secondary/40">
               <FolderArchive className="w-10 h-10 text-content-muted mx-auto" />
@@ -318,16 +351,20 @@ export function LessonTabs({
           ) : resources && resources.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {resources.map((res, idx) => (
-                <a
+                <button
                   key={idx}
-                  href={res.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-lg border border-border-subtle bg-surface-primary hover:border-border transition-colors flex items-center justify-between gap-3 group"
+                  type="button"
+                  onClick={() => handleDownloadResource(res.id)}
+                  disabled={downloadingId === res.id}
+                  className="p-3 rounded-lg border border-border-subtle bg-surface-primary hover:border-border transition-colors flex items-center justify-between gap-3 group text-start w-full cursor-pointer disabled:opacity-70"
                 >
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-md bg-surface-secondary text-primary">
-                      <FolderArchive className="w-4 h-4" />
+                      {downloadingId === res.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <FolderArchive className="w-4 h-4" />
+                      )}
                     </div>
                     <div>
                       <h5 className="text-xs font-semibold text-content-primary group-hover:text-primary transition-colors">
@@ -338,7 +375,10 @@ export function LessonTabs({
                       </span>
                     </div>
                   </div>
-                </a>
+                  <span className="text-[11px] font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    {isRtl ? 'تحميل' : 'Download'}
+                  </span>
+                </button>
               ))}
             </div>
           ) : (

@@ -28,13 +28,15 @@ export class ApiError extends Error {
   public code: string;
   public httpStatus: number;
   public errors?: Record<string, string[]>;
+  public data?: any;
 
-  constructor(message: string, code = 'ERR_UNKNOWN', httpStatus = 400, errors?: Record<string, string[]>) {
+  constructor(message: string, code = 'ERR_UNKNOWN', httpStatus = 400, errors?: Record<string, string[]>, data?: any) {
     super(message);
     this.name = 'ApiError';
     this.code = code;
     this.httpStatus = httpStatus;
     this.errors = errors;
+    this.data = data;
   }
 }
 
@@ -76,7 +78,13 @@ export async function apiClient<T = any>(
   const data: JSendResponse<T> = await response.json();
 
   if (data.status === 'fail') {
-    throw new ApiError(data.message, data.code, response.status, data.errors);
+    throw new ApiError(
+      data.message,
+      data.code,
+      response.status,
+      data.errors,
+      (data as any).pricing || (data as any).data
+    );
   }
 
   if (data.status === 'error') {

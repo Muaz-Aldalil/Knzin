@@ -13,6 +13,8 @@ import { LessonFooterNav } from '@/components/lesson/LessonFooterNav';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
+import { useLessonPlayback } from '@/hooks/useLessonPlayback';
+import { useLearnerDashboard } from '@/hooks/useLearnerDashboard';
 
 interface LessonPlayerClientViewProps {
   slug: string;
@@ -33,45 +35,23 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItemData | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-  // Track purchased parts in session (Part 1 is free preview by default) (DEF-05C)
-  const [purchasedParts, setPurchasedParts] = useState<Set<number>>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const storedBySlug = localStorage.getItem(`knzin_purchased_parts_${slug}`);
-        const storedById = initialCourse ? localStorage.getItem(`knzin_purchased_parts_${initialCourse.id}`) : null;
-        const stored = storedBySlug || storedById;
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
-            return new Set([1, ...parsed]);
-          }
-        }
-      } catch {}
-    }
-    return new Set([1]);
-  });
+  // Authoritative Playback & Entitlement Hook (eliminating DEF-05B)
+  const {
+    streamUrl,
+    watermark,
+    isLocked,
+    pricing,
+    isLoading: isPlaybackLoading,
+    refreshAuth,
+  } = useLessonPlayback(slug, partNumber);
+
+  const { enrolledCourses, refetch: refetchDashboard } = useLearnerDashboard();
+  const currentEnrolled = enrolledCourses.find((c) => c.slug === slug);
 
   const { data: course, isLoading, isError, error } = useCourseDetail(
     slug,
     initialCourse || undefined
   );
-
-  // Synchronize purchased parts when course resolves (DEF-05C)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && course) {
-      try {
-        const stored =
-          localStorage.getItem(`knzin_purchased_parts_${course.id}`) ||
-          localStorage.getItem(`knzin_purchased_parts_${slug}`);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
-            setPurchasedParts((prev) => new Set([...prev, ...parsed]));
-          }
-        }
-      } catch {}
-    }
-  }, [course, slug]);
 
   // State 1: Loading (only when no initialCourse is present)
   if (isLoading && !course) {
@@ -145,7 +125,7 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
         content: 'التزم بإرشادات السلامة ودقة القياس لتفادي إتلاف المواد والمعدات في الورشة.',
       };
 
-  const isUnlocked = purchasedParts.has(partNumber) || partNumber === 1;
+  const isUnlocked = partNumber === 1 || (!isLocked && !isPlaybackLoading && !!streamUrl);
 
   // Checkout Handlers
   const handleBuyPart = () => {
@@ -177,14 +157,21 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
   };
 
   // Build sidebar items
-  const sidebarParts: SidebarPartItem[] = (course.parts || []).map((p) => ({
-    id: p.id,
-    part_number: p.part_number,
-    title: locale === 'ar' ? p.title_ar : p.title_en,
-    duration_minutes: p.duration_minutes,
-    isUnlocked: purchasedParts.has(p.part_number) || p.part_number === 1,
-    isCompleted: p.part_number < partNumber,
-  }));
+  const sidebarParts: SidebarPartItem[] = (course.parts || []).map((p) => {
+    const isThisPartUnlocked =
+      p.part_number === 1 ||
+      currentEnrolled?.entitlement_type === 'bundle' ||
+      (p.part_number === partNumber && isUnlocked);
+
+    return {
+      id: p.id,
+      part_number: p.part_number,
+      title: locale === 'ar' ? p.title_ar : p.title_en,
+      duration_minutes: p.duration_minutes,
+      isUnlocked: isThisPartUnlocked,
+      isCompleted: p.part_number < partNumber,
+    };
+  });
 
   // Build Previous/Next navigation metadata
   const totalParts = course.parts?.length || 6;
@@ -237,7 +224,7 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
         {/* Left Column (Main Stage: Video + Tabs) */}
         <div className="flex-1 w-full space-y-6">
           <LessonVideoPlayer
-            videoUrl={extendedContent?.videoUrl || 'https://www.youtube.com/watch?v=5VzYg8k9m0M'}
+            videoUrl={streamUrl || extendedContent?.videoUrl || ''}
             durationSeconds={extendedContent?.duration_seconds || (currentPartData?.duration_minutes || 45) * 60}
             partNumber={partNumber}
             partTitle={partTitle}
@@ -245,6 +232,8 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
             courseSlug={slug}
             isUnlocked={isUnlocked}
             startSeconds={startSeconds}
+            watermarkData={watermark}
+            pricing={pricing}
             nextPart={nextPart}
             onBuyPart={handleBuyPart}
             onBuyBundle={handleBuyBundle}
@@ -283,7 +272,11 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
       {checkoutItem && (
         <CheckoutBottomSheet
           isOpen={isCheckoutOpen}
-          onClose={() => setIsCheckoutOpen(false)}
+          onClose={() => {
+            setIsCheckoutOpen(false);
+            refreshAuth();
+            refetchDashboard();
+          }}
           item={checkoutItem}
         />
       )}

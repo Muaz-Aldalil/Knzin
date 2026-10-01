@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Phase 7: Scheduled hourly run for 48h order TTL expiration
 Schedule::command('orders:expire-pending')->hourly();
+
+// Feature 005: Scheduled reconciliation for asynchronous ticket generation
+Schedule::command('knzin:reconcile-ticket-generation')->everyFiveMinutes();

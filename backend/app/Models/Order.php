@@ -27,6 +27,8 @@ class Order extends Model
         'display_price_label',
         'promotional_tickets_granted',
         'status',
+        'tickets_status',
+        'tickets_minted_at',
         'idempotency_key',
         'legal_terms_agreed',
         'terms_agreed_ip',
@@ -48,6 +50,7 @@ class Order extends Model
             'exchange_rate' => 'decimal:4',
             'paid_amount_gateway' => 'integer',
             'promotional_tickets_granted' => 'integer',
+            'tickets_minted_at' => 'datetime',
             'legal_terms_agreed' => 'boolean',
             'terms_agreed_at' => 'datetime',
             'quiz_answers' => 'array',
@@ -70,6 +73,22 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Get all course entitlements granted by this order.
+     */
+    public function courseEntitlements(): HasMany
+    {
+        return $this->hasMany(CourseEntitlement::class);
+    }
+
+    /**
+     * Get all promotional tickets minted for this order.
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
     }
 
     /**

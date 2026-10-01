@@ -30,6 +30,8 @@ import {
 import { SearchCommandDialog } from '@/components/search/SearchCommandDialog';
 import MobileNavSheet from './MobileNavSheet';
 import { HowItWorksModal } from './HowItWorksModal';
+import { TicketLedgerDrawer } from './TicketLedgerDrawer';
+import { useLearnerTickets } from '@/hooks/useLearnerTickets';
 
 interface AuthUser {
   id: string;
@@ -62,10 +64,13 @@ export default function HeaderHUD() {
   const { resolvedTheme, toggleTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
+  const { totalTickets } = useLearnerTickets();
+
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  const [isTicketsDrawerOpen, setIsTicketsDrawerOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -247,15 +252,17 @@ export default function HeaderHUD() {
             <Search className="w-4 h-4" />
           </button>
 
-          {/* Ticket Counter HUD */}
-          <Link
-            href="/raffle"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-secondary text-xs font-medium transition-colors"
-            title={isRtl ? 'تذاكر السحب الترويجية المجانية' : 'Promotional Raffle Tickets'}
+          {/* Ticket Counter HUD — opens TicketLedgerDrawer without navigating */}
+          <button
+            type="button"
+            onClick={() => setIsTicketsDrawerOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-secondary text-xs font-medium transition-colors cursor-pointer"
+            title={isRtl ? 'دفتر تذاكر السحب الترويجية' : 'Promotional Raffle Tickets Ledger'}
+            aria-label={isRtl ? 'دفتر تذاكر السحب الترويجية' : 'Promotional Raffle Tickets Ledger'}
           >
             <Ticket className="w-3.5 h-3.5 text-accent" />
-            <span>0 <span className="hidden sm:inline text-content-muted">{tCommon('ticket')}</span></span>
-          </Link>
+            <span>{totalTickets} <span className="hidden sm:inline text-content-muted">{tCommon('ticket')}</span></span>
+          </button>
 
           {/* Desktop-only: Wallet Balance HUD (>= 1024px) */}
           <div
@@ -296,17 +303,11 @@ export default function HeaderHUD() {
                     </div>
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem
-                      disabled
-                      className="flex items-center justify-between gap-2 w-full cursor-not-allowed opacity-75"
-                    >
-                      <div className="flex items-center gap-2">
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="flex items-center gap-2 w-full">
                         <UserIcon className="w-4 h-4 text-primary" />
-                        <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Learning & Tickets'}</span>
-                      </div>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-semibold">
-                        {isRtl ? 'قريباً' : 'Soon'}
-                      </span>
+                        <span>{isRtl ? 'لوحة تدريبي ودوراتي' : 'My Learning Hub'}</span>
+                      </Link>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem asChild>
@@ -398,6 +399,12 @@ export default function HeaderHUD() {
       <HowItWorksModal
         open={isHowItWorksOpen}
         onOpenChange={setIsHowItWorksOpen}
+      />
+
+      {/* Ticket Ledger Sliding Drawer */}
+      <TicketLedgerDrawer
+        isOpen={isTicketsDrawerOpen}
+        onClose={() => setIsTicketsDrawerOpen(false)}
       />
     </header>
   );

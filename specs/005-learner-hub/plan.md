@@ -280,8 +280,8 @@ Phase 2: Private Media Provisioning & Backend API Deployment (MANDATORY PREREQUI
 └── Run backend automated test suite to confirm authorization gates pass
 
 Phase 3: Public YouTube Paid Media Lockdown
-├── Set all YouTube videos for paid parts (Part 2+) to private or unlisted/deleted
-├── Confirm direct YouTube playback for paid parts is completely disabled
+├── Set all YouTube videos for paid parts (Part 2+) to Private or Deleted in YouTube Studio (Unlisted is strictly prohibited as it does not enforce authorization)
+├── Confirm direct YouTube playback for paid parts is completely disabled (returns video unavailable)
 └── At this point, no external party can stream paid content via old YouTube links
 
 Phase 4: Frontend Cutover & Edge Cache Purge

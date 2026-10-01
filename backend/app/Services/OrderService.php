@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\GenerateTicketsJob;
 use App\Models\Course;
 use App\Models\CoursePart;
 use App\Models\Order;
@@ -84,6 +85,7 @@ class OrderService
                 'display_price_label' => $displayPriceLabel,
                 'promotional_tickets_granted' => $promotionalTickets,
                 'status' => 'pending',
+                'tickets_status' => 'pending',
                 'idempotency_key' => $data['idempotency_key'],
                 'legal_terms_agreed' => true,
                 'terms_agreed_ip' => $clientIp ?: '127.0.0.1',
@@ -106,6 +108,31 @@ class OrderService
                 'order' => $order->load(['items', 'user']),
                 'is_duplicate' => false,
             ];
+        });
+    }
+
+    /**
+     * Fulfill a completed order: creates course entitlements and dispatches asynchronous ticket generation.
+     */
+    public function fulfillOrder(Order $order): Order
+    {
+        return DB::transaction(function () use ($order) {
+            $lockedOrder = Order::where('id', $order->id)->lockForUpdate()->firstOrFail();
+
+            if ($lockedOrder->status !== 'completed') {
+                $lockedOrder->update([
+                    'status' => 'completed',
+                    'tickets_status' => 'pending',
+                ]);
+            }
+
+            // 1. Synchronously create verified course entitlements
+            app(EntitlementService::class)->grantAfterFulfillment($lockedOrder);
+
+            // 2. Asynchronously dispatch ticket minting strictly after transaction commit
+            GenerateTicketsJob::dispatch($lockedOrder->id)->afterCommit();
+
+            return $lockedOrder->fresh(['items', 'user', 'courseEntitlements']);
         });
     }
 

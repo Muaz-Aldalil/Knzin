@@ -51,7 +51,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       2: {
         part_number: 2,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 3600,
         summary_ar: 'مقارنة تقنية بين الألواح أحادية البلورة (Monocrystalline) وثنائية الوجه (Bifacial) وتقنية TopCon، وحساب الفولتية في درجات الحرارة القصوى.',
         summary_en: 'Technical comparison between Mono-PERC, TopCon, and Bifacial panels, calculating string voltage under thermal extremes.',
@@ -88,7 +88,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       3: {
         part_number: 3,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 2700,
         summary_ar: 'تصميم وبناء الهياكل الحديدية المجلفنة على الساخن، ضبط زاوية الميل المناسبة لموقع التركيب، وحماية الألواح من العواصف الترابية والرياح العاتية.',
         summary_en: 'Hot-dip galvanized steel framing, tilt angle calibration, and aerodynamic anchoring against desert dust storms.',
@@ -125,7 +125,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       4: {
         part_number: 4,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 4200,
         summary_ar: 'برمجة وإعداد إنفرترات الهايبرد الحديثة (Deye, Growatt, Voltronic)، ضبط مسارات الطاقة، وإعدادات الشحن الذكي من الألواح والشبكة والمولد.',
         summary_en: 'Programming modern hybrid inverters (Deye, Growatt), energy flow automation, and multi-source charging logic.',
@@ -162,7 +162,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       5: {
         part_number: 5,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 3900,
         summary_ar: 'تجميع وتوصيل بطاريات فوسفات الحديد الليثيوم LiFePO4، برمجة نظام إدارة البطارية (BMS)، وتوصيل كوابل الاتصال CAN/RS485 مع الإنفرتر.',
         summary_en: 'Assembling LiFePO4 battery banks, programming Smart BMS units, and synchronizing CAN/RS485 communication protocols.',
@@ -199,7 +199,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       6: {
         part_number: 6,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 3300,
         summary_ar: 'تصميم لوحة القواطع DC/AC، اختيار سعة الفيوزات، تركيب موانع الصواعق SPD، وبناء منظومة تأريض قياسية بمقاومة أقل من 5 أوم.',
         summary_en: 'Designing DC/AC distribution panels, sizing thermal fuses, surge protection devices, and grounding earthing pit engineering.',
@@ -236,7 +236,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       7: {
         part_number: 7,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 3600,
         summary_ar: 'دمج منظومة الطاقة الشمسية مع سحب المولد الأهلي والكهرباء الوطنية عبر مفاتيح التحويل التلقائي ATS، ومنع ارتداد التيار.',
         summary_en: 'Interfacing solar arrays with diesel neighborhood generators and utility grid via ATS switchboards without backfeed.',
@@ -273,7 +273,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       8: {
         part_number: 8,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 3000,
         summary_ar: 'الفحص الدوري بالكاميرات الحرارية لكشف النقاط الساخنة، صيانة كوابل الربط، غسيل الألواح الدوري، وتأسيس عقود الصيانة المربحة للزبائن.',
         summary_en: 'Preventative maintenance with thermal infrared imaging, array cleaning protocols, and drafting lucrative enterprise maintenance contracts.',
@@ -353,7 +353,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       2: {
         part_number: 2,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 3000,
         summary_ar: 'الكشف الميداني عن التسريبات الدقيقة في أنابيب النحاس ومفاصل الفلير باستخدام غاز النيتروجين الجاف ورغوة المايكرو.',
         summary_en: 'Field diagnostics for microscopic refrigerant leaks in copper line sets and flare fittings using dry nitrogen.',
@@ -390,7 +390,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       3: {
         part_number: 3,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 3300,
         summary_ar: 'سحب الرطوبة والهواء بمضخة الفاكيوم ثنائية المراحل والوصول إلى 500 ميكرون، وشحن الغاز بدقة الجرام بالميزان الرقمي.',
         summary_en: 'Dehydration with two-stage rotary vane vacuum pumps down to 500 microns, and precision digital scale charging.',
@@ -427,7 +427,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       4: {
         part_number: 4,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 3900,
         summary_ar: 'تشخيص أعطال كروت الإنفرتر الإلكترونية (PCB)، فحص موديلات IPM بالدايود، وتتبع إشارات حساسات الحرارة ومحركات المراوح BLDC.',
         summary_en: 'Diagnostics of inverter split PCB electronics, testing IPM power transistors, and troubleshooting BLDC DC fan motors.',
@@ -464,7 +464,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       5: {
         part_number: 5,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 3600,
         summary_ar: 'خطوات استبدال ضاغط السبلت المحترق، تقنية اللحام بأكسي-أسيتيلين تحت تدفق النيتروجين لمنع التفحم، وغسيل الدورة بمذيب R141b.',
         summary_en: 'Burnout compressor overhaul, nitrogen-purge oxy-acetylene silver brazing, and system decontamination flush with R141b.',
@@ -544,7 +544,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       2: {
         part_number: 2,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 2700,
         summary_ar: 'تهيئة مسجل الفيديو الشبكي (NVR)، تخصيص نطاقات الـ IP الثابتة عبر أدوات البحث الشبكي، وضبط ضغط الفيديو H.265+ لحفظ مساحة الهارد.',
         summary_en: 'NVR initialization, static IP allocation via SADP/ConfigTool, and configuring advanced H.265+ smart video compression codecs.',
@@ -581,7 +581,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       3: {
         part_number: 3,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 3000,
         summary_ar: 'برمجة خوارزميات الذكاء الاصطناعي AcuSense و WizSense لكشف الأشخاص والسيارات، رسم خطوط التسلل الوهمية، والتعرف على لوحات السيارات.',
         summary_en: 'Programming AcuSense and WizSense AI analytics for vehicle/pedestrian filtering, virtual tripwires, and automatic license plate recognition.',
@@ -618,7 +618,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       4: {
         part_number: 4,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 2100,
         summary_ar: 'تفعيل خدمة السحابة P2P وتطبيقات الهواتف الذكية (Hik-Connect / DMSS)، إدارة صلاحيات المستخدمين، وحماية المنظومة من الاختراق الشبكي.',
         summary_en: 'P2P cloud remote viewing setup (Hik-Connect / DMSS), multi-tier user permission management, and cybersecurity hardening against brute-force attacks.',
@@ -698,7 +698,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       2: {
         part_number: 2,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 3600,
         summary_ar: 'إتقان تدريج الجلد (Skin Fade) بأنواعه: المنخفض (Low)، المتوسط (Mid)، والعالي (High Fade)، وتقنية حركة الـ Flick-out السريعة.',
         summary_en: 'Mastering Skin Fade variations: Low, Mid, and High Fades, leveraging the wrist flick-out blending motion.',
@@ -735,7 +735,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       3: {
         part_number: 3,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 3000,
         summary_ar: 'القص الكلاسيكي بالمقص، تقنية المقص فوق المشط (Scissor Over Comb)، نحت الطبقات وتوزيع الكثافة بمقص التخفيف (Thinning Shears).',
         summary_en: 'Scissor work precision, scissor-over-comb blending, sectioning hair crowns, and weight reduction with thinning shears.',
@@ -772,7 +772,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       4: {
         part_number: 4,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 2700,
         summary_ar: 'نحت وتحديد اللحية بالشفرة الكلاسيكية (Straight Razor)، تطبيق المناشف البخارية الحارة، والعناية بالبشرة ومساج الوجه بالزيوت.',
         summary_en: 'Traditional straight razor beard sculpting, hot towel thermal conditioning, and facial skin rejuvenation oils.',
@@ -809,7 +809,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       5: {
         part_number: 5,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 2100,
         summary_ar: 'معايير النظافة والتعقيم العالمية في الصالون، استخدام محاليل بارباسايد الطبية، وأجهزة الأشعة فوق البنفسجية UV لمنع انتقال العدوى.',
         summary_en: 'Clinical sanitation standards, hospital-grade Barbicide immersion, and UV sterilization cabinets preventing fungal infections.',
@@ -846,7 +846,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       6: {
         part_number: 6,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 2700,
         summary_ar: 'دراسة جدوى تأسيس صالون حلاقة عصري، حساب تكلفة المعدات والديكور، أنظمة مشاركة الأرباح مع الحلاقين، والتسويق الرقمي لجذب الزبائن.',
         summary_en: 'Financial feasibility of opening a modern barbershop, equipment capex, barber commission split structures, and Instagram transformation marketing.',
@@ -926,7 +926,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       2: {
         part_number: 2,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 2700,
         summary_ar: 'معايرة طاحونة الإسبريسو المسطحة والمخروطية، توزيع البن بأداة WDT، الكبس المتوازن، وتحقيق نسبة الاستخلاص الذهبية (Brew Ratio 1:2).',
         summary_en: 'Dialing-in flat and conical burr grinders, WDT puck distribution, precision tamping, and mastering the golden 1:2 espresso extraction ratio.',
@@ -963,7 +963,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       3: {
         part_number: 3,
-        videoUrl: 'https://www.youtube.com/watch?v=5VzYg8k9m0M',
+        videoUrl: '',
         duration_seconds: 3000,
         summary_ar: 'ديناميكا تبخير الحليب، إدخال الهواء وتحويل بروتينات الحليب إلى رغوة مايكروفوم حريرية، وتقنيات الرسم الاحترافي باللاتيه آرت.',
         summary_en: 'Milk steaming fluid dynamics, microfoam texturing chemistry, temperature control, and free-pour latte art patterns.',
@@ -1000,7 +1000,7 @@ export const ADDITIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       4: {
         part_number: 4,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 2100,
         summary_ar: 'تنظيم مسار العمل (Workflow) خلف بار القهوة، سرعة تلبية الطلبات في ساعات الذروة، صيانة وتنظيف ماكينة الإسبريسو بالباك فلاش، وإدارة هدر البن.',
         summary_en: 'Espresso bar workflow ergonomics, rush hour speed, daily chemical backflushing maintenance, and commercial waste reduction logs.',

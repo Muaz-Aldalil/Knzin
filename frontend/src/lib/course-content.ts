@@ -82,7 +82,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       2: {
         part_number: 2,
-        videoUrl: 'https://www.youtube.com/watch?v=gYk8Fv8G8mY',
+        videoUrl: '',
         duration_seconds: 3300, // 55m
         summary_ar: 'التدريب العملي على مكائن الصقل الدوارة (Rotary) والمدارية (Dual Action)، والتعامل مع الخدوش العميقة وحروق الشمس الشائعة في مناخ العراق.',
         summary_en: 'Hands-on rotary and dual-action polisher mechanics, tackling severe scratches and UV clear coat oxidation common in hot climates.',
@@ -119,7 +119,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       3: {
         part_number: 3,
-        videoUrl: 'https://www.youtube.com/watch?v=kYv9G8l7N1Q',
+        videoUrl: '',
         duration_seconds: 3000,
         summary_ar: 'مرحلة إنهاء السطح (Finishing) وإزالة آثار الهولوجرام (Holograms) وعلامات البفر للوصول إلى انعكاس نقي وعميق كالمرآة.',
         summary_en: 'Finishing stage mastery: eliminating buffer trails and holograms to achieve flawless optical clarity and deep mirror reflection.',
@@ -156,7 +156,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       4: {
         part_number: 4,
-        videoUrl: 'https://www.youtube.com/watch?v=vVz9Y1k3m4L',
+        videoUrl: '',
         duration_seconds: 2400,
         summary_ar: 'تطهير وإزالة الزيوت والمواد الشمعية من مسام الطلاء بواسطة محاليل الـ IPA ومذيبات السيليكون لضمان التماسك الذري لطبقة السيراميك.',
         summary_en: 'De-oiling and stripping residual lubricants using IPA and specialized prep solvents for true chemical bonding of ceramic coatings.',
@@ -193,7 +193,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       5: {
         part_number: 5,
-        videoUrl: 'https://www.youtube.com/watch?v=7X9m2k8v1Yq',
+        videoUrl: '',
         duration_seconds: 3600,
         summary_ar: 'التطبيق الاحترافي لطبقات النانو سيراميك عالي الصلابة 9H، وتوقيت مسح الفلاش (Flash Time)، والمعالجة بالمصابيح الحرارية تحت الحمراء.',
         summary_en: 'Professional 9H ceramic coating application, timing the flash rainbow effect, and curing with shortwave infrared lamps.',
@@ -230,7 +230,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       6: {
         part_number: 6,
-        videoUrl: 'https://www.youtube.com/watch?v=1F9k3v7Y8mQ',
+        videoUrl: '',
         duration_seconds: 3000,
         summary_ar: 'بناء باقات الاشتراكات الدورية للعملاء، وكتابة شروط الضمان، وتجهيز ورشة العناية المحترفة بالتهوية والإضاءة وتصريف المياه في العراق.',
         summary_en: 'Designing customer retention maintenance plans, warranty terms, and architectural layout for an auto-detailing studio in Iraq.',
@@ -309,7 +309,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       2: {
         part_number: 2,
-        videoUrl: 'https://www.youtube.com/watch?v=2X9m3k8v7Yq',
+        videoUrl: '',
         duration_seconds: 3100,
         summary_ar: 'تشخيص أعطال دائرة الشحن (Hydra/Tigris) وأعطال الباور عبر قياس ممانعات خطوط الإمداد (Diode Mode) واستخدام الباور سبلاي الرقمي.',
         summary_en: 'Diagnosing charging circuits and no-power logic boards using diode mode readings and digital DC bench power supply signatures.',
@@ -346,7 +346,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       3: {
         part_number: 3,
-        videoUrl: 'https://www.youtube.com/watch?v=9Vz8Fv2G1mY',
+        videoUrl: '',
         duration_seconds: 3600,
         summary_ar: 'إتقان فك وتركيب رقاقات BGA والذاكرة والمعالج، وتنظيف الغراء الأسود (Underfill)، وطريقة الـ Reballing بالقوالب الحرارية.',
         summary_en: 'Advanced BGA chip desoldering, black underfill chemical removal, and precision stencil reballing with solder paste alloys.',
@@ -383,7 +383,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       4: {
         part_number: 4,
-        videoUrl: 'https://www.youtube.com/watch?v=4Yv8G9k1N3Q',
+        videoUrl: '',
         duration_seconds: 2800,
         summary_ar: 'قراءة المخططات الإلكترونية (Schematics) وتتبع الإشارات الرقمية عبر برامج ZXW و XinZhiZao و Wuxinji لتحديد المسارات المقطوعة وعمل البريدجات.',
         summary_en: 'Reading electronic schematics and tracing board buses using ZXW / XinZhiZao dongles to bridge broken micro-traces.',
@@ -420,7 +420,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       5: {
         part_number: 5,
-        videoUrl: 'https://www.youtube.com/watch?v=3K9m1k7v5Yq',
+        videoUrl: '',
         duration_seconds: 3200,
         summary_ar: 'تجديد شاشات OLED المنحنية والمستوية، فصل الزجاج المكسور بسلك الموليبدينوم 0.028mm، وكبس طبقات الغراء البصري OCA في الغرفة المعقمة.',
         summary_en: 'OLED screen refurbishing, separating broken cover glass with 0.028mm molybdenum wire, and cleanroom OCA optical lamination.',
@@ -457,7 +457,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       6: {
         part_number: 6,
-        videoUrl: 'https://www.youtube.com/watch?v=8Vz1Fv9G3mQ',
+        videoUrl: '',
         duration_seconds: 2900,
         summary_ar: 'إدارة ورشة الصيانة وتسعير الخدمات الإلكترونية، واستيراد قطع الغيار الأصلية والـ OEM من دبي والصين إلى العراق بأسعار تنافسية.',
         summary_en: 'Operating a lucrative phone repair business in Iraq, managing part inventories, and sourcing original OEM components.',
@@ -536,7 +536,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       2: {
         part_number: 2,
-        videoUrl: 'https://www.youtube.com/watch?v=5Vz1Fv8G9mY',
+        videoUrl: '',
         duration_seconds: 3400,
         summary_ar: 'بناء أنظمة التصميم القابلة للتوسع في Figma باستخدام Auto Layout v5 والمكونات الذكية (Variables & Design Tokens) لتوحيد الهوية.',
         summary_en: 'Building scalable Figma design systems using advanced Auto Layout, design variables, and tokenized typography and color palettes.',
@@ -573,7 +573,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       3: {
         part_number: 3,
-        videoUrl: 'https://www.youtube.com/watch?v=7X8m1k9v3Yq',
+        videoUrl: '',
         duration_seconds: 3200,
         summary_ar: 'تصميم تجربة تسوق متكاملة لتطبيقات التجارة الإلكترونية، سلة المشتريات، الدفع ببطاقات زين كاش والماستركارد، وتتبع الطلبات المباشر.',
         summary_en: 'Designing end-to-end mobile commerce, cart UX, ZainCash / local card checkout bottom sheets, and real-time courier tracking interfaces.',
@@ -610,7 +610,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       4: {
         part_number: 4,
-        videoUrl: 'https://www.youtube.com/watch?v=3Vz9Fv1G7mY',
+        videoUrl: '',
         duration_seconds: 2700,
         summary_ar: 'تحويل التصاميم الثابتة إلى نماذج تفاعلية حية (Interactive Prototypes) واختبار قابلية الاستخدام مع مستخدمين حقيقيين لاكتشاف الثغرات.',
         summary_en: 'Converting static mockups into interactive prototypes and conducting real user testing sessions to locate friction points.',
@@ -647,7 +647,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       5: {
         part_number: 5,
-        videoUrl: 'https://www.youtube.com/watch?v=9X8m3k1v5Yq',
+        videoUrl: '',
         duration_seconds: 2800,
         summary_ar: 'إعداد ملفات التصميم للتسليم النهائي للمطورين (Developer Handoff)، توليد مواصفات Tailwind CSS، وحل مشاكل الخطوط والأبعاد.',
         summary_en: 'Preparing design deliverables for developer handoff, exporting Tailwind CSS token specs, and eliminating layout discrepancies.',
@@ -684,7 +684,7 @@ export const VOCATIONAL_COURSES_CONTENT: Record<string, CourseExtendedData> = {
       },
       6: {
         part_number: 6,
-        videoUrl: 'https://www.youtube.com/watch?v=4F8k1v7Y3mQ',
+        videoUrl: '',
         duration_seconds: 3300,
         summary_ar: 'استراتيجيات الفريلانس، بناء بورتفوليو احترافي يجذب الشركات، وكيفية تسعير المشاريع بالدولار والدينار العراقي والتفاوض مع العملاء.',
         summary_en: 'Freelancing mastery: building a high-converting portfolio, pricing projects in USD/IQD, and landing enterprise clients in Iraq and the Gulf.',
