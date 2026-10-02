@@ -56,8 +56,8 @@ class AffiliateDashboardController extends Controller
         // 7. Active dynamic admin threshold
         $minPayoutCents = (int) $this->settingsService->get('affiliate.payout_min_cents', 5000);
 
-        // 8. Referral URLs
-        $baseUrl = rtrim((string) config('app.url', 'https://knzin.com'), '/');
+        // 8. Referral URLs (pointing to Next.js Frontend catalog where cookies are captured)
+        $baseUrl = rtrim((string) env('FRONTEND_URL', config('app.frontend_url', 'http://localhost:3000')), '/');
         $profile = $user->affiliateProfile;
         $customSlug = $profile?->custom_slug;
 

@@ -64,6 +64,18 @@ class AffiliateDashboardContractTest extends TestCase
                     ],
                 ],
             ]);
+
+        $canonicalUrl = (string) $response->json('data.referral_info.canonical_url');
+        $expectedFrontendUrl = rtrim((string) env('FRONTEND_URL', 'http://localhost:3000'), '/');
+        $this->assertStringStartsWith($expectedFrontendUrl, $canonicalUrl);
+        $this->assertStringContainsString('?ref=LRN-DASH1', $canonicalUrl);
+    }
+
+    public function test_web_root_redirects_referral_query_to_frontend(): void
+    {
+        $response = $this->get('/?ref=LRN-DASH1');
+        $expectedFrontendUrl = rtrim((string) env('FRONTEND_URL', 'http://localhost:3000'), '/');
+        $response->assertRedirect("{$expectedFrontendUrl}?ref=LRN-DASH1");
     }
 
     public function test_authenticated_ledger_returns_paginated_entries(): void
