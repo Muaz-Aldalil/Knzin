@@ -837,3 +837,16 @@ You verify.
 You converge.
 
 The human makes the product decisions and gives final acceptance.
+
+---
+
+# 32. DOCUMENT AND PDF PRODUCTION DELEGATION
+
+All project reports, documentation exports, printable summaries, and PDF generation must be delegated to and generated using `/opencode-delegate`.
+
+### Operating Rule
+
+* You act as the **orchestrator and planner**: you formulate the detailed brief, structure the data, verify the content, and enforce the constraints.
+* The **OpenCode CLI** acts as the implementer: executing the document rendering, styling, and PDF compilation.
+* You must not bypass this delegation model for PDF artifacts unless the human owner explicitly authorizes direct generation.
+
