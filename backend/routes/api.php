@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\AffiliateDashboardController;
+use App\Http\Controllers\AffiliatePayoutController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
@@ -8,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DrawController;
 use App\Http\Controllers\LessonPlaybackController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +37,9 @@ Route::prefix('v1')->group(function () {
     // Public Activity Feed Endpoints (US3 - Feature 004)
     Route::get('/activity/recent', [ActivityController::class, 'recent']);
 
+    // Referral Resolution Endpoints (Feature 006 - US1)
+    Route::get('/referrals/resolve/{codeOrSlug}', [ReferralController::class, 'resolve'])->middleware('throttle:60,1');
+
     // Checkout Endpoints (US1) - Throttled 60 req/min (DEF-02G)
     Route::post('/checkout/orders', [CheckoutController::class, 'store'])->middleware('throttle:60,1');
     Route::get('/checkout/orders/{orderNumber}', [CheckoutController::class, 'show']);
@@ -41,6 +47,14 @@ Route::prefix('v1')->group(function () {
     // Learner Hub & Ticket Ledger (Feature 005)
     Route::get('/user/dashboard', [DashboardController::class, 'index'])->middleware('auth:sanctum');
     Route::get('/user/tickets', [TicketController::class, 'index'])->middleware('auth:sanctum');
+
+    // Affiliate Portal Endpoints (Feature 006 - US4)
+    Route::get('/affiliate/dashboard', [AffiliateDashboardController::class, 'dashboard'])->middleware('auth:sanctum');
+    Route::get('/affiliate/ledger', [AffiliateDashboardController::class, 'ledger'])->middleware('auth:sanctum');
+
+    // Affiliate Payout Endpoints (Feature 006 - US5)
+    Route::post('/affiliate/payouts/request', [AffiliatePayoutController::class, 'requestPayout'])->middleware('auth:sanctum');
+    Route::get('/affiliate/payouts', [AffiliatePayoutController::class, 'history'])->middleware('auth:sanctum');
 
     // Lesson Playback & Protected Resources (Feature 005)
     Route::post('/lessons/{courseSlug}/parts/{partNumber}/playback-auth', [LessonPlaybackController::class, 'playbackAuth']);

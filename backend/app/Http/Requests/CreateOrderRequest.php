@@ -50,6 +50,8 @@ class CreateOrderRequest extends FormRequest
             'quiz_answers.experience_level' => ['required', 'string'],
             'quiz_answers.learning_goal' => ['required', 'string'],
             'quiz_answers.weekly_hours' => ['required', 'string'],
+            'referral_code' => ['nullable', 'string', 'max:64'],
+            'campaign_tag' => ['nullable', 'string', 'max:64'],
         ];
     }
 

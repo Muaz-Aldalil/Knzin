@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { apiClient, ApiError } from '@/lib/api-client';
+import { getReferralData } from '@/lib/referral-cookie';
 import { CANONICAL_LEGAL_SHIELD } from '@/components/checkout/LegalShieldCheckbox';
 import { QuizAnswers } from '@/components/checkout/AntiPiracyQuizModal';
 
@@ -60,6 +61,8 @@ export function useCheckout() {
           : `idemp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
       );
 
+      const referral = getReferralData();
+
       const requestBody = {
         email: payload.email,
         course_id: payload.course_id,
@@ -69,6 +72,8 @@ export function useCheckout() {
         legal_shield_text: CANONICAL_LEGAL_SHIELD,
         idempotency_key: idempotencyKey,
         quiz_answers: payload.quiz_answers,
+        referral_code: referral.referralCode || undefined,
+        campaign_tag: referral.campaignTag || undefined,
       };
 
       return apiClient<CreatedOrder>('/checkout/orders', {

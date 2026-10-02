@@ -1,7 +1,32 @@
 import createMiddleware from "next-intl/middleware";
+import { NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 
-export default createMiddleware(routing);
+const handleI18nRouting = createMiddleware(routing);
+
+export default function middleware(request: NextRequest) {
+  const response = handleI18nRouting(request);
+
+  const ref = request.nextUrl.searchParams.get("ref");
+  if (ref && ref.trim()) {
+    response.cookies.set("knzin_ref", ref.trim(), {
+      maxAge: 30 * 24 * 60 * 60,
+      path: "/",
+      sameSite: "lax",
+    });
+  }
+
+  const campaign = request.nextUrl.searchParams.get("campaign");
+  if (campaign && campaign.trim()) {
+    response.cookies.set("knzin_campaign", campaign.trim(), {
+      maxAge: 30 * 24 * 60 * 60,
+      path: "/",
+      sameSite: "lax",
+    });
+  }
+
+  return response;
+}
 
 export const config = {
   // Match all pathnames except for

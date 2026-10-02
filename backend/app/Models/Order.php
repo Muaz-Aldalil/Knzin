@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -97,5 +98,21 @@ class Order extends Model
     public function isExpired(): bool
     {
         return $this->status === 'pending' && $this->expires_at->isPast();
+    }
+
+    /**
+     * Referral attribution record for this order (if referred).
+     */
+    public function referralAttribution(): HasOne
+    {
+        return $this->hasOne(ReferralAttribution::class);
+    }
+
+    /**
+     * Affiliate ledger entries minted or reversed for this order.
+     */
+    public function affiliateLedgerEntries(): HasMany
+    {
+        return $this->hasMany(AffiliateLedgerEntry::class);
     }
 }

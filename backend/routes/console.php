@@ -13,3 +13,7 @@ Schedule::command('orders:expire-pending')->hourly();
 
 // Feature 005: Scheduled reconciliation for asynchronous ticket generation
 Schedule::command('knzin:reconcile-ticket-generation')->everyFiveMinutes();
+
+// Feature 006: Scheduled hourly maturation for affiliate sales commissions
+Schedule::command('knzin:mature-commissions')->hourly();
+

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\CourseEntitlement;
 use App\Models\LessonProgress;
 use App\Models\Order;
+use App\Models\ReferralAttribution;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -133,10 +134,14 @@ class AccountMergeService
                     }
                 }
 
-                // 5. Revoke guest session tokens to eliminate zombie sessions (DEF-02C)
+                // 5. Re-attribute referral attributions where guest was the buyer
+                ReferralAttribution::where('buyer_user_id', $guestUser->id)
+                    ->update(['buyer_user_id' => $googleUser->id]);
+
+                // 6. Revoke guest session tokens to eliminate zombie sessions (DEF-02C)
                 $guestUser->tokens()->delete();
 
-                // 6. Deactivate guest user record with audit pointer
+                // 7. Deactivate guest user record with audit pointer
                 $guestUser->update([
                     'status' => 'deactivated',
                     'merged_into_user_id' => $googleUser->id,
@@ -150,5 +155,17 @@ class AccountMergeService
                 'deactivated_guests_count' => $totalDeactivatedGuests,
             ];
         });
+    }
+
+    /**
+     * Merge a specific source user account into a target verified account.
+     */
+    public function mergeAccounts(User $sourceUser, User $targetUser): array
+    {
+        if ($sourceUser->email !== $targetUser->email) {
+            $sourceUser->update(['email' => $targetUser->email]);
+        }
+
+        return $this->mergeGuestIntoGoogle($targetUser);
     }
 }

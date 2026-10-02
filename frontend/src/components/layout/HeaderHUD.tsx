@@ -18,6 +18,7 @@ import {
   Sun,
   Moon,
   HelpCircle,
+  Users,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -187,6 +188,17 @@ export default function HeaderHUD() {
             </Link>
 
             <Link
+              href="/affiliate"
+              className={`px-3 py-1.5 rounded-lg transition-colors ${
+                pathname.startsWith('/affiliate')
+                  ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
+                  : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
+              }`}
+            >
+              {isRtl ? 'الشركاء' : 'Affiliate'}
+            </Link>
+
+            <Link
               href="/design-system"
               className={`px-2.5 py-1.5 rounded-lg transition-colors ${
                 isDesignSystemActive
@@ -314,6 +326,13 @@ export default function HeaderHUD() {
                       <Link href="/raffle" className="flex items-center gap-2 w-full">
                         <Trophy className="w-4 h-4 text-accent" />
                         <span>{isRtl ? 'سحب الجوائز القانوني' : 'Raffle Transparency'}</span>
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/affiliate" className="flex items-center gap-2 w-full">
+                        <Users className="w-4 h-4 text-emerald-500" />
+                        <span>{isRtl ? 'بوابة الشركاء والمسوّقين' : 'Affiliate Portal'}</span>
                       </Link>
                     </DropdownMenuItem>
                   </>

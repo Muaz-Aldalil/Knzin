@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -129,8 +130,115 @@ class User extends Authenticatable
     /**
      * Check if user is a verified account.
      */
-    public function isVerified(): bool
+     public function isVerified(): bool
+     {
+         return !is_null($this->email_verified_at) && $this->auth_provider === 'google';
+     }
+
+    /**
+     * Affiliate profile associated with this user.
+     */
+    public function affiliateProfile(): HasOne
     {
-        return !is_null($this->email_verified_at) && $this->auth_provider === 'google';
+        return $this->hasOne(AffiliateProfile::class);
+    }
+
+    /**
+     * Referral attributions where this user is the credited referrer.
+     */
+    public function referralAttributions(): HasMany
+    {
+        return $this->hasMany(ReferralAttribution::class, 'referrer_user_id');
+    }
+
+    /**
+     * Affiliate subledger entries owned by this user.
+     */
+    public function affiliateLedgerEntries(): HasMany
+    {
+        return $this->hasMany(AffiliateLedgerEntry::class);
+    }
+
+    /**
+     * Affiliate payout requests submitted by this user.
+     */
+    public function affiliatePayouts(): HasMany
+    {
+        return $this->hasMany(AffiliatePayout::class);
+    }
+
+    /**
+     * Admin capabilities persistently granted to this user.
+     */
+    public function adminCapabilities(): HasMany
+    {
+        return $this->hasMany(AdminCapability::class);
+    }
+
+    /**
+     * Check if user possesses an active persistent administrative capability.
+     */
+    public function hasCapability(string $capability): bool
+    {
+        return $this->adminCapabilities()
+            ->active()
+            ->where('capability', $capability)
+            ->exists();
+    }
+
+    /**
+     * Grant a persistent administrative capability to this user.
+     */
+    public function grantCapability(
+        string $capability,
+        ?User $grantedBy = null,
+        string $source = 'delegated_admin'
+    ): AdminCapability {
+        $existing = $this->adminCapabilities()
+            ->where('capability', $capability)
+            ->first();
+
+        if ($existing !== null) {
+            $existing->update([
+                'status' => 'active',
+                'provisioning_source' => $source,
+                'granted_at' => now(),
+                'granted_by_user_id' => $grantedBy?->id,
+                'revoked_at' => null,
+                'revoked_by_user_id' => null,
+                'revocation_reason' => null,
+            ]);
+            return $existing->fresh();
+        }
+
+        return AdminCapability::create([
+            'user_id' => $this->id,
+            'capability' => $capability,
+            'status' => 'active',
+            'provisioning_source' => $source,
+            'granted_at' => now(),
+            'granted_by_user_id' => $grantedBy?->id,
+        ]);
+    }
+
+    /**
+     * Revoke a persistent administrative capability from this user with audit provenance.
+     */
+    public function revokeCapability(
+        string $capability,
+        ?User $revokedBy = null,
+        ?string $reason = null
+    ): bool {
+        $existing = $this->adminCapabilities()
+            ->where('capability', $capability)
+            ->where('status', 'active')
+            ->first();
+
+        if ($existing === null) {
+            return false;
+        }
+
+        return $existing->revoke($revokedBy, $reason);
     }
 }
+

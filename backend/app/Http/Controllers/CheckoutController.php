@@ -21,7 +21,8 @@ class CheckoutController extends ApiController
     {
         $result = $this->orderService->createOrder(
             $request->validated(),
-            $request->ip()
+            $request->ip(),
+            $request->userAgent()
         );
 
         $httpStatus = $result['is_duplicate'] ? Response::HTTP_OK : Response::HTTP_CREATED;

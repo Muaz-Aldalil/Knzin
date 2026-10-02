@@ -8,6 +8,8 @@ use App\Models\CoursePart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
+use App\Services\AffiliateAttributionService;
+use App\Services\AffiliateCommissionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -18,9 +20,9 @@ class OrderService
     /**
      * Create or retrieve an existing pending order with strict idempotency and dual-currency calculation.
      */
-    public function createOrder(array $data, ?string $clientIp = '127.0.0.1'): array
+    public function createOrder(array $data, ?string $clientIp = '127.0.0.1', ?string $userAgent = null): array
     {
-        return DB::transaction(function () use ($data, $clientIp) {
+        return DB::transaction(function () use ($data, $clientIp, $userAgent) {
             // 1. Strict Idempotency Check with Row Lock inside transaction (DEF-01E)
             $existingOrder = Order::with(['items', 'user'])
                 ->where('idempotency_key', $data['idempotency_key'])
@@ -104,6 +106,17 @@ class OrderService
                 'promotional_tickets_granted' => $promotionalTickets,
             ]);
 
+            // 5. Record Referral Attribution if referral code provided
+            if (!empty($data['referral_code'])) {
+                app(AffiliateAttributionService::class)->recordAttribution(
+                    $order,
+                    $data['referral_code'],
+                    $data['campaign_tag'] ?? null,
+                    $clientIp,
+                    $userAgent
+                );
+            }
+
             return [
                 'order' => $order->load(['items', 'user']),
                 'is_duplicate' => false,
@@ -129,7 +142,10 @@ class OrderService
             // 1. Synchronously create verified course entitlements
             app(EntitlementService::class)->grantAfterFulfillment($lockedOrder);
 
-            // 2. Asynchronously dispatch ticket minting strictly after transaction commit
+            // 2. Synchronously credit affiliate sales commission (Feature 006 - US2)
+            app(AffiliateCommissionService::class)->creditSalesCommission($lockedOrder);
+
+            // 3. Asynchronously dispatch ticket minting strictly after transaction commit
             GenerateTicketsJob::dispatch($lockedOrder->id)->afterCommit();
 
             return $lockedOrder->fresh(['items', 'user', 'courseEntitlements']);

@@ -20,6 +20,7 @@ import {
   Ticket,
   Wallet,
   BookOpen,
+  Users,
 } from 'lucide-react';
 
 interface AuthUser {
@@ -60,6 +61,7 @@ export default function MobileNavSheet({
 
   const isCoursesActive = pathname === '/' || pathname.startsWith('/courses');
   const isRaffleActive = pathname.startsWith('/raffle');
+  const isAffiliateActive = pathname.startsWith('/affiliate');
   const isDesignSystemActive = pathname.startsWith('/design-system');
 
   return (
@@ -130,6 +132,22 @@ export default function MobileNavSheet({
             >
               <span>{t('raffle')}</span>
               {isRaffleActive && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
+            </Link>
+
+            <Link
+              href="/affiliate"
+              onClick={close}
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg transition-colors ${
+                isAffiliateActive
+                  ? 'bg-surface-secondary text-primary font-semibold'
+                  : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/60'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-emerald-500" />
+                <span>{isRtl ? 'الشركاء والمسوّقين' : 'Affiliate Portal'}</span>
+              </div>
+              {isAffiliateActive && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
             </Link>
 
             <Link
