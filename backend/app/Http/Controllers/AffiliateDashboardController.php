@@ -22,6 +22,9 @@ class AffiliateDashboardController extends Controller
     {
         $user = $request->user();
 
+        // 0. Sweep any mature pending commissions for this user to ensure DB state matches holding policy
+        app(\App\Services\AffiliateCommissionService::class)->sweepMaturedCommissionsForUser($user->id);
+
         // 1. Calculate available balance: mature credits minus active debits
         $availableSum = AffiliateLedgerEntry::where('user_id', $user->id)
             ->matureAvailable()
@@ -79,6 +82,12 @@ class AffiliateDashboardController extends Controller
 
             $commissionCents = $commissionEntry ? $commissionEntry->amount_cents : 0;
 
+            $isMatured = $commissionEntry && (
+                $commissionEntry->status === 'available' ||
+                ($commissionEntry->status === 'pending' && $commissionEntry->matures_at && $commissionEntry->matures_at->isPast())
+            );
+            $effectiveStatus = $isMatured ? 'available' : ($commissionEntry?->status ?? 'pending');
+
             return [
                 'order_number' => $order?->order_number ?? 'UNKNOWN',
                 'course_title_ar' => $course?->title_ar ?? 'دورة مهنية',
@@ -89,7 +98,7 @@ class AffiliateDashboardController extends Controller
                 'commission_cents' => $commissionCents,
                 'commission_formatted' => sprintf('$%.2f', $commissionCents / 100),
                 'tickets_granted_to_buyer' => $order?->promotional_tickets_granted ?? 0,
-                'status' => $commissionEntry?->status ?? 'pending',
+                'status' => $effectiveStatus,
                 'matures_at' => $commissionEntry?->matures_at?->toISOString(),
                 'created_at' => $order?->created_at?->toISOString(),
             ];
@@ -136,6 +145,10 @@ class AffiliateDashboardController extends Controller
     public function ledger(Request $request): JsonResponse
     {
         $user = $request->user();
+
+        // Sweep any mature pending commissions for this user so ledger rows reflect availability
+        app(\App\Services\AffiliateCommissionService::class)->sweepMaturedCommissionsForUser($user->id);
+
         $perPage = min(50, max(5, (int) $request->query('per_page', 15)));
         $type = $request->query('type', 'all');
 

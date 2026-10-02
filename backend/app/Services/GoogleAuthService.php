@@ -28,9 +28,20 @@ class GoogleAuthService
     {
         if ($this->isMockMode()) {
             $email = $mockEmail ?: 'mock_student_' . Str::random(5) . '@example.com';
+            $name = 'طالب كَنزين';
+            if ($mockEmail) {
+                $existingUser = User::where('email', $email)->first();
+                if ($existingUser && !empty($existingUser->display_name)) {
+                    $name = $existingUser->display_name;
+                } elseif (str_contains($email, 'affiliate_a')) {
+                    $name = 'المسوّق أ';
+                } elseif (str_contains($email, 'customer_b')) {
+                    $name = 'العميل ب';
+                }
+            }
             $callbackUrl = url('/api/v1/auth/google/callback') . '?' . http_build_query([
                 'mock_email' => $email,
-                'mock_name' => 'طالب كَنزين',
+                'mock_name' => $name,
                 'mock_sub' => 'mock_google_sub_' . md5($email),
             ]);
 

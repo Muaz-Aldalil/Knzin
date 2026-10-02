@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\AffiliateLedgerEntry;
+use App\Models\AffiliatePayout;
+use App\Models\AffiliateProfile;
 use App\Models\CourseEntitlement;
 use App\Models\LessonProgress;
 use App\Models\Order;
@@ -134,14 +137,57 @@ class AccountMergeService
                     }
                 }
 
-                // 5. Re-attribute referral attributions where guest was the buyer
+                // 5. Re-attribute referral attributions (buyer and referrer roles)
                 ReferralAttribution::where('buyer_user_id', $guestUser->id)
                     ->update(['buyer_user_id' => $googleUser->id]);
 
-                // 6. Revoke guest session tokens to eliminate zombie sessions (DEF-02C)
+                ReferralAttribution::where('referrer_user_id', $guestUser->id)
+                    ->update(['referrer_user_id' => $googleUser->id]);
+
+                // 6. Re-attribute affiliate payouts
+                AffiliatePayout::where('user_id', $guestUser->id)
+                    ->update(['user_id' => $googleUser->id]);
+
+                // 7. Re-attribute affiliate ledger entries (direct SQL to satisfy immutability guard)
+                DB::table('affiliate_ledger_entries')
+                    ->where('user_id', $guestUser->id)
+                    ->update(['user_id' => $googleUser->id]);
+
+                // 8. Reconcile affiliate profile
+                $guestProfile = AffiliateProfile::where('user_id', $guestUser->id)->first();
+                if ($guestProfile) {
+                    $googleProfile = AffiliateProfile::where('user_id', $googleUser->id)->first();
+                    if ($googleProfile) {
+                        $updates = [];
+                        if (empty($googleProfile->custom_slug) && !empty($guestProfile->custom_slug)) {
+                            $updates['custom_slug'] = $guestProfile->custom_slug;
+                        }
+                        if (empty($googleProfile->default_payout_method) && !empty($guestProfile->default_payout_method)) {
+                            $updates['default_payout_method'] = $guestProfile->default_payout_method;
+                        }
+                        if (empty($googleProfile->payout_details) && !empty($guestProfile->payout_details)) {
+                            $updates['payout_details'] = $guestProfile->payout_details;
+                        }
+                        if (!empty($updates)) {
+                            $googleProfile->update($updates);
+                        }
+                        $guestProfile->delete();
+                    } else {
+                        $guestProfile->update(['user_id' => $googleUser->id]);
+                    }
+                }
+
+                // 9. Revoke guest session tokens to eliminate zombie sessions (DEF-02C)
                 $guestUser->tokens()->delete();
 
-                // 7. Deactivate guest user record with audit pointer
+                // 10. Preserve canonical learner_code on surviving Google user if guest held a referral code
+                if (!empty($guestUser->learner_code) && !empty($googleUser->learner_code) && $guestUser->learner_code !== $googleUser->learner_code) {
+                    $canonicalCode = $guestUser->learner_code;
+                    $guestUser->update(['learner_code' => 'LRN-M-' . substr(md5($guestUser->id), 0, 8)]);
+                    $googleUser->update(['learner_code' => $canonicalCode]);
+                }
+
+                // 11. Deactivate guest user record with audit pointer
                 $guestUser->update([
                     'status' => 'deactivated',
                     'merged_into_user_id' => $googleUser->id,

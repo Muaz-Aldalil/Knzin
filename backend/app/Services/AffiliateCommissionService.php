@@ -103,4 +103,27 @@ class AffiliateCommissionService
             ]);
         });
     }
+
+    /**
+     * Sweep and transition all mature pending commissions for a specific user to available.
+     */
+    public function sweepMaturedCommissionsForUser(string $userId): int
+    {
+        return DB::transaction(function () use ($userId) {
+            $now = now();
+            $entryIds = AffiliateLedgerEntry::where('user_id', $userId)
+                ->where('entry_type', 'sales_commission')
+                ->where('status', 'pending')
+                ->whereNotNull('matures_at')
+                ->where('matures_at', '<=', $now)
+                ->pluck('id');
+
+            if ($entryIds->isEmpty()) {
+                return 0;
+            }
+
+            return AffiliateLedgerEntry::whereIn('id', $entryIds)
+                ->update(['status' => 'available']);
+        });
+    }
 }

@@ -20,9 +20,12 @@ class AffiliateAttributionService
         }
 
         // 1. Try finding by learner_code directly on users table
-        $user = User::where('learner_code', $normalized)
-            ->where('status', 'active')
-            ->first();
+        $user = User::where('learner_code', $normalized)->first();
+        if ($user && $user->status === 'deactivated' && $user->merged_into_user_id) {
+            $user = User::where('id', $user->merged_into_user_id)->where('status', 'active')->first();
+        } elseif ($user && $user->status !== 'active') {
+            $user = null;
+        }
 
         // 2. If not found, try finding via custom_slug on affiliate_profiles
         if ($user === null) {
@@ -31,8 +34,14 @@ class AffiliateAttributionService
                 ->with('user')
                 ->first();
 
-            if ($profile !== null && $profile->user !== null && $profile->user->status === 'active') {
-                $user = $profile->user;
+            if ($profile !== null && $profile->user !== null) {
+                $candidate = $profile->user;
+                if ($candidate->status === 'deactivated' && $candidate->merged_into_user_id) {
+                    $candidate = User::where('id', $candidate->merged_into_user_id)->where('status', 'active')->first();
+                }
+                if ($candidate && $candidate->status === 'active') {
+                    $user = $candidate;
+                }
             }
         }
 

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
-import { Users, Loader2, AlertCircle, ShoppingBag, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Users, Loader2, AlertCircle, ShoppingBag, ShieldCheck, Sparkles, CheckCircle2, Clock } from 'lucide-react';
 import { useAffiliateDashboard } from '@/hooks/useAffiliateDashboard';
 import { useAffiliateLedger, LedgerEntryType } from '@/hooks/useAffiliateLedger';
 import { AffiliateKpiCards } from './AffiliateKpiCards';
@@ -77,6 +77,49 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
             {isRtl ? 'الرئيسية' : 'Home'}
           </Link>
         </div>
+
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-8 pt-6 border-t border-border-subtle text-start">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">
+                Dev Personas
+              </span>
+              <span className="text-[11px] text-content-secondary">
+                {isRtl ? 'بيئة التطوير المحلية' : 'Local Dev Mode'}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <a
+                href={`${backendUrl}/auth/google/redirect?mock_email=affiliate_a@test.knzin.com`}
+                className="flex items-center justify-between p-2.5 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors text-xs"
+              >
+                <div>
+                  <div className="font-bold text-content-primary">
+                    {isRtl ? 'المسوّق أ (Affiliate A)' : 'Affiliate A'}
+                  </div>
+                  <div className="text-[11px] font-mono text-content-secondary">
+                    affiliate_a@test.knzin.com
+                  </div>
+                </div>
+                <span className="text-primary font-bold">→</span>
+              </a>
+              <a
+                href={`${backendUrl}/auth/google/redirect?mock_email=customer_b@test.knzin.com`}
+                className="flex items-center justify-between p-2.5 rounded-xl border border-border-subtle bg-surface-secondary hover:bg-surface-elevated transition-colors text-xs"
+              >
+                <div>
+                  <div className="font-bold text-content-primary">
+                    {isRtl ? 'العميل ب (Customer B)' : 'Customer B'}
+                  </div>
+                  <div className="text-[11px] font-mono text-content-secondary">
+                    customer_b@test.knzin.com
+                  </div>
+                </div>
+                <span className="text-content-secondary font-bold">→</span>
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -194,7 +237,17 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
                     {conv.tickets_granted_to_buyer}{' '}
                     {isRtl ? 'تذكرة ممنوحة للمشتري' : 'tickets granted to buyer'}
                   </span>
-                  <span className="capitalize">{conv.status}</span>
+                  {conv.status === 'available' ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>{isRtl ? 'متاحة للسحب' : 'Available'}</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-[11px]">
+                      <Clock className="w-3 h-3" />
+                      <span>{isRtl ? 'قيد الحجز (24 س)' : 'Pending (24h)'}</span>
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
