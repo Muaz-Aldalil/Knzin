@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { apiClient } from '@/lib/api-client';
 
 export interface AuthUser {
   id: string;
@@ -11,6 +12,22 @@ export interface AuthUser {
   auth_provider?: string;
   isVerified?: boolean;
   is_verified?: boolean;
+}
+
+export interface SendOtpResult {
+  message: string;
+  email: string;
+  expires_in_seconds: number;
+  dev_code?: string | null;
+}
+
+export interface VerifyOtpResult {
+  token: string;
+  user: AuthUser;
+  merge_stats?: {
+    merged_orders_count: number;
+    deactivated_guests_count: number;
+  };
 }
 
 export function useAuth() {
@@ -59,13 +76,45 @@ export function useAuth() {
     window.dispatchEvent(new Event('storage'));
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('knzin_auth_token');
-    localStorage.removeItem('knzin_user');
-    setToken(null);
-    setUser(null);
-    window.dispatchEvent(new Event('storage'));
+  const logout = useCallback(async () => {
+    try {
+      if (localStorage.getItem('knzin_auth_token')) {
+        await apiClient('/auth/logout', { method: 'POST' });
+      }
+    } catch {
+      // Ignore network errors on logout to ensure local state is always cleared
+    } finally {
+      localStorage.removeItem('knzin_auth_token');
+      localStorage.removeItem('knzin_user');
+      setToken(null);
+      setUser(null);
+      window.dispatchEvent(new Event('storage'));
+    }
   }, []);
+
+  const sendOtp = useCallback(async (email: string): Promise<SendOtpResult> => {
+    const res = await apiClient<SendOtpResult>('/auth/otp/send', {
+      method: 'POST',
+      body: JSON.stringify({ email: email.trim().toLowerCase() }),
+    });
+    return res;
+  }, []);
+
+  const verifyOtp = useCallback(async (email: string, code: string): Promise<VerifyOtpResult> => {
+    const res = await apiClient<VerifyOtpResult>('/auth/otp/verify', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        code: code.trim(),
+      }),
+    });
+
+    if (res.token && res.user) {
+      login(res.token, res.user);
+    }
+
+    return res;
+  }, [login]);
 
   return {
     token,
@@ -74,5 +123,7 @@ export function useAuth() {
     isLoading,
     login,
     logout,
+    sendOtp,
+    verifyOtp,
   };
 }

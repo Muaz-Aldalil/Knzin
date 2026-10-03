@@ -2,7 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\LastAdminLockoutException;
 use App\Models\User;
+use App\Services\Admin\AdminCapabilityService;
+use App\Support\AdminCapabilities;
 use Illuminate\Console\Command;
 
 class RevokeAdminCapabilityCommand extends Command
@@ -28,7 +31,7 @@ class RevokeAdminCapabilityCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(AdminCapabilityService $capabilityService): int
     {
         $identifier = (string) $this->argument('user');
         $capability = (string) $this->argument('capability');
@@ -65,11 +68,16 @@ class RevokeAdminCapabilityCommand extends Command
             return self::FAILURE;
         }
 
-        $revoked = $targetUser->revokeCapability($capability, $authorizer, $reason);
-
-        if (!$revoked) {
+        if (!$targetUser->hasCapability($capability)) {
             $this->warn("User [{$targetUser->id}] had no active capability '{$capability}' to revoke.");
             return self::SUCCESS;
+        }
+
+        try {
+            $capabilityService->revoke($targetUser, $capability, $authorizer, $reason);
+        } catch (LastAdminLockoutException $le) {
+            $this->error("LOCKOUT PREVENTION: " . $le->getMessage());
+            return self::FAILURE;
         }
 
         $this->info("Successfully revoked capability '{$capability}':");

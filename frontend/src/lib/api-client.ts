@@ -48,9 +48,11 @@ export async function apiClient<T = any>(
 ): Promise<T> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('knzin_auth_token') : null;
 
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
+
   const headers: Record<string, string> = {
     'Accept': 'application/json',
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(options.headers as Record<string, string>),
   };
 

@@ -32,7 +32,8 @@ class ActivityController extends ApiController
                 ->get();
 
             // Fetch scheduled/active upcoming draws (limit 3)
-            $draws = Draw::whereIn('status', ['upcoming', 'active'])
+            $draws = Draw::published()
+                ->whereIn('status', ['upcoming', 'active'])
                 ->where('ends_at', '>', $now)
                 ->orderBy('ends_at', 'asc')
                 ->limit(3)

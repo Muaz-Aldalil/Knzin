@@ -36,7 +36,8 @@ class TicketController extends ApiController
         $serverTimeUtc = Carbon::now('UTC');
 
         // 2. Fetch active and locked promotional draws across tiers
-        $draws = Draw::whereIn('tier', ['hourly', 'daily', 'monthly'])
+        $draws = Draw::published()
+            ->whereIn('tier', ['hourly', 'daily', 'monthly'])
             ->where('status', '!=', 'completed')
             ->where('starts_at', '<=', $serverTimeUtc)
             ->get();

@@ -38,6 +38,16 @@ class DrawWinnerResource extends JsonResource
                 'governorate' => (string) $winner->winner_governorate,
                 'prize_delivered' => (bool) $winner->prize_delivered,
             ] : null,
+            'seed_verification' => $this->server_seed_hash ? [
+                'server_seed_hash' => (string) $this->server_seed_hash,
+                'server_seed_revealed' => $this->server_seed_revealed ? (string) $this->server_seed_revealed : null,
+                'revealed_at' => $this->seed_revealed_at?->toIso8601String(),
+                'verified' => $this->server_seed_revealed ? hash_equals((string) $this->server_seed_hash, hash('sha256', (string) $this->server_seed_revealed)) : false,
+            ] : null,
+            'server_seed_hash' => $this->server_seed_hash ? (string) $this->server_seed_hash : null,
+            'server_seed_revealed' => $this->server_seed_revealed ? (string) $this->server_seed_revealed : null,
+            'seed_commitment_hash' => $this->server_seed_hash ? (string) $this->server_seed_hash : null,
+            'revealed_server_seed' => $this->server_seed_revealed ? (string) $this->server_seed_revealed : null,
         ];
     }
 }

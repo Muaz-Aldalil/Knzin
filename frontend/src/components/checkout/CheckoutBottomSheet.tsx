@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
-import { X, Ticket, Mail, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
+import { X, Ticket, Mail, ShieldAlert, Sparkles, Loader2, LogIn, UserCheck } from 'lucide-react';
 import LegalShieldCheckbox from './LegalShieldCheckbox';
 import AntiPiracyQuizModal, { QuizAnswers } from './AntiPiracyQuizModal';
 import { useCheckout } from '@/hooks/useCheckout';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface CheckoutItemData {
   courseId: string;
@@ -34,7 +35,10 @@ export default function CheckoutBottomSheet({
   const t = useTranslations('checkout');
   const tCommon = useTranslations('common');
   const locale = useLocale();
+  const isRtl = locale === 'ar';
   const router = useRouter();
+
+  const { user, isLoggedIn } = useAuth();
 
   const [email, setEmail] = useState('');
   const [legalAgreed, setLegalAgreed] = useState(false);
@@ -46,7 +50,24 @@ export default function CheckoutBottomSheet({
 
   const { createOrder, isLoading, error: apiError } = useCheckout();
 
+  // Pre-fill email with authenticated user email
+  useEffect(() => {
+    if (user?.email) {
+      setEmail(user.email);
+    }
+  }, [user]);
+
   if (!isOpen) return null;
+
+  const handleSignInRedirect = () => {
+    try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('knzin_pending_checkout', JSON.stringify(item));
+      }
+    } catch {}
+    onClose();
+    router.push(`/auth/login?redirect=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '/')}` as any);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,9 +76,9 @@ export default function CheckoutBottomSheet({
     setQuizError(null);
 
     // 1. Email check
-    const cleanEmail = email.trim();
+    const cleanEmail = (isLoggedIn && user?.email ? user.email : email).trim().toLowerCase();
     if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
-      setEmailError('يرجى إدخال بريد إلكتروني صالح');
+      setEmailError(isRtl ? 'يرجى إدخال بريد إلكتروني صالح' : 'Please enter a valid email address');
       return;
     }
 
@@ -100,7 +121,7 @@ export default function CheckoutBottomSheet({
 
       // Navigate to order confirmation
       onClose();
-      router.push(`/order-summary/${order.order_number}`);
+      router.push(`/order-summary/${order.order_number}` as any);
     } catch {
       // Error handled by hook
     }
@@ -156,102 +177,170 @@ export default function CheckoutBottomSheet({
               </div>
             </div>
 
-            {/* Email Field */}
-            <div>
-              <label htmlFor="checkout_email" className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5">
-                {t('emailLabel')}
-              </label>
-              <div className="relative">
-                <input
-                  id="checkout_email"
-                  type="email"
-                  dir="ltr"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('emailPlaceholder')}
-                  required
-                  className={`w-full py-2.5 ps-3.5 pe-10 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
-                    emailError
-                      ? 'border-red-500 focus:ring-red-400/40'
-                      : 'border-slate-200 dark:border-slate-700 focus:ring-primary/40'
-                  }`}
-                />
-                <Mail className="absolute end-3 top-3 w-4 h-4 text-slate-400 pointer-events-none" />
-              </div>
-              {emailError && (
-                <p className="mt-1 text-xs font-semibold text-red-600">{emailError}</p>
-              )}
-              <p className="mt-1 text-[11px] text-slate-500">{t('emailHelp')}</p>
-            </div>
-
-            {/* Anti-Piracy 3-Step Quiz Trigger */}
-            <div className="p-3.5 rounded-xl border border-primary/20 bg-primary-light/50 dark:bg-primary/10 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                  {quizAnswers ? t('quizDone') : t('quizPrompt')}
+            {/* Authentication Gate or Verified User Card */}
+            {isLoggedIn && user ? (
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <UserCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <div className="min-w-0 truncate text-start">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
+                      {user.displayName || user.email}
+                    </span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
+                      {user.email}
+                    </span>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 shrink-0">
+                  {isRtl ? 'حساب معتمد' : 'Verified'}
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsQuizModalOpen(true)}
-                className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow transition-colors"
-              >
-                {quizAnswers ? (locale === 'ar' ? 'تعديل الإجابات' : 'Edit Answers') : t('takeQuiz')}
-              </button>
-            </div>
-            {quizError && (
-              <p className="text-xs font-semibold text-red-600">{quizError}</p>
-            )}
-
-            {/* Mandatory Canonical Legal Shield */}
-            <LegalShieldCheckbox
-              checked={legalAgreed}
-              onChange={(checked) => {
-                setLegalAgreed(checked);
-                if (checked) setLegalError(null);
-              }}
-              error={legalError}
-            />
-
-            {/* API Error Alert */}
-            {apiError && (
-              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-500/30 text-xs font-semibold text-red-700 dark:text-red-400">
-                {apiError}
+            ) : (
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-3">
+                <div className="flex items-start gap-2.5 text-start">
+                  <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-800 dark:text-amber-300">
+                      {isRtl ? 'تسجيل الدخول مطلوب لربط مشترياتك وتذاكرك' : 'Sign in to link your purchase & tickets'}
+                    </h4>
+                    <p className="text-[11px] text-amber-700/90 dark:text-amber-300/80 mt-0.5">
+                      {isRtl
+                        ? 'يرجى تسجيل الدخول أو إدخال بريدك لضمان إيداع تذاكر السحب ومحتوى الدورة باسمك.'
+                        : 'Sign in to ensure your tickets and course access are credited to your account.'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSignInRedirect}
+                  className="w-full py-2.5 px-3 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>{isRtl ? 'تسجيل الدخول / إنشاء حساب' : 'Sign In / Register'}</span>
+                </button>
               </div>
             )}
 
-            {/* Submit Action */}
+            {/* Email Field (Only editable if not logged in) */}
+            {!isLoggedIn && (
+              <div>
+                <label htmlFor="checkout_email" className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5">
+                  {t('emailLabel')}
+                </label>
+                <div className="relative">
+                  <input
+                    id="checkout_email"
+                    type="email"
+                    dir="ltr"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t('emailPlaceholder')}
+                    required
+                    className={`w-full py-2.5 ps-3.5 pe-10 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
+                      emailError
+                        ? 'border-red-500 focus:ring-red-400/40'
+                        : 'border-slate-200 dark:border-slate-700 focus:ring-primary/40'
+                    }`}
+                  />
+                  <Mail className="absolute end-3 top-3 w-4 h-4 text-slate-400 pointer-events-none" />
+                </div>
+                {emailError && (
+                  <p className="text-red-500 text-[11px] mt-1 font-semibold">{emailError}</p>
+                )}
+              </div>
+            )}
+
+            {/* Anti-Piracy Quiz Status / Button */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {t('quizHeading')}
+                </span>
+                {quizAnswers ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    {t('quizPassedBadge')}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-amber-600 dark:text-amber-400 font-semibold">
+                    {t('quizRequiredBadge')}
+                  </span>
+                )}
+              </div>
+
+              {!quizAnswers ? (
+                <button
+                  type="button"
+                  onClick={() => setIsQuizModalOpen(true)}
+                  className="w-full py-2.5 px-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span>{t('openQuizButton')}</span>
+                </button>
+              ) : (
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                  <div className="flex justify-between">
+                    <span>{t('quizExperienceLabel')}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{quizAnswers.experience_level}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{t('quizGoalLabel')}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{quizAnswers.learning_goal}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{t('quizHoursLabel')}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{quizAnswers.weekly_hours}</span>
+                  </div>
+                </div>
+              )}
+              {quizError && (
+                <p className="text-red-500 text-[11px] mt-1 font-semibold">{quizError}</p>
+              )}
+            </div>
+
+            {/* Canonical Legal Shield Checkbox */}
+            <div>
+              <LegalShieldCheckbox
+                checked={legalAgreed}
+                onChange={setLegalAgreed}
+                error={legalError}
+              />
+            </div>
+
+            {/* Global API Error */}
+            {apiError && (
+              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400 text-xs">
+                {apiError || t('checkoutFailed')}
+              </div>
+            )}
+
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50 active:scale-[0.99]"
+              className="w-full py-3.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white font-extrabold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>{t('submitting')}</span>
+                  <span>{t('processingButton')}</span>
                 </>
               ) : (
-                <>
-                  <Sparkles className="w-4 h-4 text-accent" />
-                  <span>{t('confirmOrder')}</span>
-                </>
+                <span>
+                  {t('confirmAndPayButton', {
+                    amount: `$${(item.priceCents / 100).toFixed(2)}`,
+                  })}
+                </span>
               )}
             </button>
-
-            <p className="text-[11px] text-center text-slate-400 leading-relaxed">
-              {t('legalNotice')}
-            </p>
           </form>
         </div>
       </div>
 
-      {/* Quiz Modal */}
+      {/* Anti-Piracy Diagnostic Quiz Modal */}
       <AntiPiracyQuizModal
         isOpen={isQuizModalOpen}
         onClose={() => setIsQuizModalOpen(false)}
-        initialAnswers={quizAnswers}
         onComplete={(answers) => {
           setQuizAnswers(answers);
           setQuizError(null);

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AffiliateLedgerEntry;
 use App\Models\User;
+use App\Services\Admin\AdminAuditContext;
 
 interface AffiliateCoPrizeServiceInterface
 {
@@ -26,6 +27,15 @@ interface AffiliateCoPrizeServiceInterface
     ): ?AffiliateLedgerEntry;
 
     /**
+     * Adjudicate release of pending co-prize by an authorized admin checking dual valid approvals and auditing.
+     */
+    public function adjudicateCoPrizeRelease(
+        string $winningTicketSerial,
+        User $adminUser,
+        ?AdminAuditContext $auditContext = null
+    ): ?AffiliateLedgerEntry;
+
+    /**
      * Cancel pending co-prize if winner fails identity verification or is disqualified before release.
      */
     public function cancelCoPrize(
@@ -40,6 +50,12 @@ interface AffiliateCoPrizeServiceInterface
     public function adjudicateCoPrizeRevocation(
         string $winningTicketSerial,
         string $reason,
-        User $adminUser
+        User $adminUser,
+        ?AdminAuditContext $auditContext = null
     ): ?AffiliateLedgerEntry;
+
+    /**
+     * Calculate unclamped exposure and net projection for co-prize revocation preview.
+     */
+    public function previewRevocation(string $winningTicketSerial): ?array;
 }

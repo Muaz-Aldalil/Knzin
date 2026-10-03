@@ -128,7 +128,7 @@ class AffiliateDashboardController extends Controller
                     'active_co_prize_tickets_count' => $activeCoPrizeTicketsCount,
                 ],
                 'commission_policy' => [
-                    'sales_commission_rate_percent' => 25,
+                    'sales_commission_rate_percent' => round(((int) $this->settingsService->get('affiliate.commission_rate_bps', 2500)) / 100, 2),
                     'minimum_payout_cents' => $minPayoutCents,
                     'minimum_payout_formatted' => sprintf('$%.2f', $minPayoutCents / 100),
                     'maturation_hold_hours' => (int) config('knzin.affiliate.maturation_hours', 24),
@@ -207,9 +207,17 @@ class AffiliateDashboardController extends Controller
         switch ($entry->entry_type) {
             case 'sales_commission':
                 $orderNum = $entry->order?->order_number ?? '';
+                $attribution = $entry->order_id ? \App\Models\ReferralAttribution::where('order_id', $entry->order_id)->first() : null;
+                if ($attribution && $attribution->commission_rate_bps !== null) {
+                    $percent = rtrim(rtrim(number_format($attribution->commission_rate_bps / 100, 2), '0'), '.');
+                    return [
+                        'ar' => "عمولة مبيعات {$percent}% من طلب دورة ({$orderNum})",
+                        'en' => "{$percent}% sales commission from course order ({$orderNum})",
+                    ];
+                }
                 return [
-                    'ar' => "عمولة مبيعات 25% من طلب دورة ({$orderNum})",
-                    'en' => "25% sales commission from course order ({$orderNum})",
+                    'ar' => "عمولة مبيعات من طلب دورة ({$orderNum})",
+                    'en' => "Sales commission from course order ({$orderNum})",
                 ];
             case 'co_prize_credit':
                 return [

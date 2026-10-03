@@ -73,6 +73,22 @@ return [
             'throw' => false,
         ],
 
+        'payout-receipts' => env('PAYOUT_RECEIPTS_DISK', 'local') === 's3' ? [
+            'driver' => 's3',
+            'key' => env('PAYOUT_RECEIPTS_AWS_ACCESS_KEY_ID', env('AWS_ACCESS_KEY_ID')),
+            'secret' => env('PAYOUT_RECEIPTS_AWS_SECRET_ACCESS_KEY', env('AWS_SECRET_ACCESS_KEY')),
+            'region' => env('PAYOUT_RECEIPTS_AWS_DEFAULT_REGION', env('AWS_DEFAULT_REGION', 'us-east-1')),
+            'bucket' => env('PAYOUT_RECEIPTS_AWS_BUCKET'),
+            'endpoint' => env('PAYOUT_RECEIPTS_ENDPOINT'),
+            'use_path_style_endpoint' => env('PAYOUT_RECEIPTS_USE_PATH_STYLE_ENDPOINT', true),
+            'visibility' => 'private',
+            'throw' => false,
+        ] : [
+            'driver' => 'local',
+            'root' => storage_path('app/payout-receipts'),
+            'visibility' => 'private',
+            'throw' => false,
+        ],
     ],
 
     /*

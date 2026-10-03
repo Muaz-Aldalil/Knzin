@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: AffiliatePageProps): Promise<
   return {
     title: isRtl ? 'بوابة الشركاء والمسوّقين | كَنزين' : 'Affiliate & Partner Portal | KNZiN',
     description: isRtl
-      ? 'بوابة شركاء كَنزين: شارك رابط إحالتك واكسب 25% عمولة مبيعات مباشرة بالإضافة إلى 40% من قيمة الجائزة الكبرى عند فوز المشترك المدعو.'
-      : 'KNZiN Affiliate Portal: Share your referral link to earn 25% sales commission and a 40% co-share of the grand prize when your referred student wins.',
+      ? 'بوابة شركاء كَنزين: شارك رابط إحالتك واكسب عمولة مبيعات مباشرة بالإضافة إلى 40% من قيمة الجائزة الكبرى عند فوز المشترك المدعو.'
+      : 'KNZiN Affiliate Portal: Share your referral link to earn direct sales commission and a 40% co-share of the grand prize when your referred student wins.',
   };
 }
 

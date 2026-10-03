@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\ApprovalRecord;
 use App\Models\Draw;
 use App\Models\User;
+use App\Services\Admin\AdminAuditContext;
+use App\Services\Admin\AdminAuditWriter;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -21,6 +23,12 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
      */
     public const ISSUANCE_STATUSES = ['approved', 'rejected', 'pending'];
 
+    public function __construct(
+        protected ?AdminAuditWriter $auditWriter = null
+    ) {
+        $this->auditWriter = $auditWriter ?? app(AdminAuditWriter::class);
+    }
+
     /**
      * Issue an authoritative approval record behind strict domain authorization.
      */
@@ -32,7 +40,8 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
         string $source,
         ?User $authorizer = null,
         ?string $systemPrincipal = null,
-        ?string $systemSecret = null
+        ?string $systemSecret = null,
+        ?AdminAuditContext $auditContext = null
     ): ApprovalRecord {
         // 1. Invariant: Valid approval type
         if (!in_array($approvalType, self::ALLOWED_TYPES, true)) {
@@ -73,7 +82,8 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
             $subjectId,
             $status,
             $source,
-            $approvedBy
+            $approvedBy,
+            $auditContext
         ) {
             $latest = ApprovalRecord::where('approval_type', $approvalType)
                 ->where('subject_type', $subjectType)
@@ -84,7 +94,7 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
 
             $newApprovalId = strtoupper($approvalType) . '-APP-' . (string) Str::uuid();
 
-            return ApprovalRecord::permitWrite(function () use (
+            $record = ApprovalRecord::permitWrite(function () use (
                 $latest,
                 $newApprovalId,
                 $approvalType,
@@ -120,6 +130,25 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
                     'version' => $version,
                 ]);
             });
+
+            if ($auditContext) {
+                $this->auditWriter->record(
+                    context: $auditContext,
+                    action: $latest ? 'approval.superseded' : 'approval.issued',
+                    targetType: 'approval',
+                    targetId: $newApprovalId,
+                    outcome: 'success',
+                    beforeState: $latest ? ['status' => $latest->status, 'version' => $latest->version] : null,
+                    afterState: [
+                        'status' => $status,
+                        'approval_type' => $approvalType,
+                        'subject_id' => $subjectId,
+                        'version' => $record->version,
+                    ]
+                );
+            }
+
+            return $record;
         });
     }
 
@@ -131,9 +160,10 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
         string $reason,
         ?User $authorizer = null,
         ?string $systemPrincipal = null,
-        ?string $systemSecret = null
+        ?string $systemSecret = null,
+        ?AdminAuditContext $auditContext = null
     ): ApprovalRecord {
-        return DB::transaction(function () use ($approvalId, $reason, $authorizer, $systemPrincipal, $systemSecret) {
+        return DB::transaction(function () use ($approvalId, $reason, $authorizer, $systemPrincipal, $systemSecret, $auditContext) {
             $record = ApprovalRecord::where('approval_id', $approvalId)
                 ->lockForUpdate()
                 ->first();
@@ -156,6 +186,7 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
             }
 
             $revokedBy = $authorizer?->id ?? $systemPrincipal;
+            $beforeStatus = $record->status;
 
             ApprovalRecord::permitWrite(function () use ($record, $revokedBy, $reason) {
                 $record->update([
@@ -165,6 +196,23 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
                     'revocation_reason' => $reason,
                 ]);
             });
+
+            if ($auditContext) {
+                $this->auditWriter->record(
+                    context: $auditContext,
+                    action: 'approval.revoked',
+                    targetType: 'approval',
+                    targetId: $approvalId,
+                    outcome: 'success',
+                    reasonCode: 'administrative_revocation',
+                    justification: $reason,
+                    beforeState: ['status' => $beforeStatus],
+                    afterState: [
+                        'status' => 'revoked',
+                        'revocation_reason' => $reason,
+                    ]
+                );
+            }
 
             return $record->fresh();
         });
@@ -179,7 +227,8 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
         string $source,
         ?User $authorizer = null,
         ?string $systemPrincipal = null,
-        ?string $systemSecret = null
+        ?string $systemSecret = null,
+        ?AdminAuditContext $auditContext = null
     ): ApprovalRecord {
         return DB::transaction(function () use (
             $existingApprovalId,
@@ -187,7 +236,8 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
             $source,
             $authorizer,
             $systemPrincipal,
-            $systemSecret
+            $systemSecret,
+            $auditContext
         ) {
             $existing = ApprovalRecord::where('approval_id', $existingApprovalId)
                 ->lockForUpdate()
@@ -208,7 +258,7 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
             $newApprovalId = strtoupper($existing->approval_type) . '-APP-' . (string) Str::uuid();
             $approvedBy = $authorizer?->id ?? $systemPrincipal;
 
-            return ApprovalRecord::permitWrite(function () use (
+            $record = ApprovalRecord::permitWrite(function () use (
                 $existing,
                 $newApprovalId,
                 $newStatus,
@@ -234,6 +284,25 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
                     'version' => $existing->version + 1,
                 ]);
             });
+
+            if ($auditContext) {
+                $this->auditWriter->record(
+                    context: $auditContext,
+                    action: 'approval.superseded',
+                    targetType: 'approval',
+                    targetId: $newApprovalId,
+                    outcome: 'success',
+                    beforeState: ['status' => $existing->status, 'version' => $existing->version],
+                    afterState: [
+                        'status' => $newStatus,
+                        'approval_type' => $existing->approval_type,
+                        'subject_id' => $existing->subject_id,
+                        'version' => $record->version,
+                    ]
+                );
+            }
+
+            return $record;
         });
     }
 
@@ -270,5 +339,4 @@ class ApprovalRegistryService implements ApprovalRegistryServiceInterface
             }
         }
     }
-
 }

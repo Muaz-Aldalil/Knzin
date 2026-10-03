@@ -34,8 +34,19 @@ class AffiliatePayout extends Model
         'status',
         'admin_reference_number',
         'admin_notes',
+        'receipt_path',
+        'receipt_sha256',
         'processed_by_admin_id',
         'processed_at',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'receipt_path',
     ];
 
     /**
@@ -92,10 +103,15 @@ class AffiliatePayout extends Model
     }
 
     /**
-     * Transition payout status to completed with admin reference.
+     * Transition payout status to completed with admin reference and receipt evidence.
      */
-    public function markCompleted(string $adminReferenceNumber, ?string $adminId = null, ?string $adminNotes = null): bool
-    {
+    public function markCompleted(
+        string $adminReferenceNumber,
+        ?string $adminId = null,
+        ?string $adminNotes = null,
+        ?string $receiptPath = null,
+        ?string $receiptSha256 = null
+    ): bool {
         if (!in_array($this->status, ['requested', 'processing'], true)) {
             return false;
         }
@@ -104,6 +120,14 @@ class AffiliatePayout extends Model
         $this->admin_reference_number = $adminReferenceNumber;
         $this->processed_by_admin_id = $adminId;
         $this->processed_at = now();
+
+        if ($receiptPath !== null) {
+            $this->receipt_path = $receiptPath;
+        }
+
+        if ($receiptSha256 !== null) {
+            $this->receipt_sha256 = $receiptSha256;
+        }
 
         if ($adminNotes !== null) {
             $this->admin_notes = $adminNotes;

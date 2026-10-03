@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useGrandPrizeDraw } from '@/hooks/useDraws';
 import { CountdownClock } from './CountdownClock';
 import { PulsatingLockBadge } from './PulsatingLockBadge';
+import { SeedCommitmentBadge } from './SeedCommitmentBadge';
 import { Sparkles, ArrowRight, ShieldCheck, Gift } from 'lucide-react';
 
 export function HeroGrandPrizeCountdown() {
@@ -118,6 +119,16 @@ export function HeroGrandPrizeCountdown() {
                   onExpire={() => setIsLocallyLocked(true)}
                   size="lg"
                   showDays={true}
+                />
+              </div>
+            )}
+
+            {grandDraw.seed_commitment_hash && (
+              <div className="pt-3 border-t border-border/40 mt-3">
+                <SeedCommitmentBadge
+                  commitmentHash={grandDraw.seed_commitment_hash}
+                  revealedSeed={grandDraw.revealed_server_seed}
+                  className="w-full"
                 />
               </div>
             )}

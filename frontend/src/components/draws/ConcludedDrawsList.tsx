@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
 import { ConcludedDrawItem } from '@/types/draws';
+import { SeedCommitmentBadge } from './SeedCommitmentBadge';
 import { Trophy, ExternalLink, CheckCircle2, Ticket, MapPin, Calendar } from 'lucide-react';
 
 interface ConcludedDrawsListProps {
@@ -107,6 +108,17 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
                   </span>
                 </div>
               </div>
+
+              {(item.seed_commitment_hash || item.revealed_server_seed) && (
+                <div className="pt-2 border-t border-border/40">
+                  <SeedCommitmentBadge
+                    commitmentHash={item.seed_commitment_hash}
+                    revealedSeed={item.revealed_server_seed}
+                    isDetailed={true}
+                    className="w-full"
+                  />
+                </div>
+              )}
             </div>
           </div>
 

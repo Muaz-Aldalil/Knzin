@@ -74,7 +74,7 @@ export function AffiliateLedgerTable({
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
             <ArrowDownLeft className="w-3 h-3" />
-            <span>{isRtl ? 'عمولة بيع 25%' : '25% Commission'}</span>
+            <span>{isRtl ? 'عمولة بيع' : 'Sales Commission'}</span>
           </span>
         );
       case 'co_prize_credit':

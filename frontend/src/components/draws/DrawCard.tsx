@@ -8,6 +8,7 @@ import { DrawItem } from '@/types/draws';
 import { CountdownClock } from './CountdownClock';
 import { PulsatingLockBadge } from './PulsatingLockBadge';
 import { DrawTermsAccordion } from './DrawTermsAccordion';
+import { SeedCommitmentBadge } from './SeedCommitmentBadge';
 import { ShieldCheck, Sparkles, BookOpen, Gift } from 'lucide-react';
 
 interface DrawCardProps {
@@ -122,6 +123,14 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
               </div>
             )}
           </div>
+
+          {draw.seed_commitment_hash && (
+            <SeedCommitmentBadge
+              commitmentHash={draw.seed_commitment_hash}
+              revealedSeed={draw.revealed_server_seed}
+              className="w-full"
+            />
+          )}
         </div>
       </div>
 

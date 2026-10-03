@@ -2,12 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AdminCapability;
-use App\Models\PlatformSetting;
 use App\Models\User;
+use App\Services\Admin\AdminCapabilityService;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 
 class BootstrapAdminCommand extends Command
 {
@@ -30,7 +28,7 @@ class BootstrapAdminCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(AdminCapabilityService $capabilityService): int
     {
         $identifier = (string) $this->argument('user');
         $suppliedToken = (string) $this->option('token');
@@ -54,29 +52,7 @@ class BootstrapAdminCommand extends Command
 
         // Invariant 3: Atomic, race-safe check and provisioning within database transaction
         try {
-            DB::transaction(function () use ($targetUser) {
-                // Check if any active administrator already exists
-                $activeAdminExists = AdminCapability::active()->exists();
-                if ($activeAdminExists) {
-                    throw new \DomainException('CRITICAL: Bootstrap rejected. An active Administrator already exists in the system. Use delegated Admin provisioning (knzin:grant-admin-capability).');
-                }
-
-                // Atomic singleton lock in platform_settings using database unique constraint on key
-                PlatformSetting::create([
-                    'key' => 'admin.bootstrap_singleton',
-                    'value' => [
-                        'bootstrapped_user_id' => $targetUser->id,
-                        'bootstrapped_at' => now()->toIso8601String(),
-                    ],
-                    'updated_by_user_id' => $targetUser->id,
-                    'description' => 'Initial administrator bootstrap lock',
-                ]);
-
-                // Grant initial root capabilities under least-privilege capability model
-                $targetUser->grantCapability('manage_admin_capabilities', null, 'bootstrap');
-                $targetUser->grantCapability('manage_platform_settings', null, 'bootstrap');
-                $targetUser->grantCapability('adjudicate_affiliate_coprize', null, 'bootstrap');
-            });
+            $capabilityService->bootstrapInitialAdmin($targetUser);
         } catch (\DomainException $de) {
             $this->error($de->getMessage());
             return self::FAILURE;

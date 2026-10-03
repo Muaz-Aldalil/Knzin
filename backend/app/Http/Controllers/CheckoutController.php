@@ -19,8 +19,17 @@ class CheckoutController extends ApiController
      */
     public function store(CreateOrderRequest $request): JsonResponse
     {
+        $data = $request->validated();
+
+        // Authoritative server-side identity: if user is authenticated via Sanctum, use their verified email
+        /** @var \App\Models\User|null $authUser */
+        $authUser = $request->user('sanctum') ?? $request->user();
+        if ($authUser) {
+            $data['email'] = $authUser->email;
+        }
+
         $result = $this->orderService->createOrder(
-            $request->validated(),
+            $data,
             $request->ip(),
             $request->userAgent()
         );

@@ -20,6 +20,7 @@ class DrawController extends ApiController
         $serverTimeUtc = Carbon::now('UTC');
 
         $draws = Draw::with('prize')
+            ->published()
             ->rollingWindow()
             ->orderBy('ends_at', 'asc')
             ->get();
@@ -37,6 +38,7 @@ class DrawController extends ApiController
     public function concluded(Request $request): JsonResponse
     {
         $draws = Draw::with(['prize', 'winner'])
+            ->published()
             ->concluded()
             ->whereHas('winner')
             ->orderBy('ends_at', 'desc')

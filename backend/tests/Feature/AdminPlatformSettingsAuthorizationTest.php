@@ -72,10 +72,10 @@ class AdminPlatformSettingsAuthorizationTest extends TestCase
 
     public function test_delegated_admin_provisioning_requires_active_admin_authorizer(): void
     {
-        $admin = User::factory()->create(['email' => 'root@knzin.com']);
+        $admin = User::factory()->create(['email' => 'root@knzin.com', 'auth_provider' => 'google']);
         $admin->grantCapability('manage_admin_capabilities', null, 'bootstrap');
 
-        $newUser = User::factory()->create(['email' => 'finance-officer@knzin.com']);
+        $newUser = User::factory()->create(['email' => 'finance-officer@knzin.com', 'auth_provider' => 'google']);
 
         // Delegated provisioning by active admin
         $exitCode = $this->artisan("knzin:grant-admin-capability {$newUser->email} manage_platform_settings --authorized-by={$admin->email}")

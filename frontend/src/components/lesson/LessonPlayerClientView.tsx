@@ -53,6 +53,23 @@ function LessonPlayerContent({ slug, initialCourse }: LessonPlayerClientViewProp
     initialCourse || undefined
   );
 
+  // Restore pending checkout after returning from login
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && course?.id) {
+        const pending = sessionStorage.getItem('knzin_pending_checkout');
+        if (pending) {
+          const item = JSON.parse(pending);
+          if (item.courseId === course.id) {
+            sessionStorage.removeItem('knzin_pending_checkout');
+            setCheckoutItem(item);
+            setIsCheckoutOpen(true);
+          }
+        }
+      }
+    } catch {}
+  }, [course?.id]);
+
   // State 1: Loading (only when no initialCourse is present)
   if (isLoading && !course) {
     return (

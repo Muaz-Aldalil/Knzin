@@ -221,7 +221,7 @@
   },
   "affiliate": {
     "title": "Affiliate & Partner Engine",
-    "subtitle": "Share your referral link to earn 25% direct sales commission plus a 40% co-share of the grand prize if your referred student wins!",
+    "subtitle": "Share your referral link to earn {rate} direct sales commission plus a 40% co-share of the grand prize if your referred student wins!",
     "unpaidAvailable": "Available for Withdrawal",
     "unpaidPending": "Pending Maturation (24h)",
     "totalEarned": "Total Earnings",
@@ -262,5 +262,41 @@
     "payoutSuccess": "Withdrawal request submitted successfully. Funds have been locked from your available balance pending settlement.",
     "viewHistory": "Payout Request History",
     "navLink": "Affiliate"
+  },
+  "admin": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "settings": "Platform Settings",
+      "affiliates": "Affiliate Oversight",
+      "payouts": "Payout Settlements",
+      "coprizes": "Co-Prize Adjudication",
+      "approvals": "Approvals & Audit",
+      "draws": "Draws & Prizes",
+      "awards": "Promotional Awards",
+      "users": "Users & Capabilities",
+      "audit": "Security Audit Trail"
+    },
+    "portal": {
+      "title": "KNZiN Admin",
+      "subtitle": "Operations & Audit Portal",
+      "authRequired": "Admin Authentication Required",
+      "forbidden": "Forbidden Access (403)",
+      "missingCapability": "Missing Capability",
+      "logout": "Sign Out"
+    },
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "reject": "Reject",
+      "revoke": "Revoke",
+      "settle": "Settle",
+      "release": "Release",
+      "manage": "Manage",
+      "search": "Search",
+      "filter": "Filter",
+      "status": "Status",
+      "actions": "Actions"
+    }
   }
 }

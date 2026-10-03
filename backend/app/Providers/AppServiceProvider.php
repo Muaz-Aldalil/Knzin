@@ -7,7 +7,10 @@ use App\Services\ApprovalRegistryService;
 use App\Services\ApprovalRegistryServiceInterface;
 use App\Services\CoPrizeApprovalProviderInterface;
 use App\Services\DatabaseCoPrizeApprovalProvider;
+use App\Support\AdminCapabilities;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,6 +29,11 @@ class AppServiceProvider extends ServiceProvider
             ApprovalRegistryServiceInterface::class,
             ApprovalRegistryService::class
         );
+
+        $this->app->bind(
+            \App\Services\AffiliateCoPrizeServiceInterface::class,
+            \App\Services\AffiliateCoPrizeService::class
+        );
     }
 
     /**
@@ -33,25 +41,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Define persistent Admin authorization gates under least privilege model
-        Gate::define('manage_platform_settings', function (?User $user) {
-            return $user !== null && $user->hasCapability('manage_platform_settings');
-        });
+        // Define persistent Admin authorization gates for all six approved capabilities under least privilege model
+        foreach (AdminCapabilities::ALL as $capability) {
+            Gate::define($capability, function (?User $user) use ($capability) {
+                return $user !== null && $user->hasCapability($capability);
+            });
+        }
 
-        Gate::define('adjudicate_affiliate_coprize', function (?User $user) {
-            return $user !== null && $user->hasCapability('adjudicate_affiliate_coprize');
-        });
-
-        Gate::define('manage_admin_capabilities', function (?User $user) {
-            return $user !== null && $user->hasCapability('manage_admin_capabilities');
-        });
-
-        Gate::define('issue_kyc_approval', function (?User $user) {
-            return $user !== null && $user->hasCapability('issue_kyc_approval');
-        });
-
-        Gate::define('issue_draw_audit_approval', function (?User $user) {
-            return $user !== null && $user->hasCapability('issue_draw_audit_approval');
+        RateLimiter::for('admin', function ($request) {
+            return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
         });
     }
 }

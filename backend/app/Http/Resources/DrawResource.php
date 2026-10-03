@@ -47,6 +47,12 @@ class DrawResource extends JsonResource
                 'display_iqd_label' => (string) $prize->display_iqd_label,
                 'image_url' => (string) $prize->image_url,
             ] : null,
+            'seed_commitment' => $this->server_seed_hash ? [
+                'server_seed_hash' => (string) $this->server_seed_hash,
+                'committed_at' => $this->seed_committed_at?->toIso8601String(),
+            ] : null,
+            'server_seed_hash' => $this->server_seed_hash ? (string) $this->server_seed_hash : null,
+            'seed_commitment_hash' => $this->server_seed_hash ? (string) $this->server_seed_hash : null,
         ];
     }
 }

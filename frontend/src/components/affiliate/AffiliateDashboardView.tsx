@@ -32,6 +32,9 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
     refetch: refetchDashboard,
   } = useAffiliateDashboard();
 
+  const activeRatePercent =
+    commissionPolicy?.sales_commission_rate_percent ?? 25;
+
   const [ledgerPage, setLedgerPage] = useState(1);
   const [ledgerType, setLedgerType] = useState<LedgerEntryType>('all');
   const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
@@ -60,8 +63,8 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
         </h2>
         <p className="mt-2 text-sm text-content-secondary max-w-md mx-auto">
           {isRtl
-            ? 'سجّل الدخول للحصول على رابط الإحالة الخاص بك، ومتابعة عمولات المبيعات (25%)، ومكافأة الفوز بالجائزة الكبرى (40%).'
-            : 'Sign in to access your unique referral link, track 25% sales commissions, and claim 40% co-prize rewards.'}
+            ? `سجّل الدخول للحصول على رابط الإحالة الخاص بك، ومتابعة عمولات المبيعات (${activeRatePercent}%)، ومكافأة الفوز بالجائزة الكبرى (40%).`
+            : `Sign in to access your unique referral link, track ${activeRatePercent}% sales commissions, and claim 40% co-prize rewards.`}
         </p>
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
@@ -173,7 +176,7 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
             {t('title')}
           </h1>
           <p className="text-sm text-content-secondary mt-1 max-w-2xl">
-            {t('subtitle')}
+            {t('subtitle', { rate: `${activeRatePercent}%` })}
           </p>
         </div>
 

@@ -2,18 +2,25 @@
 
 namespace App\Services;
 
+use App\Exceptions\AdminStateConflictException;
+use App\Exceptions\CoPrizeApprovalsIncompleteException;
 use App\Models\AffiliateLedgerEntry;
 use App\Models\ReferralAttribution;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\Admin\AdminAuditContext;
+use App\Services\Admin\AdminAuditWriter;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 
 class AffiliateCoPrizeService implements AffiliateCoPrizeServiceInterface
 {
     public function __construct(
-        protected CoPrizeApprovalProviderInterface $approvalProvider
-    ) {}
+        protected CoPrizeApprovalProviderInterface $approvalProvider,
+        protected ?AdminAuditWriter $auditWriter = null
+    ) {
+        $this->auditWriter = $auditWriter ?? app(AdminAuditWriter::class);
+    }
 
     /**
      * Resolve winning ticket attribution and award 40% co-prize to referrer in pending status (Option C).
@@ -122,6 +129,81 @@ class AffiliateCoPrizeService implements AffiliateCoPrizeServiceInterface
     }
 
     /**
+     * Adjudicate release of pending co-prize by an authorized admin checking dual valid approvals and auditing.
+     */
+    public function adjudicateCoPrizeRelease(
+        string $winningTicketSerial,
+        User $adminUser,
+        ?AdminAuditContext $auditContext = null
+    ): ?AffiliateLedgerEntry {
+        if (!$adminUser->hasCapability('adjudicate_affiliate_coprize')) {
+            throw new AuthorizationException("User [{$adminUser->id}] lacks required capability 'adjudicate_affiliate_coprize'.");
+        }
+
+        return DB::transaction(function () use ($winningTicketSerial, $auditContext) {
+            $idempotencyKey = "co_prize_ticket_{$winningTicketSerial}";
+            $entry = AffiliateLedgerEntry::where('idempotency_key', $idempotencyKey)
+                ->lockForUpdate()
+                ->first();
+
+            if ($entry === null) {
+                throw new AdminStateConflictException("Co-prize credit for ticket '{$winningTicketSerial}' not found.");
+            }
+
+            // Idempotent replay: already available
+            if ($entry->status === 'available') {
+                return $entry;
+            }
+
+            if ($entry->status !== 'pending') {
+                throw new AdminStateConflictException("Cannot release co-prize with status '{$entry->status}'.");
+            }
+
+            $approvalState = $this->approvalProvider->getApprovalState($winningTicketSerial);
+
+            if (!$approvalState->isFullyApproved()) {
+                throw new CoPrizeApprovalsIncompleteException(
+                    message: "Dual approvals incomplete for co-prize release on ticket '{$winningTicketSerial}'.",
+                    data: [
+                        'kyc' => [
+                            'status' => $approvalState->kyc->status,
+                            'approval_id' => $approvalState->kyc->approvalId,
+                            'is_approved' => $approvalState->kyc->isApproved(),
+                        ],
+                        'draw_integrity' => [
+                            'status' => $approvalState->drawIntegrity->status,
+                            'approval_id' => $approvalState->drawIntegrity->approvalId,
+                            'is_approved' => $approvalState->drawIntegrity->isApproved(),
+                        ],
+                        'draw_winner_exists' => $approvalState->drawWinnerExists,
+                    ]
+                );
+            }
+
+            $entry->status = 'available';
+            $entry->save();
+
+            if ($auditContext) {
+                $this->auditWriter->record(
+                    context: $auditContext,
+                    action: 'coprize.released',
+                    targetType: 'ticket',
+                    targetId: $winningTicketSerial,
+                    outcome: 'success',
+                    beforeState: ['status' => 'pending'],
+                    afterState: [
+                        'status' => 'available',
+                        'kyc_approval_id' => $approvalState->kyc->approvalId,
+                        'draw_integrity_approval_id' => $approvalState->drawIntegrity->approvalId,
+                    ]
+                );
+            }
+
+            return $entry->fresh();
+        });
+    }
+
+    /**
      * Cancel pending co-prize if winner fails identity verification or is disqualified.
      */
     public function cancelCoPrize(
@@ -153,20 +235,27 @@ class AffiliateCoPrizeService implements AffiliateCoPrizeServiceInterface
     public function adjudicateCoPrizeRevocation(
         string $winningTicketSerial,
         string $reason,
-        User $adminUser
+        User $adminUser,
+        ?AdminAuditContext $auditContext = null
     ): ?AffiliateLedgerEntry {
         if (!$adminUser->hasCapability('adjudicate_affiliate_coprize')) {
             throw new AuthorizationException("User [{$adminUser->id}] lacks required capability 'adjudicate_affiliate_coprize' to adjudicate co-prize reversals.");
         }
 
-        return DB::transaction(function () use ($winningTicketSerial, $reason, $adminUser) {
+        return DB::transaction(function () use ($winningTicketSerial, $reason, $adminUser, $auditContext) {
             $idempotencyKey = "co_prize_ticket_{$winningTicketSerial}";
             $originalEntry = AffiliateLedgerEntry::where('idempotency_key', $idempotencyKey)
                 ->lockForUpdate()
                 ->first();
 
             if ($originalEntry === null) {
-                return null;
+                throw new AdminStateConflictException("Co-prize credit for ticket '{$winningTicketSerial}' not found.");
+            }
+
+            if ($originalEntry->status !== 'available') {
+                throw new AdminStateConflictException(
+                    "Co-prize revocation is post-release only. Current status is '{$originalEntry->status}', expected 'available'."
+                );
             }
 
             $reversalKey = "co_prize_reversal_{$winningTicketSerial}";
@@ -175,11 +264,11 @@ class AffiliateCoPrizeService implements AffiliateCoPrizeServiceInterface
                 ->first();
 
             if ($existingReversal !== null) {
-                return $existingReversal;
+                return $existingReversal; // Idempotent
             }
 
             // Compensating reversal debit preserving original entry intact
-            return AffiliateLedgerEntry::create([
+            $reversal = AffiliateLedgerEntry::create([
                 'user_id' => $originalEntry->user_id,
                 'order_id' => $originalEntry->order_id,
                 'payout_id' => null,
@@ -197,6 +286,58 @@ class AffiliateCoPrizeService implements AffiliateCoPrizeServiceInterface
                 'matures_at' => null,
                 'idempotency_key' => $reversalKey,
             ]);
+
+            if ($auditContext) {
+                $this->auditWriter->record(
+                    context: $auditContext,
+                    action: 'coprize.revoked',
+                    targetType: 'ticket',
+                    targetId: $winningTicketSerial,
+                    outcome: 'success',
+                    reasonCode: 'approval_revoked',
+                    justification: $reason,
+                    beforeState: ['original_entry_status' => $originalEntry->status],
+                    afterState: [
+                        'reversal_entry_id' => $reversal->id,
+                        'reversal_amount_cents' => $reversal->amount_cents,
+                    ]
+                );
+            }
+
+            return $reversal;
         });
+    }
+
+    /**
+     * Calculate unclamped exposure and net projection for co-prize revocation preview.
+     */
+    public function previewRevocation(string $winningTicketSerial): ?array
+    {
+        $idempotencyKey = "co_prize_ticket_{$winningTicketSerial}";
+        $entry = AffiliateLedgerEntry::where('idempotency_key', $idempotencyKey)->first();
+
+        if ($entry === null) {
+            return null;
+        }
+
+        $userId = $entry->user_id;
+        $originalAmountCents = abs($entry->amount_cents);
+
+        // Compute current mature available balance (unclamped projection)
+        $currentAvailableUnclamped = (int) AffiliateLedgerEntry::where('user_id', $userId)
+            ->matureAvailable()
+            ->sum('amount_cents');
+
+        $netAfterReversal = $currentAvailableUnclamped - $originalAmountCents;
+        $withdrawnExposure = max(0, -$netAfterReversal);
+
+        return [
+            'winning_ticket_serial' => $winningTicketSerial,
+            'referrer_user_id' => $userId,
+            'original_amount_cents' => $originalAmountCents,
+            'current_available_cents' => max(0, $currentAvailableUnclamped),
+            'net_after_reversal' => $netAfterReversal,
+            'withdrawn_exposure' => $withdrawnExposure,
+        ];
     }
 }

@@ -24,7 +24,7 @@ class GoogleAuthService
     /**
      * Generate redirect response for Google OAuth (mock or real).
      */
-    public function getRedirectResponse(?string $mockEmail = null): RedirectResponse
+    public function getRedirectResponse(?string $mockEmail = null, ?string $redirect = null): RedirectResponse
     {
         if ($this->isMockMode()) {
             $email = $mockEmail ?: 'mock_student_' . Str::random(5) . '@example.com';
@@ -39,11 +39,15 @@ class GoogleAuthService
                     $name = 'العميل ب';
                 }
             }
-            $callbackUrl = url('/api/v1/auth/google/callback') . '?' . http_build_query([
+            $params = [
                 'mock_email' => $email,
                 'mock_name' => $name,
                 'mock_sub' => 'mock_google_sub_' . md5($email),
-            ]);
+            ];
+            if ($redirect) {
+                $params['redirect'] = $redirect;
+            }
+            $callbackUrl = url('/api/v1/auth/google/callback') . '?' . http_build_query($params);
 
             return redirect()->away($callbackUrl);
         }

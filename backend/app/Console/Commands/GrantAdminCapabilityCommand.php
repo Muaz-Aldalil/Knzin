@@ -3,21 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Services\Admin\AdminCapabilityService;
+use App\Support\AdminCapabilities;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Console\Command;
+use Illuminate\Validation\ValidationException;
 
 class GrantAdminCapabilityCommand extends Command
 {
-    /**
-     * Allowed system capabilities.
-     */
-    public const ALLOWED_CAPABILITIES = [
-        'manage_admin_capabilities',
-        'manage_platform_settings',
-        'adjudicate_affiliate_coprize',
-        'issue_kyc_approval',
-        'issue_draw_audit_approval',
-    ];
-
     /**
      * The name and signature of the console command.
      *
@@ -38,15 +31,15 @@ class GrantAdminCapabilityCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(AdminCapabilityService $capabilityService): int
     {
         $identifier = (string) $this->argument('user');
         $capability = (string) $this->argument('capability');
         $authorizerOption = (string) $this->option('authorized-by');
 
         // Invariant 1: Capability must be a recognized system capability
-        if (!in_array($capability, self::ALLOWED_CAPABILITIES, true)) {
-            $this->error("Invalid capability [{$capability}]. Allowed: " . implode(', ', self::ALLOWED_CAPABILITIES));
+        if (!in_array($capability, AdminCapabilities::ALL, true)) {
+            $this->error("Invalid capability [{$capability}]. Allowed: " . implode(', ', AdminCapabilities::ALL));
             return self::FAILURE;
         }
 
@@ -88,12 +81,22 @@ class GrantAdminCapabilityCommand extends Command
             return self::FAILURE;
         }
 
-        $granted = $targetUser->grantCapability($capability, $authorizer, 'delegated_admin');
+        try {
+            $capabilityService->grant($targetUser, $capability, $authorizer);
+        } catch (AuthorizationException $ae) {
+            $this->error("AUTHORIZATION FAILED: " . $ae->getMessage());
+            return self::FAILURE;
+        } catch (ValidationException $ve) {
+            $this->error("VALIDATION FAILED: " . implode(' ', $ve->validator->errors()->all()));
+            return self::FAILURE;
+        }
+
+        $grantedRecord = $targetUser->adminCapabilities()->where('capability', $capability)->first();
 
         $this->info("Successfully granted capability '{$capability}' under Admin authority:");
         $this->line(" - Target User: {$targetUser->id} ({$targetUser->email})");
         $this->line(" - Authorized By: {$authorizer->id} ({$authorizer->email})");
-        $this->line(" - Granted At: {$granted->granted_at->toIso8601String()}");
+        $this->line(" - Granted At: " . ($grantedRecord?->granted_at ? $grantedRecord->granted_at->toIso8601String() : now()->toIso8601String()));
 
         return self::SUCCESS;
     }

@@ -131,7 +131,7 @@ class AffiliateAttributionService
             'buyer_user_id' => $order->user_id,
             'referral_code' => $resolved['referral_code'],
             'campaign_tag' => $campaignTag,
-            'commission_rate_bps' => config('knzin.affiliate.commission_rate_bps', 2500),
+            'commission_rate_bps' => app(\App\Services\PlatformSettingsService::class)->get('affiliate.commission_rate_bps', 2500),
             'attribution_type' => 'cookie',
             'ip_hash' => $ipHash,
             'user_agent_hash' => $uaHash,

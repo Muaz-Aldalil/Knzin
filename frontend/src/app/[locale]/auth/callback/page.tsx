@@ -35,15 +35,18 @@ function CallbackContent() {
         isVerified: true,
       });
 
+      const target = searchParams.get('redirect') || '/';
+
       const timer = setTimeout(() => {
         setIsProcessing(false);
-        router.replace('/');
+        router.replace(target as any);
       }, 1500);
 
       return () => clearTimeout(timer);
     } else if (!token && !email) {
       processedRef.current = true;
-      router.replace('/');
+      const target = searchParams.get('redirect') || '/';
+      router.replace(target as any);
     }
   }, [searchParams, login, router]);
 

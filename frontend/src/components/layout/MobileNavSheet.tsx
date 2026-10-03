@@ -251,16 +251,23 @@ export default function MobileNavSheet({
                 </button>
               </div>
             ) : (
-              <div className="pt-2">
+              <div className="pt-2 space-y-2">
+                <Link
+                  href="/auth/login"
+                  onClick={close}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>{isRtl ? 'تسجيل الدخول / حساب جديد' : 'Sign In / Register'}</span>
+                </Link>
                 <button
                   type="button"
                   onClick={() => {
                     close();
                     onGoogleLogin();
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-surface-secondary hover:bg-surface-elevated text-xs font-semibold text-content-primary border border-border-subtle transition-colors cursor-pointer"
                 >
-                  <LogIn className="w-4 h-4" />
                   <span>{t('loginWithGoogle')}</span>
                 </button>
               </div>

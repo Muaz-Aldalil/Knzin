@@ -285,6 +285,17 @@ export default function HeaderHUD() {
             <span>0 {tCommon('currencyIqd')}</span>
           </div>
 
+          {/* Desktop & Tablet Sign In entry button when unauthenticated */}
+          {!user && (
+            <Link
+              href="/auth/login"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>{isRtl ? 'تسجيل الدخول' : 'Sign In'}</span>
+            </Link>
+          )}
+
           {/* Language Switcher */}
           <LanguageToggle />
 
@@ -341,11 +352,17 @@ export default function HeaderHUD() {
                     <DropdownMenuLabel>
                       {t('guestBadge')}
                     </DropdownMenuLabel>
+                    <DropdownMenuItem asChild>
+                      <Link href="/auth/login" className="flex items-center gap-2 text-primary font-semibold w-full cursor-pointer">
+                        <LogIn className="w-4 h-4" />
+                        <span>{isRtl ? 'تسجيل الدخول / حساب جديد' : 'Sign In / Register'}</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={handleGoogleLogin}
-                      className="flex items-center gap-2 text-primary font-semibold cursor-pointer"
+                      className="flex items-center gap-2 text-content-secondary hover:text-content-primary cursor-pointer text-xs"
                     >
-                      <LogIn className="w-4 h-4" />
+                      <UserIcon className="w-4 h-4" />
                       <span>{t('loginWithGoogle')}</span>
                     </DropdownMenuItem>
                   </>

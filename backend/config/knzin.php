@@ -48,6 +48,7 @@ return [
     */
     'admin' => [
         'bootstrap_token' => env('KNZIN_ADMIN_BOOTSTRAP_TOKEN', 'knzin-bootstrap-secret-change-in-prod'),
+        'session_max_age_minutes' => (int) env('KNZIN_ADMIN_SESSION_MAX_AGE_MINUTES', 480),
     ],
 
     /*
