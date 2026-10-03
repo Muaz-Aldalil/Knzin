@@ -132,7 +132,6 @@ export default function HeaderHUD() {
 
   const isCoursesActive = pathname === '/' || pathname.startsWith('/courses');
   const isRaffleActive = pathname.startsWith('/raffle');
-  const isDesignSystemActive = pathname.startsWith('/design-system');
 
   const firstName = user ? getFirstName(user.displayName || user.email) : '';
 
@@ -196,17 +195,6 @@ export default function HeaderHUD() {
               }`}
             >
               {isRtl ? 'الشركاء' : 'Affiliate'}
-            </Link>
-
-            <Link
-              href="/design-system"
-              className={`px-2.5 py-1.5 rounded-lg transition-colors ${
-                isDesignSystemActive
-                  ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
-                  : 'text-content-muted hover:text-content-primary hover:bg-surface-secondary/70'
-              }`}
-            >
-              {t('designSystem')}
             </Link>
 
             {/* How It Works Desktop 1-Click Trigger */}

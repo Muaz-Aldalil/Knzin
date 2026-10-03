@@ -16,11 +16,11 @@ describe('Navigation & Responsive Invariants', () => {
   });
 
   it('navigation destination routes encompass all primary areas', () => {
-    const primaryRoutes = ['/', '/raffle', '/design-system', '/profile'];
-    assert.equal(primaryRoutes.length, 4);
+    const primaryRoutes = ['/', '/raffle', '/profile'];
+    assert.equal(primaryRoutes.length, 3);
     assert.ok(primaryRoutes.includes('/'));
     assert.ok(primaryRoutes.includes('/raffle'));
-    assert.ok(primaryRoutes.includes('/design-system'));
+    assert.ok(!primaryRoutes.includes('/design-system'));
   });
 
   it('responsive breakpoint contract: desktop full navbar is active at lg (1024px+)', () => {
