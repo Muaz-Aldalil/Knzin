@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
 import { X, Ticket, Mail, ShieldAlert, Sparkles, Loader2, LogIn, UserCheck } from 'lucide-react';
 import LegalShieldCheckbox from './LegalShieldCheckbox';
 import AntiPiracyQuizModal, { QuizAnswers } from './AntiPiracyQuizModal';
+import PaymentGatewaySelector, { PaymentGatewayType } from './PaymentGatewaySelector';
 import { useCheckout } from '@/hooks/useCheckout';
 import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/lib/api-client';
 
 export interface CheckoutItemData {
   courseId: string;
@@ -48,7 +51,16 @@ export default function CheckoutBottomSheet({
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [quizError, setQuizError] = useState<string | null>(null);
 
+  const [selectedGateway, setSelectedGateway] = useState<PaymentGatewayType>('zaincash');
+  const [isInitiatingPayment, setIsInitiatingPayment] = useState(false);
+
   const { createOrder, isLoading, error: apiError } = useCheckout();
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Pre-fill email with authenticated user email
   useEffect(() => {
@@ -57,7 +69,29 @@ export default function CheckoutBottomSheet({
     }
   }, [user]);
 
-  if (!isOpen) return null;
+  // Lock body scroll when dialog is open to prevent underlying page from scrolling
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
+  // Dismiss on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !mounted) return null;
 
   const handleSignInRedirect = () => {
     try {
@@ -119,7 +153,35 @@ export default function CheckoutBottomSheet({
         }
       } catch {}
 
-      // Navigate to order confirmation
+      // Immediately initiate gateway checkout session (Feature 007 - US5)
+      try {
+        setIsInitiatingPayment(true);
+        const payResult = await apiClient<{
+          success: boolean;
+          data: {
+            checkout_url: string;
+            gateway_transaction_id: string;
+          };
+        }>(`/checkout/orders/${order.order_number}/pay`, {
+          method: 'POST',
+          body: JSON.stringify({
+            gateway: selectedGateway,
+            locale,
+          }),
+        });
+
+        if (payResult?.data?.checkout_url) {
+          onClose();
+          window.location.href = payResult.data.checkout_url;
+          return;
+        }
+      } catch (payErr) {
+        console.error('Failed to initiate payment gateway, navigating to summary:', payErr);
+      } finally {
+        setIsInitiatingPayment(false);
+      }
+
+      // Fallback: Navigate to order confirmation
       onClose();
       router.push(`/order-summary/${order.order_number}` as any);
     } catch {
@@ -127,13 +189,22 @@ export default function CheckoutBottomSheet({
     }
   };
 
-  return (
+  return createPortal(
     <>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="w-full max-w-lg bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-2xl shadow-2xl p-6 max-h-[92vh] overflow-y-auto">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="checkout-dialog-title"
+        onClick={onClose}
+        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-sm animate-in fade-in duration-200"
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="w-full max-w-lg bg-white dark:bg-slate-900 border-t sm:border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-2xl shadow-2xl p-6 max-h-[90dvh] overflow-y-auto"
+        >
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-            <h2 className="text-lg font-extrabold text-secondary dark:text-white">
+            <h2 id="checkout-dialog-title" className="text-lg font-extrabold text-secondary dark:text-white">
               {t('title')}
             </h2>
             <button
@@ -298,6 +369,16 @@ export default function CheckoutBottomSheet({
               )}
             </div>
 
+            {/* Payment Gateway Selector (Feature 007 - US5) */}
+            <div>
+              <PaymentGatewaySelector
+                selectedGateway={selectedGateway}
+                onSelectGateway={setSelectedGateway}
+                amountIqd={item.itemType === 'bundle' ? 13000 : 2600}
+                disabled={isLoading || isInitiatingPayment}
+              />
+            </div>
+
             {/* Canonical Legal Shield Checkbox */}
             <div>
               <LegalShieldCheckbox
@@ -317,19 +398,25 @@ export default function CheckoutBottomSheet({
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isInitiatingPayment}
               className="w-full py-3.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white font-extrabold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
             >
-              {isLoading ? (
+              {isLoading || isInitiatingPayment ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>{t('processingButton')}</span>
+                  <span>
+                    {isInitiatingPayment
+                      ? (isRtl ? 'جاري توجيهك لبوابة الدفع...' : 'Redirecting to payment...')
+                      : t('processingButton')
+                    }
+                  </span>
                 </>
               ) : (
                 <span>
-                  {t('confirmAndPayButton', {
-                    amount: `$${(item.priceCents / 100).toFixed(2)}`,
-                  })}
+                  {isRtl
+                    ? `الانتقال للدفع الآن (${(item.itemType === 'bundle' ? 13000 : 2600).toLocaleString()} د.ع)`
+                    : `Proceed to Pay (${(item.itemType === 'bundle' ? 13000 : 2600).toLocaleString()} IQD)`
+                  }
                 </span>
               )}
             </button>
@@ -346,6 +433,7 @@ export default function CheckoutBottomSheet({
           setQuizError(null);
         }}
       />
-    </>
+    </>,
+    document.body
   );
 }

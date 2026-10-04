@@ -31,7 +31,7 @@ export interface AuditLogFilters {
   cursor?: string | null;
 }
 
-export function useAdminAuditLogs(filters: AuditLogFilters = {}) {
+export function useAdminAuditLogs(filters: AuditLogFilters = {}, enabled: boolean = true) {
   const query = useQuery<{ items: AuditLogItem[]; next_cursor: string | null }, ApiError>({
     queryKey: ['admin', 'audit-logs', filters],
     queryFn: () => {
@@ -46,6 +46,7 @@ export function useAdminAuditLogs(filters: AuditLogFilters = {}) {
         `/admin/audit-logs?${params.toString()}`
       );
     },
+    enabled,
     staleTime: 15 * 1000,
   });
 

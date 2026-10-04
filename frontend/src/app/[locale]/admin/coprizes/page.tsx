@@ -156,6 +156,83 @@ export default function AdminCoPrizesPage() {
     },
   ];
 
+  const renderCoPrizeMobileCard = (item: CoPrizeItem) => {
+    const prov = item.approval_provenance;
+    const canRelease = item.status === 'pending' && prov?.is_fully_approved;
+    const canRevoke = item.status === 'available';
+
+    return (
+      <div className="space-y-3" data-testid={`coprize-card-${item.ticket_serial}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <span className="font-mono text-xs font-bold text-brand-gold block">
+              {item.ticket_serial}
+            </span>
+            <span className="text-xs text-content-secondary block">
+              {item.user?.email || `User #${item.user_id}`}
+            </span>
+            <span className="text-[10px] text-content-muted">
+              {formatDate(item.created_at, locale)}
+            </span>
+          </div>
+          <div className="text-end">
+            <MoneyText cents={item.amount_cents} className="text-base font-bold text-amber-400 block" />
+            <StatusBadge status={item.status} />
+          </div>
+        </div>
+
+        {/* Dual Approval Provenance */}
+        {prov && (
+          <div className="p-2.5 rounded-xl bg-surface-elevated/60 border border-border-subtle text-xs space-y-1">
+            <span className="text-[11px] text-content-muted block">{isAr ? 'شروط الصرف (الموافقة المزدوجة):' : 'Dual Approval Provenance:'}</span>
+            <div className="flex items-center justify-between">
+              <span className="text-content-secondary">{isAr ? 'هوية الفائز (KYC):' : 'Winner KYC:'}</span>
+              <span className={prov.kyc.is_approved ? 'text-emerald-400 font-bold' : 'text-rose-400'}>
+                {prov.kyc.status}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-content-secondary">{isAr ? 'تدقيق السحب:' : 'Draw Audit:'}</span>
+              <span className={prov.draw_integrity.is_approved ? 'text-emerald-400 font-bold' : 'text-rose-400'}>
+                {prov.draw_integrity.status}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="pt-1">
+          {item.status === 'pending' && (
+            <button
+              onClick={() => handleRelease(item.ticket_serial)}
+              disabled={!canRelease || isReleasing}
+              className={`w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-colors ${
+                canRelease
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs'
+                  : 'bg-surface-elevated text-content-muted border border-border-subtle cursor-not-allowed opacity-50'
+              }`}
+              data-testid={`release-coprize-${item.ticket_serial}`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{isAr ? 'صرف للمتاح' : 'Release to Available'}</span>
+            </button>
+          )}
+
+          {canRevoke && (
+            <button
+              onClick={() => setRevokingItem(item)}
+              className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors"
+              data-testid={`revoke-coprize-${item.ticket_serial}`}
+            >
+              <XCircle className="w-3.5 h-3.5" />
+              <span>{isAr ? 'إلغاء واسترداد' : 'Revoke & Clawback'}</span>
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <AdminGuard requiredCapability="adjudicate_affiliate_coprize">
       <div className="space-y-6" data-testid="admin-coprizes-page">
@@ -179,6 +256,7 @@ export default function AdminCoPrizesPage() {
           keyExtractor={(item) => item.id}
           isLoading={isLoading}
           emptyMessage={isAr ? 'لا توجد جوائز شركاء مسجلة.' : 'No co-prize records found.'}
+          mobileRenderer={renderCoPrizeMobileCard}
         />
 
         {/* Revocation Exposure Dialog */}

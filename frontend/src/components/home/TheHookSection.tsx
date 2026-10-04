@@ -1,11 +1,27 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Sparkles, Quote, ArrowDown } from 'lucide-react';
+import { usePublicLandingCms } from '@/hooks/admin/useAdminCms';
 
 export const TheHookSection: React.FC = () => {
   const t = useTranslations('theHook');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
+
+  const { data: cmsData } = usePublicLandingCms();
+  const skillCapital = cmsData?.sections?.skill_capital;
+
+  // Visibility guard
+  if (skillCapital?.is_visible === false) {
+    return null;
+  }
+
+  const title = (isAr ? skillCapital?.title_ar : skillCapital?.title_en) || t('title');
+  const quote = (isAr ? skillCapital?.quote_ar : skillCapital?.quote_en) || t('quote');
+  const authorName = isAr ? skillCapital?.author_name_ar : skillCapital?.author_name_en;
+  const authorTitle = isAr ? skillCapital?.author_title_ar : skillCapital?.author_title_en;
 
   return (
     <section
@@ -30,15 +46,23 @@ export const TheHookSection: React.FC = () => {
             id="vision-heading"
             className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-content-primary tracking-tight"
           >
-            {t('title')}
+            {title}
           </h2>
 
           {/* Canonical Founder Quote */}
           <div className="relative max-w-3xl my-2">
             <Quote className="w-8 h-8 text-primary/30 mx-auto mb-3 opacity-60 rotate-180" />
             <blockquote className="text-base sm:text-lg lg:text-xl font-medium text-content-primary/95 leading-relaxed sm:leading-loose">
-              «{t('quote')}»
+              «{quote}»
             </blockquote>
+            {authorName && (
+              <div className="mt-3 text-center">
+                <p className="text-xs font-bold text-content-primary">{authorName}</p>
+                {authorTitle && (
+                  <p className="text-[11px] text-content-secondary mt-0.5">{authorTitle}</p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* CTA Link / Exploration Prompt */}

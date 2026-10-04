@@ -44,6 +44,7 @@ describe('Promotional Draws & Countdown Invariants (Feature 003)', () => {
       assert.ok(tiers.includes('monthly'));
 
       for (const draw of MOCK_ACTIVE_DRAWS) {
+        assert.ok(draw.prize, 'Mock active draw must have a prize configured');
         assert.ok(draw.prize.valuation_usd > 0, 'Prize must have positive USD valuation');
         assert.ok(draw.prize.display_iqd_label.includes('د.ع'), 'Prize must have IQD display label');
         assert.ok(draw.badge_label.length > 0, 'Draw must have trust badge label');

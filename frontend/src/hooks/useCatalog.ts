@@ -7,6 +7,9 @@ import { CoursePartData } from '@/components/catalog/CoursePartList';
 
 export interface DetailedCourse extends CourseData {
   parts: CoursePartData[];
+  outcomes?: any[];
+  curriculum_summary_ar?: string | null;
+  curriculum_summary_en?: string | null;
 }
 
 export function useCatalog(initialCourses?: CourseData[]) {

@@ -20,6 +20,7 @@ interface DataTableProps<T> {
   currentPage?: number;
   lastPage?: number;
   onPageChange?: (page: number) => void;
+  mobileRenderer?: (item: T) => React.ReactNode;
 }
 
 export function DataTable<T>({
@@ -31,13 +32,41 @@ export function DataTable<T>({
   currentPage,
   lastPage,
   onPageChange,
+  mobileRenderer,
 }: DataTableProps<T>) {
   const locale = useLocale();
   const isAr = locale === 'ar';
 
   return (
     <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden shadow-xs">
-      <div className="overflow-x-auto">
+      {/* Mobile Responsive Cards View (< md) when mobileRenderer is supplied */}
+      {mobileRenderer && (
+        <div className="md:hidden">
+          {isLoading ? (
+            <div className="px-6 py-12 text-center text-content-secondary">
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin text-brand-gold" />
+                <span>{isAr ? 'جارِ تحميل البيانات...' : 'Loading data...'}</span>
+              </div>
+            </div>
+          ) : data.length === 0 ? (
+            <div className="px-6 py-12 text-center text-content-muted">
+              {emptyMessage || (isAr ? 'لا توجد بيانات متاحة حالياً.' : 'No records found.')}
+            </div>
+          ) : (
+            <div className="divide-y divide-border-subtle">
+              {data.map((item) => (
+                <div key={keyExtractor(item)} className="p-4 hover:bg-surface-elevated/30 transition-colors">
+                  {mobileRenderer(item)}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Desktop Table View (>= md when mobileRenderer is supplied, or always if not) */}
+      <div className={`overflow-x-auto ${mobileRenderer ? 'hidden md:block' : ''}`}>
         <table className="w-full text-start text-sm">
           <thead className="bg-surface-elevated/60 border-b border-border-subtle text-content-secondary font-semibold">
             <tr>

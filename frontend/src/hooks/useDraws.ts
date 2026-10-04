@@ -79,7 +79,10 @@ export function useConcludedDraws(initialData?: ConcludedDrawsData) {
 
 export function useGrandPrizeDraw() {
   const { draws, serverTimeUtc, isLoading } = useActiveDraws();
-  const grandDraw = draws.find((d) => d.tier === 'monthly') ?? draws[0] ?? null;
+  const grandDraw =
+    draws.find((d) => d.tier === 'monthly' && Boolean(d.prize)) ??
+    draws.find((d) => Boolean(d.prize)) ??
+    null;
 
   return {
     grandDraw,

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -15,10 +16,27 @@ class GoogleAuthService
 
     /**
      * Check if Google OAuth mock mode is enabled for deterministic offline development.
+     *
+     * Mock mode accepts an arbitrary email without verification, so it is only ever
+     * honoured in local/testing environments regardless of the configuration flag.
      */
     public function isMockMode(): bool
     {
-        return (bool) config('services.google.mock', true);
+        return (bool) config('services.google.mock', false)
+            && app()->environment(['local', 'testing']);
+    }
+
+    /**
+     * Real Google OAuth (Socialite) is not implemented. Outside mock mode this must fail
+     * closed rather than authenticate a placeholder identity.
+     */
+    protected function failGoogleNotConfigured(): never
+    {
+        throw new HttpResponseException(response()->json([
+            'status' => 'fail',
+            'code' => 'ERR_GOOGLE_AUTH_UNAVAILABLE',
+            'message' => 'Google sign-in is not available. Please sign in with your email verification code.',
+        ], 503));
     }
 
     /**
@@ -52,8 +70,7 @@ class GoogleAuthService
             return redirect()->away($callbackUrl);
         }
 
-        // Production Socialite redirect would go here
-        return redirect()->away('https://accounts.google.com/o/oauth2/v2/auth');
+        $this->failGoogleNotConfigured();
     }
 
     /**
@@ -67,11 +84,7 @@ class GoogleAuthService
             $providerId = (string) $request->input('mock_sub', 'mock_sub_' . md5($email));
             $avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode($name);
         } else {
-            // Socialite driver handling in production
-            $email = 'user@example.com';
-            $name = 'Google User';
-            $providerId = 'sub_prod_123';
-            $avatarUrl = null;
+            $this->failGoogleNotConfigured();
         }
 
         // Find or create Google authenticated user

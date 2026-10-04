@@ -34,12 +34,13 @@ export interface CreatePrizePayload {
 }
 
 export interface SetWinnerPayload {
-  ticket_id: number;
   winner_masked_name?: string;
   winner_governorate?: string;
+  prize_delivered?: boolean;
+  stream_recording_url?: string;
 }
 
-export function useAdminDraws(status?: string, published?: boolean | string) {
+export function useAdminDraws(status?: string, published?: boolean | string, enabled: boolean = true) {
   const queryClient = useQueryClient();
 
   const query = useQuery<{ items: DrawRecord[]; next_cursor: string | null }, ApiError>({
@@ -56,6 +57,7 @@ export function useAdminDraws(status?: string, published?: boolean | string) {
         `/admin/draws?${params.toString()}`
       );
     },
+    enabled,
     staleTime: 15 * 1000,
   });
 
@@ -139,10 +141,10 @@ export function useAdminDrawDetail(id: string | number) {
     },
   });
 
-  const updatePrizeMutation = useMutation<PrizeRecord, ApiError, { prizeId: number; payload: CreatePrizePayload }>({
+  const updatePrizeMutation = useMutation<PrizeRecord, ApiError, { prizeId: number | string; payload: Partial<CreatePrizePayload> }>({
     mutationFn: ({ prizeId, payload }) =>
-      apiClient<PrizeRecord>(`/admin/draws/${id}/prizes/${prizeId}`, {
-        method: 'PUT',
+      apiClient<PrizeRecord>(`/admin/prizes/${prizeId}`, {
+        method: 'PATCH',
         body: JSON.stringify(payload),
       }),
     onSuccess: () => {
@@ -150,9 +152,9 @@ export function useAdminDrawDetail(id: string | number) {
     },
   });
 
-  const deletePrizeMutation = useMutation<void, ApiError, number>({
+  const deletePrizeMutation = useMutation<void, ApiError, number | string>({
     mutationFn: (prizeId) =>
-      apiClient<void>(`/admin/draws/${id}/prizes/${prizeId}`, {
+      apiClient<void>(`/admin/prizes/${prizeId}`, {
         method: 'DELETE',
       }),
     onSuccess: () => {
@@ -160,10 +162,10 @@ export function useAdminDrawDetail(id: string | number) {
     },
   });
 
-  const setWinnerMutation = useMutation<any, ApiError, SetWinnerPayload>({
+  const updateWinnerMutation = useMutation<any, ApiError, Partial<SetWinnerPayload>>({
     mutationFn: (payload) =>
       apiClient<any>(`/admin/draws/${id}/winner`, {
-        method: 'POST',
+        method: 'PATCH',
         body: JSON.stringify(payload),
       }),
     onSuccess: () => {
@@ -187,7 +189,7 @@ export function useAdminDrawDetail(id: string | number) {
     isAddingPrize: addPrizeMutation.isPending,
     updatePrize: updatePrizeMutation.mutateAsync,
     deletePrize: deletePrizeMutation.mutateAsync,
-    setWinner: setWinnerMutation.mutateAsync,
-    isSettingWinner: setWinnerMutation.isPending,
+    setWinner: updateWinnerMutation.mutateAsync,
+    isSettingWinner: updateWinnerMutation.isPending,
   };
 }

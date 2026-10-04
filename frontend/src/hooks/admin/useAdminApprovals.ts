@@ -33,7 +33,7 @@ export interface RevokeApprovalPayload {
   reason: string;
 }
 
-export function useAdminApprovals(type?: string) {
+export function useAdminApprovals(type?: string, enabled: boolean = true) {
   const queryClient = useQueryClient();
 
   const query = useQuery<{ items: AdminApprovalRecord[] }, ApiError>({
@@ -45,6 +45,7 @@ export function useAdminApprovals(type?: string) {
       }
       return apiClient<{ items: AdminApprovalRecord[] }>(`/admin/approvals?${params.toString()}`);
     },
+    enabled,
     staleTime: 15 * 1000,
   });
 

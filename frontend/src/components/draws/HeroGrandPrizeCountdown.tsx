@@ -15,7 +15,7 @@ export function HeroGrandPrizeCountdown() {
   const { grandDraw, serverTimeUtc, isLoading } = useGrandPrizeDraw();
   const [isLocallyLocked, setIsLocallyLocked] = useState(false);
 
-  if (isLoading || !grandDraw) {
+  if (isLoading || !grandDraw || !grandDraw.prize) {
     return null;
   }
 
@@ -44,7 +44,7 @@ export function HeroGrandPrizeCountdown() {
 
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
-              {grandDraw.prize.title}
+              {grandDraw.prize?.title}
             </h2>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl">
               {t('heroMarqueeSubtitle')}
@@ -57,11 +57,13 @@ export function HeroGrandPrizeCountdown() {
               {t('approxIqd')}:
             </span>
             <span className="text-xl sm:text-2xl font-black text-foreground">
-              ${grandDraw.prize.valuation_usd.toLocaleString()}
+              ${grandDraw.prize?.valuation_usd ? grandDraw.prize.valuation_usd.toLocaleString() : '0'}
             </span>
-            <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
-              ({grandDraw.prize.display_iqd_label})
-            </span>
+            {grandDraw.prize?.display_iqd_label && (
+              <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                ({grandDraw.prize.display_iqd_label})
+              </span>
+            )}
           </div>
 
           {/* Action CTAs */}
@@ -88,8 +90,8 @@ export function HeroGrandPrizeCountdown() {
         <div className="lg:col-span-5 flex flex-col items-center justify-center space-y-4">
           <div className="relative aspect-16/10 w-full max-w-md rounded-2xl overflow-hidden border border-border shadow-md">
             <Image
-              src={grandDraw.prize.image_url}
-              alt={grandDraw.prize.title}
+              src={grandDraw.prize?.image_url || '/assets/prizes/default.png'}
+              alt={grandDraw.prize?.title || ''}
               fill
               sizes="(max-width: 768px) 100vw, 400px"
               className="object-cover"
@@ -97,7 +99,7 @@ export function HeroGrandPrizeCountdown() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             <div className="absolute bottom-3 inset-x-3 text-white text-xs font-medium text-center">
-              {grandDraw.prize.title}
+              {grandDraw.prize?.title}
             </div>
           </div>
 

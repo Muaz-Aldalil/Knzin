@@ -115,4 +115,21 @@ class Order extends Model
     {
         return $this->hasMany(AffiliateLedgerEntry::class);
     }
+
+    /**
+     * Payment transaction attempts for this order (1:N multi-attempt continuity).
+     */
+    public function paymentTransactions(): HasMany
+    {
+        return $this->hasMany(PaymentTransaction::class);
+    }
+
+    /**
+     * Latest payment transaction for this order.
+     */
+    public function latestPaymentTransaction(): HasOne
+    {
+        return $this->hasOne(PaymentTransaction::class)->latestOfMany();
+    }
 }
+

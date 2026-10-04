@@ -260,4 +260,56 @@ class TicketEligibilityTest extends TestCase
 
         Carbon::setTestNow();
     }
+
+    public function test_active_draw_window_is_prioritized_over_older_locked_draws_in_same_tier(): void
+    {
+        $serverNow = Carbon::parse('2026-10-02 11:30:00', 'UTC');
+        Carbon::setTestNow($serverNow);
+
+        // Older draw from yesterday, never marked completed (locked)
+        $olderDraw = Draw::create([
+            'tier' => 'daily',
+            'execution_type' => 'automated_electronic',
+            'title_ar' => 'سحب الأمس المغلق',
+            'title_en' => 'Yesterday Locked Draw',
+            'status' => 'active',
+            'is_published' => true,
+            'starts_at' => Carbon::parse('2026-10-01 00:00:00', 'UTC'),
+            'ends_at' => Carbon::parse('2026-10-01 23:59:59', 'UTC'),
+            'total_eligible_tickets' => 50,
+        ]);
+
+        // Today's active draw currently open
+        $todayDraw = Draw::create([
+            'tier' => 'daily',
+            'execution_type' => 'automated_electronic',
+            'title_ar' => 'سحب اليوم النشط',
+            'title_en' => 'Today Active Draw',
+            'status' => 'active',
+            'is_published' => true,
+            'starts_at' => Carbon::parse('2026-10-02 00:00:00', 'UTC'),
+            'ends_at' => Carbon::parse('2026-10-02 23:59:59', 'UTC'),
+            'total_eligible_tickets' => 0,
+        ]);
+
+        // Ticket purchased today at 11:00 UTC
+        $todayTicket = $this->createTicketWithIssuedAt(Carbon::parse('2026-10-02 11:00:00', 'UTC'), 1, 'KNZ-26-TODAY-0001');
+
+        Sanctum::actingAs($this->user, ['*']);
+        $response = $this->getJson('/api/v1/user/tickets');
+        $response->assertStatus(200);
+
+        // Active draw selected for daily must be today's open draw
+        $dailyActiveDraw = $response->json('data.active_draws.daily');
+        $this->assertNotNull($dailyActiveDraw);
+        $this->assertEquals($todayDraw->id, $dailyActiveDraw['id']);
+        $this->assertEquals('active', $dailyActiveDraw['status']);
+
+        // Today's ticket must evaluate to eligible: true and status: active for daily draw
+        $ticketResult = collect($response->json('data.tickets'))->firstWhere('id', $todayTicket->id);
+        $this->assertTrue($ticketResult['eligibility']['daily']['is_eligible']);
+        $this->assertEquals('active', $ticketResult['eligibility']['daily']['status']);
+
+        Carbon::setTestNow();
+    }
 }

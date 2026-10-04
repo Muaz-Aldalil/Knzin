@@ -47,13 +47,19 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
       <div>
         {/* Prize Image Container */}
         <div className="relative aspect-16/10 w-full overflow-hidden bg-muted/30">
-          <Image
-            src={draw.prize.image_url}
-            alt={draw.prize.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-          />
+          {draw.prize?.image_url ? (
+            <Image
+              src={draw.prize.image_url}
+              alt={draw.prize.title || draw.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-amber-500/10">
+              <Gift className="h-12 w-12 text-muted-foreground/40" />
+            </div>
+          )}
 
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-black/30" />
@@ -74,21 +80,25 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
           </div>
 
           {/* Valuation Floating Banner */}
-          <div className="absolute bottom-3 inset-x-3 flex items-end justify-between">
-            <div className="bg-background/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border/80 shadow-xs">
-              <p className="text-[10px] text-muted-foreground uppercase font-medium">
-                {t('approxIqd')}
-              </p>
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-extrabold text-lg text-foreground">
-                  ${draw.prize.valuation_usd.toLocaleString()}
-                </span>
-                <span className="text-xs font-semibold text-primary">
-                  ({draw.prize.display_iqd_label})
-                </span>
+          {draw.prize && (
+            <div className="absolute bottom-3 inset-x-3 flex items-end justify-between">
+              <div className="bg-background/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border/80 shadow-xs">
+                <p className="text-[10px] text-muted-foreground uppercase font-medium">
+                  {t('approxIqd')}
+                </p>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="font-extrabold text-lg text-foreground">
+                    ${draw.prize.valuation_usd.toLocaleString()}
+                  </span>
+                  {draw.prize.display_iqd_label && (
+                    <span className="text-xs font-semibold text-primary">
+                      ({draw.prize.display_iqd_label})
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Content Body */}
@@ -98,7 +108,7 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
               {draw.title}
             </h3>
             <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
-              {draw.prize.description || draw.prize.title}
+              {draw.prize?.description || draw.prize?.title || ''}
             </p>
           </div>
 

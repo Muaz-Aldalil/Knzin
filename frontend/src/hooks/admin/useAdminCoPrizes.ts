@@ -44,7 +44,7 @@ export interface CoPrizeItem {
   } | null;
 }
 
-export function useAdminCoPrizes(status?: string) {
+export function useAdminCoPrizes(status?: string, enabled: boolean = true) {
   const queryClient = useQueryClient();
 
   const query = useQuery<{ items: CoPrizeItem[]; next_cursor: string | null }, ApiError>({
@@ -58,6 +58,7 @@ export function useAdminCoPrizes(status?: string) {
         `/admin/coprizes?${params.toString()}`
       );
     },
+    enabled,
     staleTime: 15 * 1000,
   });
 

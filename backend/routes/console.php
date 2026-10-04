@@ -17,3 +17,6 @@ Schedule::command('knzin:reconcile-ticket-generation')->everyFiveMinutes();
 // Feature 006: Scheduled hourly maturation for affiliate sales commissions
 Schedule::command('knzin:mature-commissions')->hourly();
 
+// Feature 007: Scheduled reconciliation for dropped payment transactions
+Schedule::command('payments:reconcile')->everyFiveMinutes()->withoutOverlapping(10);
+

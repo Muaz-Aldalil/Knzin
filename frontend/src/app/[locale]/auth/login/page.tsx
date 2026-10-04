@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { ApiError } from '@/lib/api-client';
+import { fetchAdminCapabilities } from '@/lib/admin/access';
+import { resolvePostLoginDestination, sanitizeRedirectTarget } from '@/lib/auth-redirect';
 import { Mail, ArrowLeft, ArrowRight, ShieldCheck, Sparkles, Loader2, KeyRound, UserCheck, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -14,7 +16,7 @@ function LoginContent() {
   const isRtl = locale === 'ar';
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTarget = searchParams.get('redirect') || '/';
+  const requestedRedirect = searchParams.get('redirect');
 
   const { isLoggedIn, sendOtp, verifyOtp } = useAuth();
 
@@ -26,12 +28,30 @@ function LoginContent() {
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
-  // If already logged in, redirect to destination
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const navigatedRef = useRef(false);
+
+  // Single post-authentication navigation path (fresh login or already-signed-in visit).
+  // Admin status comes from the backend (/admin/me); the redirect value is sanitized and
+  // can never send a non-admin to /admin or anyone to an external origin.
+  const goToDestination = useCallback(async () => {
+    if (navigatedRef.current) return;
+    navigatedRef.current = true;
+    setIsRedirecting(true);
+
+    const capabilities = await fetchAdminCapabilities();
+    const destination = resolvePostLoginDestination({
+      redirect: requestedRedirect,
+      isAdmin: capabilities !== null,
+    });
+    router.replace(destination as any);
+  }, [requestedRedirect, router]);
+
   useEffect(() => {
     if (isLoggedIn) {
-      router.replace(redirectTarget as any);
+      void goToDestination();
     }
-  }, [isLoggedIn, redirectTarget, router]);
+  }, [isLoggedIn, goToDestination]);
 
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -85,8 +105,7 @@ function LoginContent() {
 
     try {
       await verifyOtp(email, cleanCode);
-      // Successful login triggers redirect
-      router.replace(redirectTarget as any);
+      // Navigation is handled by the isLoggedIn effect (role-aware destination).
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message || (isRtl ? 'رمز التحقق غير صحيح أو انتهت صلاحيته.' : 'Invalid or expired verification code.'));
@@ -99,7 +118,10 @@ function LoginContent() {
   };
 
   const handleGoogleLogin = () => {
-    const googleRedirectUrl = `${backendUrl}/auth/google/redirect?redirect=${encodeURIComponent(redirectTarget)}`;
+    const safeRedirect = sanitizeRedirectTarget(requestedRedirect);
+    const googleRedirectUrl = safeRedirect
+      ? `${backendUrl}/auth/google/redirect?redirect=${encodeURIComponent(safeRedirect)}`
+      : `${backendUrl}/auth/google/redirect`;
     window.location.href = googleRedirectUrl;
   };
 
@@ -107,6 +129,17 @@ function LoginContent() {
     setEmail(quickEmail);
     handleSendOtp(undefined, quickEmail);
   };
+
+  if (isRedirecting) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center gap-3 px-4" role="status" aria-live="polite">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-sm font-semibold text-content-secondary">
+          {isRtl ? 'جارِ تسجيل دخولك...' : 'Signing you in...'}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">

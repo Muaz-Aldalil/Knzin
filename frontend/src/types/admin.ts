@@ -25,7 +25,7 @@ export interface AdminSession {
 
 export interface PlatformSetting {
   key: string;
-  value: any;
+  value: unknown;
   updated_at: string;
   updated_by: number | null;
 }
@@ -33,7 +33,7 @@ export interface PlatformSetting {
 export interface PlatformSettingsPayload {
   'affiliate.commission_rate_bps': number;
   'affiliate.payout_min_cents': number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface AffiliateOverview {
@@ -68,7 +68,7 @@ export interface PayoutRecord {
     phone?: string;
     account_number?: string;
     account_name?: string;
-    [key: string]: any;
+    [key: string]: string | number | undefined;
   } | null;
   status: 'requested' | 'processing' | 'completed' | 'rejected';
   rejection_reason?: string | null;
@@ -119,11 +119,13 @@ export interface PrizeRecord {
 
 export interface DrawWinnerRecord {
   id: number;
-  draw_id: number;
+  draw_id: number | string;
   ticket_id: number;
   winning_ticket_serial: string;
   winner_masked_name?: string | null;
   winner_governorate?: string | null;
+  prize_delivered?: boolean;
+  stream_recording_url?: string | null;
   drawn_at: string;
 }
 
@@ -178,8 +180,64 @@ export interface AuditLogRecord {
   action: string;
   capability_used: string;
   ip_address: string;
-  request_payload: any;
+  request_payload: unknown;
   result: 'success' | 'failure';
   justification?: string | null;
   created_at: string;
 }
+
+export interface OutcomeItem {
+  title_ar: string;
+  title_en: string;
+  desc_ar: string;
+  desc_en: string;
+}
+
+export interface AdminCoursePart {
+  id: string;
+  course_id: string;
+  part_number: number;
+  title_ar: string;
+  title_en: string;
+  description_ar?: string;
+  description_en?: string;
+  syllabus_ar?: string;
+  syllabus_en?: string;
+  part_price_cents: number;
+  part_promotional_tickets: number;
+  display_price_label?: string;
+  resource_types?: string[];
+  duration_minutes: number;
+  is_free: boolean;
+  is_active: boolean;
+  video_url?: string | null;
+  video_storage_path?: string | null;
+  pdf_url?: string | null;
+  pdf_storage_path?: string | null;
+  pdf_title_ar?: string | null;
+  pdf_title_en?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface AdminCourse {
+  id: string;
+  slug: string;
+  title_ar: string;
+  title_en: string;
+  description_ar: string;
+  description_en: string;
+  cover_image_url?: string;
+  bundle_price_cents: number;
+  bundle_promotional_tickets: number;
+  display_price_label?: string;
+  is_active: boolean;
+  outcomes?: OutcomeItem[] | null;
+  curriculum_summary_ar?: string | null;
+  curriculum_summary_en?: string | null;
+  parts_count?: number;
+  parts?: AdminCoursePart[];
+  created_at?: string;
+  updated_at?: string;
+}
+

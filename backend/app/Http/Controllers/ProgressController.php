@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseEntitlement;
 use App\Models\CoursePart;
 use App\Models\LessonProgress;
 use App\Services\EntitlementService;
@@ -39,7 +40,7 @@ class ProgressController extends ApiController
             );
         }
 
-        $course = Course::where('slug', $validated['course_slug'])->first();
+        $course = Course::where('slug', $validated['course_slug'])->where('is_active', true)->first();
         if (!$course) {
             return $this->failResponse(
                 'ERR_COURSE_NOT_FOUND',
@@ -51,6 +52,7 @@ class ProgressController extends ApiController
 
         $part = CoursePart::where('course_id', $course->id)
             ->where('part_number', $validated['part_number'])
+            ->where('is_active', true)
             ->first();
 
         if (!$part) {
@@ -120,6 +122,7 @@ class ProgressController extends ApiController
 
     /**
      * Get the latest active course & part for Scrimba-style "Jump Back In" hero card.
+     * Strictly scoped to courses and parts where user holds an active entitlement.
      * Serves exclusively authoritative server-persisted state with zero demo/mock fallback.
      */
     public function getActiveLearning(Request $request): JsonResponse
@@ -129,8 +132,29 @@ class ProgressController extends ApiController
             return $this->successResponse(['active_learning' => null]);
         }
 
+        $activeEntitlements = CourseEntitlement::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->get();
+
+        $bundleCourseIds = $activeEntitlements->whereNull('course_part_id')->pluck('course_id')->all();
+        $modularPartIds = $activeEntitlements->whereNotNull('course_part_id')->pluck('course_part_id')->all();
+
+        if (empty($bundleCourseIds) && empty($modularPartIds)) {
+            return $this->successResponse(['active_learning' => null]);
+        }
+
         $latest = LessonProgress::with(['course', 'coursePart'])
             ->where('user_id', $user->id)
+            ->whereHas('course', fn($q) => $q->where('is_active', true))
+            ->whereHas('coursePart', fn($q) => $q->where('is_active', true))
+            ->where(function ($q) use ($bundleCourseIds, $modularPartIds) {
+                if (!empty($bundleCourseIds)) {
+                    $q->whereIn('course_id', $bundleCourseIds);
+                }
+                if (!empty($modularPartIds)) {
+                    $q->orWhereIn('course_part_id', $modularPartIds);
+                }
+            })
             ->orderBy('last_watched_at', 'desc')
             ->first();
 
@@ -165,9 +189,9 @@ class ProgressController extends ApiController
             return $this->successResponse(['parts_progress' => []]);
         }
 
-        $course = Course::where('slug', $courseSlug)->first();
+        $course = Course::where('slug', $courseSlug)->where('is_active', true)->first();
         if (!$course) {
-            return $this->successResponse(['parts_progress' => []]);
+            return $this->failResponse('ERR_COURSE_NOT_FOUND', 'Course not found or inactive.', [], 404);
         }
 
         $progressRecords = LessonProgress::with('coursePart')

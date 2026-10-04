@@ -12,7 +12,7 @@ class AdminRoutesCapabilityCoverageTest extends TestCase
         $adminRoutes = collect(Route::getRoutes()->getRoutes())
             ->filter(fn ($r) => str_starts_with($r->uri(), 'api/v1/admin'));
 
-        $this->assertCount(30, $adminRoutes, 'Expected exactly 30 admin routes.');
+        $this->assertCount(43, $adminRoutes, 'Expected exactly 43 admin routes.');
 
         foreach ($adminRoutes as $route) {
             $uri = $route->uri();

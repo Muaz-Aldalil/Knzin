@@ -6,10 +6,11 @@ import { AdminSession, AdminCapability } from '@/types/admin';
 import { hasCapability } from '@/lib/admin/capabilities';
 
 export function useAdminSession() {
-  const hasToken = typeof window !== 'undefined' ? !!localStorage.getItem('knzin_auth_token') : false;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('knzin_auth_token') : null;
+  const hasToken = !!token;
 
   const query = useQuery<AdminSession, ApiError>({
-    queryKey: ['admin', 'session'],
+    queryKey: ['admin', 'session', token],
     queryFn: () => apiClient<AdminSession>('/admin/me'),
     enabled: hasToken,
     staleTime: 60 * 1000,
@@ -31,6 +32,7 @@ export function useAdminSession() {
     session,
     user: session?.user ?? null,
     capabilities,
+    serverTimeUtc: session?.server_time_utc ?? null,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,

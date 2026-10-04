@@ -9,6 +9,7 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class TicketController extends ApiController
 {
@@ -23,29 +24,39 @@ class TicketController extends ApiController
             return $this->failResponse('ERR_UNAUTHORIZED', 'Unauthenticated', [], 401);
         }
 
-        // 1. Check for pending ticket orders and trigger immediate async re-dispatch
+        // 1. Check for pending ticket orders and trigger async re-dispatch with throttle guard
         $pendingOrders = Order::where('user_id', $user->id)
             ->where('status', 'completed')
             ->where('tickets_status', 'pending')
             ->get();
 
         foreach ($pendingOrders as $order) {
-            GenerateTicketsJob::dispatch($order->id);
+            $lockKey = "ticket_dispatch_lock_{$order->id}";
+            if (Cache::add($lockKey, true, now()->addMinutes(2))) {
+                GenerateTicketsJob::dispatch($order->id);
+            }
         }
 
         $serverTimeUtc = Carbon::now('UTC');
 
-        // 2. Fetch active and locked promotional draws across tiers
+        // 2. Fetch active and locked promotional draws across tiers ordered by starts_at DESC
         $draws = Draw::published()
             ->whereIn('tier', ['hourly', 'daily', 'monthly'])
             ->where('status', '!=', 'completed')
             ->where('starts_at', '<=', $serverTimeUtc)
+            ->orderBy('starts_at', 'desc')
             ->get();
 
+        $selectedDraws = [];
         $activeDraws = [];
         foreach (['hourly', 'daily', 'monthly'] as $tier) {
-            $draw = $draws->firstWhere('tier', $tier);
+            $tierDraws = $draws->where('tier', $tier);
+            // Prioritize currently open window (starts_at <= serverTimeUtc < ends_at), fallback to most recent
+            $draw = $tierDraws->first(fn($d) => $d->ends_at && $serverTimeUtc->gte($d->starts_at) && $serverTimeUtc->lt($d->ends_at))
+                ?? $tierDraws->first();
+
             if ($draw) {
+                $selectedDraws[$tier] = $draw;
                 $activeDraws[$tier] = [
                     'id' => $draw->id,
                     'title_ar' => $draw->title_ar,
@@ -62,9 +73,9 @@ class TicketController extends ApiController
             ->orderByDesc('issued_at')
             ->get();
 
-        $hourlyDraw = $draws->firstWhere('tier', 'hourly');
-        $dailyDraw = $draws->firstWhere('tier', 'daily');
-        $monthlyDraw = $draws->firstWhere('tier', 'monthly');
+        $hourlyDraw = $selectedDraws['hourly'] ?? null;
+        $dailyDraw = $selectedDraws['daily'] ?? null;
+        $monthlyDraw = $selectedDraws['monthly'] ?? null;
 
         $ticketsData = [];
         foreach ($tickets as $ticket) {

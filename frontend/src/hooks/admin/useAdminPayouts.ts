@@ -21,7 +21,7 @@ export interface RejectPayoutPayload {
   reason: string;
 }
 
-export function useAdminPayouts(status?: string, cursor?: string | null) {
+export function useAdminPayouts(status?: string, cursor?: string | null, enabled: boolean = true) {
   const queryClient = useQueryClient();
 
   const query = useQuery<AdminPayoutsResponse, ApiError>({
@@ -36,6 +36,7 @@ export function useAdminPayouts(status?: string, cursor?: string | null) {
       }
       return apiClient<AdminPayoutsResponse>(`/admin/payouts?${params.toString()}`);
     },
+    enabled,
     staleTime: 15 * 1000,
   });
 

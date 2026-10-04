@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Link, usePathname } from '@/i18n/routing';
+import { Link, usePathname, useRouter } from '@/i18n/routing';
+import { useTheme } from '@/components/providers/ThemeProvider';
 import {
   Sheet,
   SheetContent,
@@ -10,8 +11,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import LanguageToggle from './LanguageToggle';
-import ThemeToggle from './ThemeToggle';
 import {
   Search,
   User as UserIcon,
@@ -21,7 +20,22 @@ import {
   Wallet,
   BookOpen,
   Users,
+  Gift,
+  Trophy,
+  Shield,
+  Sun,
+  Moon,
+  Globe,
 } from 'lucide-react';
+import { USER_MENU_ITEMS, UserMenuItemId } from '@/lib/user-menu';
+import { AdminCapability } from '@/types/admin';
+
+const USER_MENU_ICONS: Record<UserMenuItemId, { icon: React.ElementType; className: string }> = {
+  'learning-hub': { icon: UserIcon, className: 'text-primary' },
+  referral: { icon: Gift, className: 'text-rose-500' },
+  transparency: { icon: Trophy, className: 'text-accent' },
+  affiliate: { icon: Users, className: 'text-emerald-500' },
+};
 
 interface AuthUser {
   id: string;
@@ -35,6 +49,8 @@ interface MobileNavSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user: AuthUser | null;
+  isAdmin?: boolean;
+  adminCapabilities?: AdminCapability[];
   onLogout: () => void;
   onGoogleLogin: () => void;
   onOpenSearch: () => void;
@@ -45,6 +61,8 @@ export default function MobileNavSheet({
   open,
   onOpenChange,
   user,
+  isAdmin = false,
+  adminCapabilities = [],
   onLogout,
   onGoogleLogin,
   onOpenSearch,
@@ -54,8 +72,17 @@ export default function MobileNavSheet({
   const tCommon = useTranslations('common');
   const tHowItWorks = useTranslations('howItWorks');
   const locale = useLocale();
+  const router = useRouter();
   const pathname = usePathname();
   const isRtl = locale === 'ar';
+
+  const { resolvedTheme, toggleTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+
+  const toggleLanguage = () => {
+    const nextLocale = locale === 'ar' ? 'en' : 'ar';
+    router.replace(pathname, { locale: nextLocale });
+  };
 
   const close = () => onOpenChange(false);
 
@@ -214,14 +241,37 @@ export default function MobileNavSheet({
                   </div>
                 </div>
 
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    onClick={close}
+                    data-testid="mobile-admin-dashboard-link"
+                    className="flex items-center gap-2.5 p-2.5 rounded-xl bg-brand-gold/10 border border-brand-gold/25 text-xs font-bold text-brand-gold hover:bg-brand-gold/20 transition-colors"
+                  >
+                    <Shield className="w-4 h-4 text-brand-gold shrink-0" />
+                    <span>{isRtl ? 'لوحة التحكم الإدارية' : 'Admin Dashboard'}</span>
+                  </Link>
+                )}
+
                 <div
-                  className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-content-muted opacity-75 cursor-not-allowed select-none"
-                  aria-disabled="true"
+                  className="space-y-0.5"
+                  data-testid="mobile-user-menu"
                 >
-                  <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Learning & Tickets'}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-secondary text-content-muted font-semibold">
-                    {isRtl ? 'قريباً' : 'Soon'}
-                  </span>
+                  {USER_MENU_ITEMS.map((item) => {
+                    const { icon: ItemIcon, className } = USER_MENU_ICONS[item.id];
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.href as any}
+                        onClick={close}
+                        data-testid={`mobile-user-link-${item.id}`}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-content-secondary hover:text-content-primary hover:bg-surface-secondary/60 transition-colors"
+                      >
+                        <ItemIcon className={`w-4 h-4 shrink-0 ${className}`} />
+                        <span>{isRtl ? item.labelAr : item.labelEn}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
 
                 <button
@@ -261,10 +311,36 @@ export default function MobileNavSheet({
           </div>
         </div>
 
-        {/* Footer: Preferences (Theme & Language) */}
-        <div className="pt-4 border-t border-border-subtle flex items-center justify-between gap-3">
-          <LanguageToggle />
-          <ThemeToggle />
+        {/* Footer: Preferences (1. Theme toggle, 2. Language toggle directly underneath Theme) */}
+        <div className="pt-4 border-t border-border-subtle space-y-2">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            data-testid="mobile-sheet-theme-toggle"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-border-subtle bg-surface-secondary hover:bg-surface-elevated text-xs font-semibold text-content-primary transition-colors cursor-pointer text-start"
+          >
+            <div className="flex items-center gap-2.5">
+              {isDark ? <Sun className="w-4 h-4 text-accent" /> : <Moon className="w-4 h-4 text-blue-500" />}
+              <span>{t('theme')}</span>
+            </div>
+            <span className="text-[11px] text-content-muted font-normal">
+              {isDark ? t('themeDark') : t('themeLight')}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            data-testid="mobile-sheet-language-toggle"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border border-border-subtle bg-surface-secondary hover:bg-surface-elevated text-xs font-semibold text-content-primary transition-colors cursor-pointer text-start"
+          >
+            <div className="flex items-center gap-2.5">
+              <Globe className="w-4 h-4 text-primary" />
+              <span>{t('language')}</span>
+            </div>
+            <span className="text-[11px] text-content-muted font-normal">
+              {locale === 'ar' ? 'English' : 'العربية'}
+            </span>
+          </button>
         </div>
       </SheetContent>
     </Sheet>

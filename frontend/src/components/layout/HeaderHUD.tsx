@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { Link, usePathname } from '@/i18n/routing';
-import LanguageToggle from './LanguageToggle';
+import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { useTheme } from '@/components/providers/ThemeProvider';
 import {
   Ticket,
@@ -19,6 +18,9 @@ import {
   Moon,
   HelpCircle,
   Users,
+  Gift,
+  Shield,
+  Globe,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -33,6 +35,16 @@ import MobileNavSheet from './MobileNavSheet';
 import { HowItWorksModal } from './HowItWorksModal';
 import { TicketLedgerDrawer } from './TicketLedgerDrawer';
 import { useLearnerTickets } from '@/hooks/useLearnerTickets';
+import { useAuth } from '@/hooks/useAuth';
+import { useAdminAccess } from '@/hooks/admin/useAdminAccess';
+import { USER_MENU_ITEMS, UserMenuItemId } from '@/lib/user-menu';
+
+const USER_MENU_ICONS: Record<UserMenuItemId, { icon: React.ElementType; className: string }> = {
+  'learning-hub': { icon: UserIcon, className: 'text-primary' },
+  referral: { icon: Gift, className: 'text-rose-500' },
+  transparency: { icon: Trophy, className: 'text-accent' },
+  affiliate: { icon: Users, className: 'text-emerald-500' },
+};
 
 interface AuthUser {
   id: string;
@@ -67,7 +79,22 @@ export default function HeaderHUD() {
 
   const { totalTickets } = useLearnerTickets();
 
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const router = useRouter();
+  const { user: authUser, token, logout } = useAuth();
+  const { isAdmin, capabilities } = useAdminAccess(token);
+
+  const user = React.useMemo<AuthUser | null>(
+    () =>
+      authUser
+        ? {
+            id: authUser.id,
+            email: authUser.email,
+            displayName: authUser.displayName ?? authUser.display_name ?? null,
+            authProvider: authUser.authProvider ?? authUser.auth_provider ?? '',
+          }
+        : null,
+    [authUser]
+  );
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
@@ -107,22 +134,10 @@ export default function HeaderHUD() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem('knzin_user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch {
-        setUser(null);
-      }
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('knzin_auth_token');
-    localStorage.removeItem('knzin_user');
-    setUser(null);
-    window.location.reload();
+  const handleLogout = async () => {
+    // Revokes the Sanctum token server-side, then clears local identity and cached data.
+    await logout();
+    router.replace('/');
   };
 
   const handleGoogleLogin = () => {
@@ -130,17 +145,23 @@ export default function HeaderHUD() {
     window.location.href = `${backendUrl}/auth/google/redirect`;
   };
 
+  const toggleLanguage = () => {
+    const nextLocale = locale === 'ar' ? 'en' : 'ar';
+    router.replace(pathname, { locale: nextLocale });
+  };
+
   const isCoursesActive = pathname === '/' || pathname.startsWith('/courses');
   const isRaffleActive = pathname.startsWith('/raffle');
+  const isReferralActive = pathname.startsWith('/affiliate#referral');
 
   const firstName = user ? getFirstName(user.displayName || user.email) : '';
 
   return (
     <header
       dir={isRtl ? 'rtl' : 'ltr'}
-      className={`sticky top-0 z-40 w-full text-content-primary transition-colors duration-150 border-b ${
+      className={`sticky top-0 z-40 w-full text-content-primary transition-all duration-200 border-b ${
         isScrolled
-          ? 'bg-surface/85 dark:bg-surface/85 border-border-subtle shadow-2xs'
+          ? 'bg-surface/95 backdrop-blur-md border-border-subtle shadow-xs'
           : 'bg-surface border-border-subtle'
       }`}
     >
@@ -164,6 +185,7 @@ export default function HeaderHUD() {
 
           {/* Full Desktop Navigation (>= 1024px) */}
           <nav className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-content-secondary">
+            {/* 1. Vocational Course */}
             <Link
               href="/"
               className={`px-3 py-1.5 rounded-lg transition-colors ${
@@ -175,6 +197,7 @@ export default function HeaderHUD() {
               {t('courses')}
             </Link>
 
+            {/* 2. Promotional */}
             <Link
               href="/raffle"
               className={`px-3 py-1.5 rounded-lg transition-colors ${
@@ -186,28 +209,33 @@ export default function HeaderHUD() {
               {t('raffle')}
             </Link>
 
+            {/* 3. Referral */}
             <Link
-              href="/affiliate"
+              href="/affiliate#referral"
               className={`px-3 py-1.5 rounded-lg transition-colors ${
-                pathname.startsWith('/affiliate')
+                isReferralActive
                   ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
                   : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
               }`}
             >
-              {isRtl ? 'الشركاء' : 'Affiliate'}
+              {t('referral')}
             </Link>
 
-            {/* How It Works Desktop 1-Click Trigger */}
-            <button
-              type="button"
-              onClick={() => setIsHowItWorksOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-primary hover:text-primary-hover hover:bg-primary/10 transition-colors text-xs font-semibold cursor-pointer border border-primary/20 bg-primary/5"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>{tHowItWorks('trigger')}</span>
-            </button>
+            {/* 4. Affiliate (AUTHENTICATED ONLY) */}
+            {user && (
+              <Link
+                href="/affiliate"
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  pathname.startsWith('/affiliate') && !isReferralActive
+                    ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
+                    : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
+                }`}
+              >
+                {isRtl ? 'الشركاء' : 'Affiliate'}
+              </Link>
+            )}
 
-            {/* Global Search Bar (Accessible on all routes) */}
+            {/* 5. Global Search Bar */}
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
@@ -228,19 +256,8 @@ export default function HeaderHUD() {
           </nav>
         </div>
 
-        {/* Logical End: Language Toggle & Profile Controls */}
+        {/* Logical End: Tools & Dropdown Menu */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Mobile How It Works 1-click shortcut (< 1024px) */}
-          <button
-            type="button"
-            onClick={() => setIsHowItWorksOpen(true)}
-            className="lg:hidden p-2 rounded-lg bg-surface-secondary hover:bg-surface-elevated border border-border-subtle text-primary transition-colors cursor-pointer"
-            aria-label={tHowItWorks('trigger')}
-            title={tHowItWorks('trigger')}
-          >
-            <HelpCircle className="w-4 h-4" />
-          </button>
-
           {/* Mobile / Tablet search trigger (< 1024px) */}
           <button
             type="button"
@@ -273,7 +290,7 @@ export default function HeaderHUD() {
             <span>0 {tCommon('currencyIqd')}</span>
           </div>
 
-          {/* Desktop & Tablet Sign In entry button when unauthenticated */}
+          {/* Sign In quick button when unauthenticated (Guest) */}
           {!user && (
             <Link
               href="/auth/login"
@@ -284,10 +301,7 @@ export default function HeaderHUD() {
             </Link>
           )}
 
-          {/* Language Switcher */}
-          <LanguageToggle />
-
-          {/* Profile Dropdown (First Name Only + Theme Toggle Inside) */}
+          {/* Primary Dropdown Menu (Theme, Language, How It Works, Account/Actions) */}
           <div className="hidden lg:flex items-center">
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-secondary border border-border-subtle text-xs font-semibold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-1 focus:ring-primary/40 cursor-pointer">
@@ -299,10 +313,56 @@ export default function HeaderHUD() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align={isRtl ? 'start' : 'end'} className="w-56">
+                {/* 1. Theme Toggle */}
+                <DropdownMenuItem
+                  onClick={toggleTheme}
+                  className="flex items-center justify-between cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    {isDark ? (
+                      <Sun className="w-4 h-4 text-accent" />
+                    ) : (
+                      <Moon className="w-4 h-4 text-blue-500" />
+                    )}
+                    <span>{t('theme')}</span>
+                  </div>
+                  <span className="text-[11px] text-content-muted font-normal">
+                    {isDark ? t('themeDark') : t('themeLight')}
+                  </span>
+                </DropdownMenuItem>
+
+                {/* 2. Language Toggle directly underneath Theme */}
+                <DropdownMenuItem
+                  onClick={toggleLanguage}
+                  className="flex items-center justify-between cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-primary" />
+                    <span>{t('language')}</span>
+                  </div>
+                  <span className="text-[11px] text-content-muted font-normal">
+                    {locale === 'ar' ? 'English' : 'العربية'}
+                  </span>
+                </DropdownMenuItem>
+
+                {/* 3. How It Works directly underneath Language */}
+                <DropdownMenuItem
+                  onClick={() => setIsHowItWorksOpen(true)}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <HelpCircle className="w-4 h-4 text-primary" />
+                  <span>{tHowItWorks('trigger')}</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                {/* 4. Other Existing Menu Actions */}
                 {user ? (
                   <>
                     <DropdownMenuLabel>
-                      {isRtl ? 'حساب المتدرب' : 'Learner Account'}
+                      {isAdmin
+                        ? (isRtl ? 'حساب المشرف' : 'Administrator Account')
+                        : (isRtl ? 'حساب المتدرب' : 'Learner Account')}
                     </DropdownMenuLabel>
                     <div className="px-2.5 pb-2 text-[11px] text-content-muted truncate">
                       {user.displayName && (
@@ -314,25 +374,48 @@ export default function HeaderHUD() {
                     </div>
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard" className="flex items-center gap-2 w-full">
-                        <UserIcon className="w-4 h-4 text-primary" />
-                        <span>{isRtl ? 'لوحة تدريبي ودوراتي' : 'My Learning Hub'}</span>
-                      </Link>
-                    </DropdownMenuItem>
+                    {/* For Admins visiting the public platform, provide explicit return link */}
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link
+                            href="/admin"
+                            data-testid="header-admin-dashboard-link"
+                            className="flex items-center gap-2 w-full font-bold text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20 py-2 rounded-lg cursor-pointer transition-colors"
+                          >
+                            <Shield className="w-4 h-4 text-brand-gold" />
+                            <span>{isRtl ? 'لوحة التحكم الإدارية' : 'Admin Dashboard'}</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
 
-                    <DropdownMenuItem asChild>
-                      <Link href="/raffle" className="flex items-center gap-2 w-full">
-                        <Trophy className="w-4 h-4 text-accent" />
-                        <span>{isRtl ? 'سحب الجوائز القانوني' : 'Raffle Transparency'}</span>
-                      </Link>
-                    </DropdownMenuItem>
+                    <div data-testid="header-user-menu">
+                      {USER_MENU_ITEMS.map((item) => {
+                        const { icon: ItemIcon, className } = USER_MENU_ICONS[item.id];
+                        return (
+                          <DropdownMenuItem asChild key={item.id}>
+                            <Link
+                              href={item.href as any}
+                              data-testid={`header-user-link-${item.id}`}
+                              className="flex items-center gap-2 w-full"
+                            >
+                              <ItemIcon className={`w-4 h-4 ${className}`} />
+                              <span>{isRtl ? item.labelAr : item.labelEn}</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </div>
 
-                    <DropdownMenuItem asChild>
-                      <Link href="/affiliate" className="flex items-center gap-2 w-full">
-                        <Users className="w-4 h-4 text-emerald-500" />
-                        <span>{isRtl ? 'بوابة الشركاء والمسوّقين' : 'Affiliate Portal'}</span>
-                      </Link>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20 cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 ms-0 me-2" />
+                      <span>{t('logout')}</span>
                     </DropdownMenuItem>
                   </>
                 ) : (
@@ -352,39 +435,6 @@ export default function HeaderHUD() {
                     >
                       <UserIcon className="w-4 h-4" />
                       <span>{t('loginWithGoogle')}</span>
-                    </DropdownMenuItem>
-                  </>
-                )}
-
-                <DropdownMenuSeparator />
-
-                {/* Theme Toggle inside Profile Dropdown (Moon when light, Sun when dark) */}
-                <DropdownMenuItem
-                  onClick={toggleTheme}
-                  className="flex items-center justify-between cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    {isDark ? (
-                      <Sun className="w-4 h-4 text-accent" />
-                    ) : (
-                      <Moon className="w-4 h-4 text-blue-500" />
-                    )}
-                    <span>{t('theme')}</span>
-                  </div>
-                  <span className="text-[11px] text-content-muted font-normal">
-                    {isDark ? t('themeDark') : t('themeLight')}
-                  </span>
-                </DropdownMenuItem>
-
-                {user && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={handleLogout}
-                      className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20 cursor-pointer"
-                    >
-                      <LogOut className="w-4 h-4 ms-0 me-2" />
-                      <span>{t('logout')}</span>
                     </DropdownMenuItem>
                   </>
                 )}
@@ -413,6 +463,8 @@ export default function HeaderHUD() {
         open={isMobileMenuOpen}
         onOpenChange={setIsMobileMenuOpen}
         user={user}
+        isAdmin={isAdmin}
+        adminCapabilities={capabilities}
         onLogout={handleLogout}
         onGoogleLogin={handleGoogleLogin}
         onOpenSearch={() => setIsSearchOpen(true)}

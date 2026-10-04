@@ -20,9 +20,11 @@
   /* Semantic Theme Color Roles (Auto-adapt via CSS variables) */
   --color-app-bg: var(--bg-app);
   --color-surface: var(--surface-primary);
+  --color-surface-primary: var(--surface-primary);
   --color-surface-secondary: var(--surface-secondary);
   --color-surface-elevated: var(--surface-elevated);
   --color-surface-muted: var(--surface-muted);
+  --color-surface-card: var(--surface-primary);
 
   --color-content-primary: var(--text-primary);
   --color-content-secondary: var(--text-secondary);
@@ -142,8 +144,7 @@
 }
 
 html {
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: clip;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   scroll-padding-top: 5rem; /* 80px: 64px sticky HeaderHUD + 16px breathing room */
@@ -161,8 +162,7 @@ body {
   color: var(--text-primary);
   font-family: var(--font-tajawal), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: clip;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -235,17 +235,15 @@ body {
 /* Route transition page-enter effect (Protocol Sections 11, 12, & 23) */
 @keyframes page-enter {
   from {
-    opacity: 0.85;
-    transform: translateY(2px);
+    opacity: 0.9;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .animate-page-enter {
-  animation: page-enter 140ms ease-out forwards;
+  animation: page-enter 140ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {

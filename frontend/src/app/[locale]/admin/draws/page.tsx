@@ -96,6 +96,61 @@ export default function AdminDrawsPage() {
     },
   ];
 
+  const renderDrawMobileCard = (item: DrawRecord) => {
+    return (
+      <div className="space-y-3" data-testid={`draw-card-${item.id}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-content-primary text-sm">
+              {isAr ? item.title_ar : item.title_en}
+            </h3>
+            <span className="font-mono text-[11px] text-content-muted">#{item.id}</span>
+          </div>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+              item.is_published
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+            }`}
+          >
+            {item.is_published ? (isAr ? 'منشور' : 'Published') : (isAr ? 'مسودة' : 'Draft')}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2.5 rounded-xl bg-surface-elevated/60 border border-border-subtle text-xs">
+          <div>
+            <span className="text-[11px] text-content-muted block">{isAr ? 'الالتزام التشفيري' : 'Cryptographic Proof'}</span>
+            {(item.server_seed_hash || item.seed_commitment_hash) ? (
+              <div className="flex items-center gap-1 font-mono text-[11px] text-brand-gold mt-0.5">
+                <Lock className="w-3 h-3 text-brand-gold shrink-0" />
+                <span className="truncate">{(item.server_seed_hash || item.seed_commitment_hash)!.slice(0, 16)}...</span>
+              </div>
+            ) : (
+              <span className="text-content-muted text-[11px]">{isAr ? 'غير مولد' : 'Not generated'}</span>
+            )}
+          </div>
+          <div>
+            <span className="text-[11px] text-content-muted block">{isAr ? 'فترة السحب' : 'Window'}</span>
+            <span className="text-[11px] text-content-secondary block mt-0.5">
+              {formatDate(item.starts_at, locale)} → {formatDate(item.ends_at, locale)}
+            </span>
+          </div>
+        </div>
+
+        <div className="pt-1">
+          <Link
+            href={`/${locale}/admin/draws/${item.id}`}
+            className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary transition-colors"
+            data-testid={`manage-draw-${item.id}`}
+          >
+            <Edit3 className="w-3.5 h-3.5 text-brand-gold" />
+            <span>{isAr ? 'إدارة السحب' : 'Manage Draw'}</span>
+          </Link>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <AdminGuard requiredCapability="manage_platform_settings">
       <div className="space-y-6" data-testid="admin-draws-page">
@@ -147,6 +202,7 @@ export default function AdminDrawsPage() {
           keyExtractor={(item) => item.id}
           isLoading={isLoading}
           emptyMessage={isAr ? 'لا توجد سحوبات مطابقة.' : 'No draws found.'}
+          mobileRenderer={renderDrawMobileCard}
         />
       </div>
     </AdminGuard>

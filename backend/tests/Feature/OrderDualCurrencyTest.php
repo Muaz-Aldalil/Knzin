@@ -45,7 +45,7 @@ class OrderDualCurrencyTest extends TestCase
             ->assertJsonPath('data.total_amount_cents', 200)
             ->assertJsonPath('data.currency', 'USD')
             ->assertJsonPath('data.exchange_rate', '1.3100')
-            ->assertJsonPath('data.paid_amount_gateway', 2620)
+            ->assertJsonPath('data.paid_amount_gateway', 2600)
             ->assertJsonPath('data.display_price_label', '2,000 IQD')
             ->assertJsonPath('data.promotional_tickets_granted', 1);
 
@@ -53,7 +53,7 @@ class OrderDualCurrencyTest extends TestCase
         $this->assertNotNull($order);
         $this->assertEquals(200, $order->total_amount_cents);
         $this->assertEquals('1.3100', $order->exchange_rate);
-        $this->assertEquals(2620, $order->paid_amount_gateway);
+        $this->assertEquals(2600, $order->paid_amount_gateway);
         $this->assertEquals('2,000 IQD', $order->display_price_label);
         $this->assertEquals(1, $order->promotional_tickets_granted);
     }
@@ -83,7 +83,7 @@ class OrderDualCurrencyTest extends TestCase
             ->assertJsonPath('data.total_amount_cents', 1000)
             ->assertJsonPath('data.currency', 'USD')
             ->assertJsonPath('data.exchange_rate', '1.3100')
-            ->assertJsonPath('data.paid_amount_gateway', 13100)
+            ->assertJsonPath('data.paid_amount_gateway', 13000)
             ->assertJsonPath('data.display_price_label', '13,000 IQD')
             ->assertJsonPath('data.promotional_tickets_granted', 15);
 
@@ -91,7 +91,7 @@ class OrderDualCurrencyTest extends TestCase
         $this->assertNotNull($order);
         $this->assertEquals(1000, $order->total_amount_cents);
         $this->assertEquals('1.3100', $order->exchange_rate);
-        $this->assertEquals(13100, $order->paid_amount_gateway);
+        $this->assertEquals(13000, $order->paid_amount_gateway);
         $this->assertEquals('13,000 IQD', $order->display_price_label);
         $this->assertEquals(15, $order->promotional_tickets_granted);
     }

@@ -1,14 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useActiveDraws, useConcludedDraws } from '@/hooks/useDraws';
+import { usePublicLandingCms } from '@/hooks/admin/useAdminCms';
 import { DrawCard } from './DrawCard';
 import { ConcludedDrawsList } from './ConcludedDrawsList';
-import { Clock, Trophy, Sparkles, AlertCircle } from 'lucide-react';
+import { Clock, Trophy, Sparkles, AlertCircle, Radio, ExternalLink } from 'lucide-react';
 
 export function DrawsArena() {
   const t = useTranslations('draws');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
+  const { data: cmsData } = usePublicLandingCms();
+  const drawContent = cmsData?.sections?.draw_content;
   const [activeTab, setActiveTab] = useState<'active' | 'concluded'>('active');
 
   // Deep-link section target resolution (Protocol Sections 6, 16 & 17)
@@ -138,7 +143,35 @@ export function DrawsArena() {
             )}
           </div>
         ) : (
-          <div id="hall-of-fame" className="scroll-mt-24">
+          <div id="hall-of-fame" className="scroll-mt-24 space-y-6">
+            {/* CMS Managed Hall of Fame Header & Stream Notification */}
+            {drawContent && drawContent.is_visible !== false && (
+              <div className="text-center max-w-2xl mx-auto space-y-2 pb-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+                  {(isAr ? drawContent.hall_of_fame_title_ar : drawContent.hall_of_fame_title_en) || t('tabConcluded')}
+                </h2>
+                {(isAr ? drawContent.hall_of_fame_subtitle_ar : drawContent.hall_of_fame_subtitle_en) && (
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    {isAr ? drawContent.hall_of_fame_subtitle_ar : drawContent.hall_of_fame_subtitle_en}
+                  </p>
+                )}
+                {drawContent.live_stream_url && (
+                  <div className="pt-2">
+                    <a
+                      href={drawContent.live_stream_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs font-bold hover:bg-rose-500/20 transition-colors"
+                    >
+                      <Radio className="w-3.5 h-3.5 animate-pulse text-rose-500" />
+                      <span>{isAr ? 'مشاهدة البث المباشر للسحب' : 'Watch Live Draw Stream'}</span>
+                      <ExternalLink className="w-3 h-3 opacity-70" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
+
             {isLoadingConcluded ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (

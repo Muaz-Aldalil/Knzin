@@ -41,7 +41,7 @@ export interface DrawItem {
     server_seed_hash: string;
     committed_at: string;
   } | null;
-  prize: PrizeItem;
+  prize?: PrizeItem | null;
 }
 
 export interface ActiveDrawsData {
@@ -80,12 +80,12 @@ export interface ConcludedDrawItem {
     revealed_at: string | null;
     verified?: boolean;
   } | null;
-  prize: {
+  prize?: {
     title: string;
     valuation_usd: number;
     display_iqd_label: string;
     image_url: string;
-  };
+  } | null;
   winner?: ConcludedDrawWinner | null;
 }
 

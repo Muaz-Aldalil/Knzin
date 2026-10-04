@@ -22,17 +22,22 @@ class MediaProtectionService
     public function generatePlaybackToken(?User $user, Course $course, CoursePart $part): array
     {
         $partNumber = (int) $part->part_number;
+        $isFree = (bool) ($part->is_free || $partNumber === 1);
 
-        // Part 1: Public free preview
-        if ($partNumber === 1) {
+        // Free preview part (part 1 by default, or any part configured as free by admin)
+        if ($isFree) {
+            $streamUrl = !empty($part->video_url)
+                ? $part->video_url
+                : url("/api/v1/media/stream/{$course->slug}/{$partNumber}");
+
             return [
                 'course_slug' => $course->slug,
-                'part_number' => 1,
+                'part_number' => $partNumber,
                 'part_title_ar' => $part->title_ar,
                 'part_title_en' => $part->title_en,
-                'duration_seconds' => (int) $part->duration_seconds,
+                'duration_seconds' => (int) ($part->duration_minutes ? $part->duration_minutes * 60 : 2700),
                 'stream' => [
-                    'stream_url' => url("/api/v1/media/stream/{$course->slug}/1"),
+                    'stream_url' => $streamUrl,
                     'format' => 'hls',
                     'expires_at' => null,
                     'validity_seconds' => null,
@@ -41,7 +46,7 @@ class MediaProtectionService
             ];
         }
 
-        // Part 2+: Requires authenticated learner with verified entitlement
+        // Paid parts: Requires authenticated learner with verified entitlement
         if (!$user) {
             return [
                 'error' => 'ERR_UNAUTHORIZED',
@@ -66,21 +71,23 @@ class MediaProtectionService
 
         $expiresAt = Carbon::now('UTC')->addSeconds(self::TOKEN_VALIDITY_SECONDS);
 
-        $signedStreamUrl = URL::temporarySignedRoute(
-            'api.media.stream',
-            $expiresAt,
-            [
-                'courseSlug' => $course->slug,
-                'partNumber' => $partNumber,
-            ]
-        );
+        $signedStreamUrl = !empty($part->video_url)
+            ? $part->video_url
+            : URL::temporarySignedRoute(
+                'api.media.stream',
+                $expiresAt,
+                [
+                    'courseSlug' => $course->slug,
+                    'partNumber' => $partNumber,
+                ]
+            );
 
         return [
             'course_slug' => $course->slug,
             'part_number' => $partNumber,
             'part_title_ar' => $part->title_ar,
             'part_title_en' => $part->title_en,
-            'duration_seconds' => (int) $part->duration_seconds,
+            'duration_seconds' => (int) ($part->duration_minutes ? $part->duration_minutes * 60 : 2700),
             'stream' => [
                 'stream_url' => $signedStreamUrl,
                 'format' => 'hls',
@@ -108,7 +115,9 @@ class MediaProtectionService
             ];
         }
 
-        if (!$this->entitlementService->hasAccess($user, $course, $part)) {
+        $isFree = (bool) ($part->is_free ?? ($part->part_number === 1));
+
+        if (!$isFree && !$this->entitlementService->hasAccess($user, $course, $part)) {
             return [
                 'error' => 'ERR_RESOURCE_LOCKED',
                 'message' => 'الملفات المرفقة متاحة حصرياً للمتدربين المشتركين في هذا الجزء أو باقة الدورة.',
@@ -118,15 +127,17 @@ class MediaProtectionService
 
         $expiresAt = Carbon::now('UTC')->addSeconds(self::TOKEN_VALIDITY_SECONDS);
 
-        $downloadUrl = URL::temporarySignedRoute(
-            'api.media.download',
-            $expiresAt,
-            [
-                'courseSlug' => $course->slug,
-                'partNumber' => (int) $part->part_number,
-                'resourceId' => $resourceId,
-            ]
-        );
+        $downloadUrl = !empty($part->pdf_url)
+            ? $part->pdf_url
+            : URL::temporarySignedRoute(
+                'api.media.download',
+                $expiresAt,
+                [
+                    'courseSlug' => $course->slug,
+                    'partNumber' => (int) $part->part_number,
+                    'resourceId' => $resourceId,
+                ]
+            );
 
         return [
             'resource_id' => $resourceId,

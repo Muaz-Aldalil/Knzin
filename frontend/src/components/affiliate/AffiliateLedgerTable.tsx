@@ -148,8 +148,53 @@ export function AffiliateLedgerTable({
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="overflow-x-auto">
+      {/* Mobile Transaction Cards View (< md) */}
+      <div className="md:hidden">
+        {entries.length === 0 && !isLoading ? (
+          <div className="text-center py-12 text-content-secondary">
+            <FileText className="w-10 h-10 mx-auto mb-3 opacity-40" />
+            <p className="text-sm font-medium">{t('emptyLedger')}</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border-subtle">
+            {entries.map((entry) => {
+              const isDebit = entry.entry_type === 'payout_debit';
+              const formattedAmount = isDebit
+                ? `-$${(Math.abs(entry.amount_cents) / 100).toFixed(2)}`
+                : `+$${(Math.abs(entry.amount_cents) / 100).toFixed(2)}`;
+
+              return (
+                <div key={entry.id} className="py-3.5 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-xs text-content-muted">
+                      {formatDate(entry.created_at)}
+                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      {getTypeBadge(entry.entry_type)}
+                      {getStatusBadge(entry.status)}
+                    </div>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="text-xs font-semibold text-content-primary flex-1 min-w-0">
+                      {isRtl ? entry.description_ar : entry.description_en}
+                    </p>
+                    <span
+                      className={`font-mono font-bold text-sm shrink-0 ${
+                        isDebit ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+                      }`}
+                    >
+                      {formattedAmount}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table View (>= md) */}
+      <div className="hidden md:block overflow-x-auto">
         {entries.length === 0 && !isLoading ? (
           <div className="text-center py-12 text-content-secondary">
             <FileText className="w-10 h-10 mx-auto mb-3 opacity-40" />

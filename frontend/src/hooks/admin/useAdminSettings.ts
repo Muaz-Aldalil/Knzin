@@ -17,12 +17,13 @@ export interface UpdateSettingsPayload {
   payout_min_cents?: number;
 }
 
-export function useAdminSettings() {
+export function useAdminSettings(enabled: boolean = true) {
   const queryClient = useQueryClient();
 
   const query = useQuery<AdminSettingsData, ApiError>({
     queryKey: ['admin', 'settings'],
     queryFn: () => apiClient<AdminSettingsData>('/admin/settings'),
+    enabled,
     staleTime: 10 * 1000,
   });
 

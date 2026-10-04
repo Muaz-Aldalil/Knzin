@@ -110,6 +110,58 @@ export default function AdminApprovalsPage() {
     },
   ];
 
+  const renderApprovalMobileCard = (item: AdminApprovalRecord) => {
+    return (
+      <div className="space-y-3" data-testid={`approval-card-${item.approval_id}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-1.5 font-bold text-xs">
+              {item.approval_type === 'kyc' ? (
+                <>
+                  <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-content-primary">{isAr ? 'هوية الفائز (KYC)' : 'Winner KYC'}</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
+                  <span className="text-content-primary">{isAr ? 'نزاهة السحب' : 'Draw Integrity'}</span>
+                </>
+              )}
+            </div>
+            <span className="font-mono text-xs text-content-secondary block mt-0.5">
+              {item.subject_type}: #{item.subject_id}
+            </span>
+          </div>
+          <StatusBadge status={item.status} />
+        </div>
+
+        <div className="flex items-center justify-between text-xs text-content-secondary p-2.5 rounded-xl bg-surface-elevated/60 border border-border-subtle">
+          <span>Admin #{item.approved_by}</span>
+          <span className="text-[11px] text-content-muted">{formatDate(item.created_at, locale)}</span>
+        </div>
+
+        {item.status === 'valid' ? (
+          <div className="pt-1">
+            <button
+              onClick={() => setRevokingApproval(item)}
+              className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors"
+              data-testid={`revoke-approval-${item.approval_id}`}
+            >
+              <XCircle className="w-3.5 h-3.5" />
+              <span>{isAr ? 'سحب / إلغاء القرار' : 'Revoke Decision'}</span>
+            </button>
+          </div>
+        ) : (
+          item.revocation_reason && (
+            <p className="text-xs text-content-muted italic">
+              {isAr ? 'السبب: ' : 'Reason: '}{item.revocation_reason}
+            </p>
+          )
+        )}
+      </div>
+    );
+  };
+
   return (
     <AdminGuard requiredCapability={['issue_kyc_approval', 'issue_draw_audit_approval']}>
       <div className="space-y-8" data-testid="admin-approvals-page">
@@ -166,6 +218,7 @@ export default function AdminApprovalsPage() {
             keyExtractor={(item) => item.approval_id}
             isLoading={isLoading}
             emptyMessage={isAr ? 'لا توجد قرارات موافقة مسجلة.' : 'No approval records found.'}
+            mobileRenderer={renderApprovalMobileCard}
           />
         </div>
 

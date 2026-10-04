@@ -26,6 +26,7 @@ export interface CoursePartData {
   display_price_label: string;
   resource_types: string[];
   duration_minutes: number;
+  is_free?: boolean;
 }
 
 interface CoursePartListProps {
@@ -73,7 +74,7 @@ export default function CoursePartList({
           {parts.map((part, index) => {
             const partTitle = isRtl ? part.title_ar : part.title_en;
             const syllabus = isRtl ? part.syllabus_ar : part.syllabus_en;
-            const isFirstFree = part.part_number === 1;
+            const isFirstFree = part.is_free !== undefined ? part.is_free : (part.part_number === 1);
             const lessonHref = `/lessons/${courseSlug || 'course'}?part=${part.part_number}`;
             const isLast = index === parts.length - 1;
 

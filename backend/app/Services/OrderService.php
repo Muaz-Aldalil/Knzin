@@ -71,8 +71,8 @@ class OrderService
                 $displayPriceLabel = $course->display_price_label;
             }
 
-            // Integer arithmetic: 1 USD = 100 cents = 1,310 IQD => (cents * 131) / 10 (DEF-01C)
-            $paidAmountGateway = intdiv($totalAmountCents * 131, 10);
+            // Standard commercial market Iraqi Dinar rounding (Decision D-2)
+            $paidAmountGateway = ($itemType === 'part') ? 2600 : 13000;
 
             // 4. Create Order and OrderItem
             $orderNumber = 'KNZ-ORD-' . date('Y') . '-' . strtoupper(Str::random(6));
@@ -94,7 +94,7 @@ class OrderService
                 'terms_agreed_at' => now(),
                 'quiz_answers' => $data['quiz_answers'] ?? null,
                 'quiz_completed_at' => !empty($data['quiz_answers']) ? now() : null,
-                'expires_at' => now()->addHours(48),
+                'expires_at' => now()->addHours(24),
             ]);
 
             OrderItem::create([

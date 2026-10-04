@@ -35,13 +35,19 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
           <div>
             {/* Prize Thumbnail Header */}
             <div className="relative aspect-16/9 w-full overflow-hidden bg-muted/30">
-              <Image
-                src={item.prize.image_url}
-                alt={item.prize.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
+              {item.prize?.image_url ? (
+                <Image
+                  src={item.prize.image_url}
+                  alt={item.prize.title || ''}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-amber-500/10">
+                  <Trophy className="h-10 w-10 text-muted-foreground/40" />
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
               <div className="absolute top-3 start-3">
@@ -55,9 +61,11 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
                 </span>
               </div>
 
-              <div className="absolute bottom-2.5 inset-x-3 text-white text-xs font-bold line-clamp-1">
-                {item.prize.title} (${item.prize.valuation_usd.toLocaleString()})
-              </div>
+              {item.prize && (
+                <div className="absolute bottom-2.5 inset-x-3 text-white text-xs font-bold line-clamp-1">
+                  {item.prize.title} (${item.prize.valuation_usd.toLocaleString()})
+                </div>
+              )}
             </div>
 
             {/* Winner Details Body */}

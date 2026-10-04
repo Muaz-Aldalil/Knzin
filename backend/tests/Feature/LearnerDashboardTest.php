@@ -204,4 +204,32 @@ class LearnerDashboardTest extends TestCase
             ],
         ]);
     }
+
+    public function test_active_learning_is_null_when_user_has_watched_preview_of_unpurchased_course(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user, ['*']);
+
+        // User watched Part 1 (free preview) of unpurchased course
+        LessonProgress::create([
+            'user_id' => $user->id,
+            'course_id' => $this->course->id,
+            'course_part_id' => $this->part1->id,
+            'watch_seconds' => 300,
+            'percent_complete' => 30,
+            'is_completed' => false,
+            'last_watched_at' => Carbon::now('UTC'),
+        ]);
+
+        $response = $this->getJson('/api/v1/user/dashboard');
+
+        $response->assertStatus(200);
+        $this->assertNull($response->json('data.active_learning'));
+        $this->assertEmpty($response->json('data.enrolled_courses'));
+
+        // Standalone active learning endpoint also confirms null
+        $continuationResponse = $this->getJson('/api/v1/user/active-learning');
+        $continuationResponse->assertStatus(200);
+        $this->assertNull($continuationResponse->json('data.active_learning'));
+    }
 }

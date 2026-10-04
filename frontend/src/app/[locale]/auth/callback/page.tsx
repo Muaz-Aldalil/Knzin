@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
+import { fetchAdminCapabilities } from '@/lib/admin/access';
+import { resolvePostLoginDestination } from '@/lib/auth-redirect';
 import { CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 
 function CallbackContent() {
@@ -35,18 +37,29 @@ function CallbackContent() {
         isVerified: true,
       });
 
-      const target = searchParams.get('redirect') || '/';
+      const requestedRedirect = searchParams.get('redirect');
 
-      const timer = setTimeout(() => {
+      // Keep the success state visible briefly while the backend confirms admin access.
+      void Promise.all([
+        fetchAdminCapabilities(),
+        new Promise((resolve) => setTimeout(resolve, 1500)),
+      ]).then(([capabilities]) => {
         setIsProcessing(false);
-        router.replace(target as any);
-      }, 1500);
-
-      return () => clearTimeout(timer);
+        router.replace(
+          resolvePostLoginDestination({
+            redirect: requestedRedirect,
+            isAdmin: capabilities !== null,
+          }) as any
+        );
+      });
     } else if (!token && !email) {
       processedRef.current = true;
-      const target = searchParams.get('redirect') || '/';
-      router.replace(target as any);
+      router.replace(
+        resolvePostLoginDestination({
+          redirect: searchParams.get('redirect'),
+          isAdmin: false,
+        }) as any
+      );
     }
   }, [searchParams, login, router]);
 

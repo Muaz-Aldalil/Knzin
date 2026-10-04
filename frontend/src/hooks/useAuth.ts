@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 
 export interface AuthUser {
@@ -31,6 +32,7 @@ export interface VerifyOtpResult {
 }
 
 export function useAuth() {
+  const queryClient = useQueryClient();
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,12 +71,14 @@ export function useAuth() {
   }, [syncAuth]);
 
   const login = useCallback((newToken: string, newUser: AuthUser) => {
+    // Drop anything cached under a previous identity (guest or another account).
+    queryClient.clear();
     localStorage.setItem('knzin_auth_token', newToken);
     localStorage.setItem('knzin_user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
     window.dispatchEvent(new Event('storage'));
-  }, []);
+  }, [queryClient]);
 
   const logout = useCallback(async () => {
     try {
@@ -86,11 +90,12 @@ export function useAuth() {
     } finally {
       localStorage.removeItem('knzin_auth_token');
       localStorage.removeItem('knzin_user');
+      queryClient.clear();
       setToken(null);
       setUser(null);
       window.dispatchEvent(new Event('storage'));
     }
-  }, []);
+  }, [queryClient]);
 
   const sendOtp = useCallback(async (email: string): Promise<SendOtpResult> => {
     const res = await apiClient<SendOtpResult>('/auth/otp/send', {

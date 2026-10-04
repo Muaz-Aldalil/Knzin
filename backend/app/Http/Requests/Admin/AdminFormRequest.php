@@ -39,15 +39,23 @@ abstract class AdminFormRequest extends FormRequest
      */
     public function auditContext(?string $capability = null): AdminAuditContext
     {
-        $requestId = $this->attributes->get('request_id')
-            ?? $this->header('X-Request-Id')
+        return static::fromRequest($this, $capability);
+    }
+
+    /**
+     * Construct an AdminAuditContext from any Request instance with actor resolution.
+     */
+    public static function fromRequest(\Illuminate\Http\Request $request, ?string $capability = null): AdminAuditContext
+    {
+        $requestId = $request->attributes->get('request_id')
+            ?? $request->header('X-Request-Id')
             ?? (string) Str::uuid();
 
-        $ip = $this->ip();
+        $ip = $request->ip();
         $salt = (string) config('app.key', 'knzin-salt');
         $ipHash = $ip ? hash('sha256', $ip . $salt) : null;
 
-        $justification = $this->input('justification') ?? $this->input('reason');
+        $justification = $request->input('justification') ?? $request->input('reason');
         if (is_string($justification)) {
             $justification = trim($justification);
         } else {
@@ -55,7 +63,7 @@ abstract class AdminFormRequest extends FormRequest
         }
 
         return new AdminAuditContext(
-            actorUserId: $this->user()?->id,
+            actorUserId: $request->user()?->id,
             capabilityUsed: $capability,
             requestId: $requestId,
             ipHash: $ipHash,

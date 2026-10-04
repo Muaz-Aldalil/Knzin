@@ -12,6 +12,12 @@ class CoursePart extends Model
 {
     use HasFactory, HasUuids;
 
+    protected $attributes = [
+        'resource_types' => '["video","pdf"]',
+        'is_active' => true,
+        'is_free' => false,
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -30,6 +36,11 @@ class CoursePart extends Model
         'resource_types',
         'duration_minutes',
         'is_active',
+        'is_free',
+        'video_url',
+        'pdf_url',
+        'pdf_title_ar',
+        'pdf_title_en',
     ];
 
     /**
@@ -46,6 +57,7 @@ class CoursePart extends Model
             'resource_types' => 'array',
             'duration_minutes' => 'integer',
             'is_active' => 'boolean',
+            'is_free' => 'boolean',
         ];
     }
 

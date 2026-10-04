@@ -132,12 +132,27 @@ class DashboardController extends ApiController
         });
 
         // 3. Active Learning ("Jump Back In") continuation item
-        $latestProgress = LessonProgress::where('user_id', $user->id)
-            ->with(['course', 'coursePart'])
-            ->whereHas('course', fn($q) => $q->where('is_active', true))
-            ->whereHas('coursePart', fn($q) => $q->where('is_active', true))
-            ->orderByDesc('last_watched_at')
-            ->first();
+        // Strictly scoped to courses and parts where user holds an active entitlement
+        $bundleCourseIds = $activeEntitlements->whereNull('course_part_id')->pluck('course_id')->all();
+        $modularPartIds = $activeEntitlements->whereNotNull('course_part_id')->pluck('course_part_id')->all();
+
+        $latestProgress = null;
+        if (!empty($bundleCourseIds) || !empty($modularPartIds)) {
+            $latestProgress = LessonProgress::where('user_id', $user->id)
+                ->with(['course', 'coursePart'])
+                ->whereHas('course', fn($q) => $q->where('is_active', true))
+                ->whereHas('coursePart', fn($q) => $q->where('is_active', true))
+                ->where(function ($q) use ($bundleCourseIds, $modularPartIds) {
+                    if (!empty($bundleCourseIds)) {
+                        $q->whereIn('course_id', $bundleCourseIds);
+                    }
+                    if (!empty($modularPartIds)) {
+                        $q->orWhereIn('course_part_id', $modularPartIds);
+                    }
+                })
+                ->orderByDesc('last_watched_at')
+                ->first();
+        }
 
         $activeLearning = null;
         if ($latestProgress && $latestProgress->course && $latestProgress->coursePart) {

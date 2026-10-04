@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   Accordion,
   AccordionContent,
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/accordion';
 import { ShieldCheck, Download, Award, Users, FileCheck, HelpCircle } from 'lucide-react';
 import { WinnerKycCard } from '@/components/compliance/WinnerKycCard';
+import { usePublicLandingCms } from '@/hooks/admin/useAdminCms';
 
 export interface FaqAccordionProps {
   className?: string;
@@ -18,6 +19,17 @@ export interface FaqAccordionProps {
 
 export function FaqAccordion({ className = '', kycSlot }: FaqAccordionProps) {
   const t = useTranslations('faq');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
+
+  const { data: cmsData } = usePublicLandingCms();
+  const faqCms = cmsData?.sections?.referral_faq;
+
+  // Visibility guard
+  if (faqCms?.is_visible === false) {
+    return null;
+  }
+
   const renderedKycSlot = kycSlot !== undefined ? kycSlot : <WinnerKycCard variant="embedded" />;
 
   const categories = [
@@ -64,15 +76,21 @@ export function FaqAccordion({ className = '', kycSlot }: FaqAccordionProps) {
     },
     {
       id: 'referral',
-      title: t('categoryReferral'),
+      title: (isAr ? faqCms?.title_ar : faqCms?.title_en) || t('categoryReferral'),
       icon: Users,
-      items: [
-        {
-          id: 'faq-referral-1',
-          question: t('q_referral_1'),
-          answer: t('a_referral_1'),
-        },
-      ],
+      items: (faqCms?.items && faqCms.items.length > 0)
+        ? faqCms.items.map((item) => ({
+            id: item.id,
+            question: (isAr ? item.question_ar : item.question_en) || item.question_ar || item.question_en || '',
+            answer: (isAr ? item.answer_ar : item.answer_en) || item.answer_ar || item.answer_en || '',
+          }))
+        : [
+            {
+              id: 'faq-referral-1',
+              question: t('q_referral_1'),
+              answer: t('a_referral_1'),
+            },
+          ],
     },
     {
       id: 'kyc',

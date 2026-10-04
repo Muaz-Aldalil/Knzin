@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { CheckCircle2, Ticket, Clock, CreditCard, ShieldCheck, ArrowRight, Smartphone } from 'lucide-react';
 import { CreatedOrder } from '@/hooks/useCheckout';
+import PaymentStatusMonitor from './PaymentStatusMonitor';
 
 interface OrderSummaryCardProps {
   order: CreatedOrder;
@@ -40,6 +41,12 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
       </div>
 
       <div className="p-6 space-y-6">
+        {/* Real-Time Payment Status Monitor & Celebration UX (Feature 007) */}
+        <PaymentStatusMonitor
+          orderNumber={order.order_number}
+          courseSlug={order.items?.[0]?.course_id}
+        />
+
         {/* Core Order Data Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
           <div>

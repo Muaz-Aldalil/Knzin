@@ -22,6 +22,7 @@ import {
 import { CANONICAL_LEGAL_SHIELD } from '@/components/checkout/LegalShieldCheckbox';
 import { DrawsArena } from '@/components/draws/DrawsArena';
 import { WinnerKycCard } from '@/components/compliance/WinnerKycCard';
+import { LegalShieldCmsSection } from '@/components/compliance/LegalShieldCmsSection';
 
 export default async function RafflePage({
   params,
@@ -164,26 +165,8 @@ export default async function RafflePage({
         </Card>
       </div>
 
-      {/* Canonical Legal Shield Section */}
-      <div className="p-6 rounded-2xl bg-surface-secondary border border-border-subtle space-y-4">
-        <div className="flex items-center gap-2.5 text-secondary dark:text-white font-extrabold text-sm sm:text-base">
-          <Scale className="w-5 h-5 text-primary" />
-          <span>{isRtl ? 'الإقرار والدرع القانوني الإلزامي (العراق)' : 'Mandatory Legal Shield & Compliance'}</span>
-        </div>
-
-        <p className="text-xs sm:text-sm text-content-secondary leading-relaxed bg-surface-primary p-4 rounded-xl border border-border-subtle font-medium">
-          « {CANONICAL_LEGAL_SHIELD} »
-        </p>
-
-        <div className="flex items-center gap-2 text-[11px] text-content-muted">
-          <FileCheck2 className="w-4 h-4 text-emerald-500" />
-          <span>
-            {isRtl
-              ? 'متوافق مع تعليمات وزارة التجارة العراقية وقوانين حماية المستهلك رقم (1) لسنة 2010.'
-              : 'Complies with Iraqi Ministry of Trade regulations & Consumer Protection Law No. 1 (2010).'}
-          </span>
-        </div>
-      </div>
+      {/* Canonical Legal Shield Section (CMS managed with canonical fallback) */}
+      <LegalShieldCmsSection />
 
       {/* Winner KYC Legal Compliance & National ID Claim Requirement (US6) */}
       <WinnerKycCard variant="standalone" />

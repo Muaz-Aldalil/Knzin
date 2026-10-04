@@ -108,7 +108,7 @@ sequenceDiagram
 - Grid display of vocational and online skill courses.
 - Micro-Pricing Display:
   - **Single Part (جزء واحد):** **$2 USD (or ~2,000 IQD)** &rarr; Grants **1 Promotional Raffle Ticket**.
-  - **Full Course Bundle (بكج كامل - 6 أجزاء):** **$10 USD** &rarr; Grants **15 Promotional Raffle Tickets** (bulk incentive: saves $2 and yields 2.5x tickets).
+  - **Full Course Bundle (باقة الدورة الكاملة - جميع الأجزاء النشطة):** **$10 USD** &rarr; Grants **15 Promotional Raffle Tickets** (bulk incentive: unlocks complete course and yields 15 tickets per Owner Decision 4).
 - Course details modal showing: syllabus outline, instructor bio, deliverable formats (PDF + 15-minute Audio notes + Unlisted YouTube video embeds).
 
 ### FR-004: Anti-Piracy Psychological Profiler (محرك التخصيص النفسي)
@@ -268,7 +268,7 @@ Ground truth visual identity established in primary project documentation:
 ## 12. Confirmed Requirements vs. Assumptions vs. Open Questions
 
 ### A. Confirmed Requirements (Ground Truth)
-- [x] Canonical product pricing: **$2 per single part**; **$10 per 6-part full course bundle**.
+- [x] Canonical product pricing: **$2 per single part**; **$10 per full course bundle (all active parts)**.
 - [x] Ticket allocation: **1 ticket for $2**; **15 tickets for $10**.
 - [x] Draw frequencies: Hourly ($100), Daily ($50,000), and Monthly ($500,000 / Vehicles).
 - [x] Hourly and daily tickets expire immediately when that specific draw is held; monthly tickets remain valid all month.

@@ -42,8 +42,6 @@ export function LearnerDashboardView() {
 
   // State 1: Unauthenticated
   if (isUnauthenticated) {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-
     return (
       <div className="max-w-2xl mx-auto my-16 p-8 rounded-3xl bg-surface border border-border-subtle text-center shadow-sm">
         <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
@@ -58,12 +56,12 @@ export function LearnerDashboardView() {
             : 'Sign in to access your enrolled vocational courses, continue learning, and view your promotional tickets.'}
         </p>
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href={`${backendUrl}/auth/google/redirect`}
+          <Link
+            href="/auth/login?redirect=/dashboard"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold transition-all shadow-xs"
           >
-            <span>{isRtl ? 'الدخول عبر حساب Google' : 'Sign in with Google'}</span>
-          </a>
+            <span>{isRtl ? 'تسجيل الدخول إلى حسابك' : 'Sign in to Your Account'}</span>
+          </Link>
           <Link
             href="/"
             className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl bg-surface-secondary hover:bg-surface-elevated text-content-secondary text-sm font-semibold transition-colors border border-border-subtle"

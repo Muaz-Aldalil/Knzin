@@ -12,12 +12,12 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function getNestedKeys(obj: Record<string, any>, prefix = ''): string[] {
+function getNestedKeys(obj: Record<string, unknown>, prefix = ''): string[] {
   let keys: string[] = [];
   for (const [key, value] of Object.entries(obj)) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
     if (value && typeof value === 'object' && !Array.isArray(value)) {
-      keys = keys.concat(getNestedKeys(value, fullKey));
+      keys = keys.concat(getNestedKeys(value as Record<string, unknown>, fullKey));
     } else {
       keys.push(fullKey);
     }

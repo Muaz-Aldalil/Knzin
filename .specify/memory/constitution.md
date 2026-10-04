@@ -58,7 +58,7 @@ KNZiN operates commercially as a vocational micro-learning e-commerce platform, 
 - **Commercial Classification**: Every order, invoice, and payment receipt MUST reflect a 100% purchase of vocational educational content.
 - **Standardized Pricing & Ticket Ratio**:
   - Individual Course Part: **$2.00 USD** &rarr; Grants **1 Free Promotional Sweepstakes Ticket**.
-  - Full Course Bundle (6 Parts): **$10.00 USD** &rarr; Grants **15 Free Promotional Sweepstakes Tickets** (bulk educational incentive).
+  - Full Course Bundle (Complete Course): **$10.00 USD** &rarr; Grants **15 Free Promotional Sweepstakes Tickets** (covers all active published parts of the course regardless of part count; bulk educational incentive).
   - Exchange Rate: Frozen at checkout in Iraqi Dinars (IQD, e.g., 1.3100 frozen rate) and persisted per transaction.
 - **Zero-Value Line Item**: Sweepstakes tickets MUST be recorded in the database as zero-value promotional grants (`promotional_tickets_granted`), never as standalone purchased line items.
 - **Canonical Legal Shield**: Checkout MUST enforce the affirmative, non-pre-checked consent checkbox verbatim in both frontend UI and backend validator before processing payment:
@@ -157,4 +157,4 @@ Converge before declaring complete.
 ## Governance
 
 - **Supremacy**: This Constitution represents the technical engineering domain policy for the KNZiN repository. It operates under the overarching behavioral rules defined in [`AGENTS.md`](file:///d:/Work%20Projects/Knzin%20Project/AGENTS.md).
-- **Version**: 3.2.0 | **Ratified**: 2026-09-28 | **Reconciled**: 2026-09-30
+- **Version**: 3.3.0 | **Ratified**: 2026-09-28 | **Reconciled**: 2026-10-03 (Owner Decision 4: Complete course bundle scope)

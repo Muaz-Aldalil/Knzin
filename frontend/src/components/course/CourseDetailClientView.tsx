@@ -211,7 +211,19 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
       </div>
 
       {/* What You'll Learn: Vocational Outcomes Panel */}
-      <LearningOutcomes slug={slug} />
+      <LearningOutcomes
+        slug={slug}
+        titleAr={course.title_ar}
+        outcomes={
+          course.outcomes && course.outcomes.length > 0
+            ? course.outcomes.map((o: any) => ({
+                title: locale === 'ar' ? (o.title_ar || o.title) : (o.title_en || o.title || o.title_ar),
+                description: locale === 'ar' ? (o.desc_ar || o.description) : (o.desc_en || o.description || o.desc_ar),
+                icon: o.icon || 'wrench',
+              }))
+            : undefined
+        }
+      />
 
       {/* Curriculum Syllabus & Modular Parts Explorer */}
       <div className="pt-2">

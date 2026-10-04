@@ -679,6 +679,9 @@ class CourseCatalogSeeder extends Seeder
             );
 
             foreach ($parts as $pData) {
+                if (!isset($pData['is_free'])) {
+                    $pData['is_free'] = ((int) $pData['part_number'] === 1);
+                }
                 CoursePart::firstOrCreate(
                     [
                         'course_id' => $course->id,

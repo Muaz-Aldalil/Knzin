@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تقرير حالة الميزة 008 - منصة كَنزين</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm 8mm 10mm;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    color: #0f172a;
+    background: #ffffff;
+    font-size: 7.7pt;
+    line-height: 1.32;
+    direction: rtl;
+    text-align: right;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 100%;
+    min-height: 280mm;
+    max-height: 280mm;
+    position: relative;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+  .page-content {
+    flex: 1;
+  }
+  .header-bar {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .brand-title {
+    font-size: 13pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+  }
+  .brand-sub {
+    font-size: 8pt;
+    font-weight: 600;
+    color: #475569;
+    margin-top: 1px;
+  }
+  .header-meta {
+    text-align: left;
+    font-size: 7pt;
+    color: #64748b;
+    line-height: 1.3;
+    direction: ltr;
+  }
+  .badge-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+  .status-badge {
+    flex: 1;
+    border-radius: 4px;
+    padding: 5px 8px;
+    border: 1px solid transparent;
+  }
+  .badge-ready {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+  }
+  .badge-amber {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+  }
+  .badge-label {
+    font-size: 6.8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 1px;
+  }
+  .badge-ready .badge-label { color: #047857; }
+  .badge-amber .badge-label { color: #1d4ed8; }
+  .badge-val {
+    font-size: 8.2pt;
+    font-weight: 800;
+  }
+  .badge-ready .badge-val { color: #065f46; }
+  .badge-amber .badge-val { color: #1e40af; }
+
+  .section-title {
+    font-size: 8.5pt;
+    font-weight: 800;
+    color: #0f172a;
+    background: #f1f5f9;
+    padding: 2.5px 6px;
+    border-right: 3px solid #2563eb;
+    margin-top: 5px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title-en {
+    font-size: 6.8pt;
+    font-weight: 600;
+    color: #64748b;
+    direction: ltr;
+  }
+
+  p {
+    margin-bottom: 4px;
+    color: #334155;
+    text-align: justify;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+  .scope-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 4px 6px;
+  }
+  .scope-card-title {
+    font-size: 7.7pt;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .scope-card-desc {
+    font-size: 7pt;
+    color: #475569;
+    line-height: 1.25;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 3px;
+    margin-bottom: 5px;
+    font-size: 7pt;
+  }
+  th {
+    background: #0f172a;
+    color: #ffffff;
+    font-weight: 700;
+    padding: 3.5px 6px;
+    text-align: right;
+    border: 1px solid #0f172a;
+  }
+  td {
+    padding: 3px 6px;
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+    vertical-align: middle;
+  }
+  tr:nth-child(even) {
+    background: #f8fafc;
+  }
+  .tag {
+    display: inline-block;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 6.5pt;
+    font-weight: 800;
+  }
+  .tag-pass { background: #dcfce7; color: #15803d; }
+  .tag-sec { background: #fef3c7; color: #b45309; }
+  .tag-done { background: #e0f2fe; color: #0369a1; }
+
+  .footer-bar {
+    border-top: 1px solid #cbd5e1;
+    padding-top: 3px;
+    margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 6.8pt;
+    color: #64748b;
+  }
+  .footer-bar span {
+    direction: ltr;
+  }
+
+  .highlight-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin-bottom: 5px;
+    font-size: 7pt;
+    color: #1e3a8a;
+    line-height: 1.28;
+  }
+  .highlight-box strong {
+    color: #1d4ed8;
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= PAGE 1 ================= -->
+<div class="page">
+  <div class="page-content">
+    <div class="header-bar">
+      <div>
+        <div class="brand-title">منصة كَنزين · KNZiN Platform</div>
+        <div class="brand-sub">تقرير الحالة الهندسية والاعتماد التنفيذي · الميزة 008 (لوحة التحكم الإدارية والحوكمة)</div>
+      </div>
+      <div class="header-meta">
+        <div><strong>Spec:</strong> specs/008-admin-panel</div>
+        <div><strong>Tasks:</strong> 147/147 Verified (100%)</div>
+        <div><strong>Date:</strong> 2026-10-03 · v1.0.0</div>
+      </div>
+    </div>
+
+    <div class="badge-container">
+      <div class="status-badge badge-ready">
+        <span class="badge-label">حالة التنفيذ البرمجي والمطابقة</span>
+        <span class="badge-val">مكتمل ومتحقق ومطابق 100% (READY &amp; CONVERGED)</span>
+      </div>
+      <div class="status-badge badge-amber">
+        <span class="badge-label">حالة بيئة الإنتاج والجاهزية</span>
+        <span class="badge-val">جاهز للربط ببوابات الدفع (READY FOR FEATURE 007)</span>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <span>1. الملخص التنفيذي وميثاق الحوكمة</span>
+      <span class="section-title-en">Executive Summary &amp; Governance Standard</span>
+    </div>
+    <p>
+      أكملت الميزة 008 (لوحة التحكم الإدارية والحوكمة التشغيلية والرقابة المالية) كافة مراحل التصميم المعماري، والتنفيذ البرمجي، والفحص الأمني، والتحقق المالي المتشدد، وتكامل الواجهات الأمامية المعزولة باللغتين العربية والإنجليزية. تُمثل هذه الميزة العقل الإداري الحاكم لمنصة كَنزين؛ حيث تتيح إدارة الإعدادات الحساسة وفق مبدأ الامتيازات الأدنى (Least Privilege) وعزل الصلاحيات الصارم دون أي تجاوز كلي، مع ضمان الامتثال لميثاق المنصة الدستوري (Sections VI, VII, VIII, X, XI) عبر سجل تدقيق غير قابل للتعديل (Immutable Audit Log) واشتراط المعاملات الذرية المحمية بأقفال قواعد البيانات المتزامنة (<code>SELECT ... FOR UPDATE</code>). تم اجتياز بوابة التقارب البرمجي (<code>speckit-converge</code>) بنجاح قطعي واكتمال كافة المهام (147 مهمة).
+    </p>
+
+    <div class="section-title">
+      <span>2. نطاق العمل المُنجز المعتمد (Delivered Scope - 9 Modules)</span>
+      <span class="section-title-en">Architectural Deliverables &amp; Core Systems</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="scope-card">
+        <div class="scope-card-title">1. عزل الصلاحيات الست الحصرية (Six Capability Gates)</div>
+        <div class="scope-card-desc">قيد قاعدة بيانات صارم (<code>chk_admin_capabilities_allowed</code>) يمنع أي صلاحيات وهمية أو تجاوزات كلية، مع حظر المنح الذاتي وقفل المسؤول الأخير (<code>LastAdminLockoutException</code>).</div>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-title">2. حوكمة نسب العمولة والإعدادات (Dynamic Settings)</div>
+        <div class="scope-card-desc">تعديل فوري لنسبة عمولة المبيعات (BPS) والحد الأدنى للسحب مع تثبيت النسبة مستقبلياً فقط (Forward-only snapshotting) عند إنشاء الطلب وتدقيق متزامن في المعاملة.</div>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-title">3. الرقابة على المسوقين وسجل الأستاذ (Affiliate Oversight)</div>
+        <div class="scope-card-desc">استعراض مركزي لمؤشرات أداء المسوقين (KPIs)، وتصفح سجل الأستاذ الفرعي غير القابل للتعديل مع تفصيل الأرصدة المتاحة والمعلقة وسجلات التسوية التاريخية.</div>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-title">4. تسوية السحوبات المالية (MTCN Payout Settlement)</div>
+        <div class="scope-card-desc">معالجة طلبات السحب اليدوي (Western Union/Cash) مع إلزامية تسجيل رقم التحويل (MTCN) ورفع الإيصال وتصفير الرصيد ذرياً، مع إمكانية الرفض المسبب وإرجاع الرصيد.</div>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-title">5. التحكيم في جوائز الشريك 40% (Co-Prize Dual Approval)</div>
+        <div class="scope-card-desc">اشتراط اكتمال اعتمادي الهوية والسحب المزدوج (Dual Approval) قبل الإفراج عن حصة المسوق (40%)، مع توليد قيود تسوية عكسية تعويضية عند صدور قرار إداري بالإلغاء.</div>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-title">6. دورة السحوبات والبذرة العشوائية (Provably Fair RNG)</div>
+        <div class="scope-card-desc">توليد ونشر تجزئة البذرة العشوائية (SHA-256) قبل استقبال التذاكر (Pre-Commitment)، وقفل نافذة التذاكر لحظياً، مع كشف البذرة الأصلية للتحقق وحجب المسودات غير المنشورة.</div>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-title">7. سجل التدقيق غير القابل للتعديل (Immutable Audit Logs)</div>
+        <div class="scope-card-desc">جدول <code>admin_activity_logs</code> بدون <code>updated_at</code>، محمي ضد التعديل والحذف، يسجل الفاعل، الصلاحية، التبرير، IP المملح، وحالتي الكيان، مع وسيط لتسجيل محاولات 401 و 403.</div>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-title">8. منح الجوائز الترويجية (Promotional Awards)</div>
+        <div class="scope-card-desc">سجل مستقل لمنح مكافآت وجوائز ترويجية وتكريمات إدارية استثنائية مع توثيق القيمة التقديرية والمشرف المانح، دون المساس بسجلات الفائزين في السحوبات الرسمية.</div>
+      </div>
+    </div>
+
+    <div class="scope-card" style="margin-bottom: 5px;">
+      <div class="scope-card-title">9. الهيكل البرمجي المعزول للواجهة الإدارية (Admin Application Shell &amp; RTL Navigation)</div>
+      <div class="scope-card-desc">واجهة متكاملة تحت المسار <code>/[locale]/admin</code> تستخدم نفس هوية المنصة (Tajawal والرموز) مع هيكل ملاحة وشريط علوي وقائمة جانبية مستقلة تماماً، متوافقة مع الشاشات اللمسية وتستمد صلاحياتها حصرياً من الخادم (<code>GET /api/v1/admin/me</code>).</div>
+    </div>
+
+    <div class="section-title">
+      <span>3. جدول نتائج التحقق والاختبار الشامل</span>
+      <span class="section-title-en">Verification Results &amp; Quality Gates</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 28%;">مجال الفحص والاختبار</th>
+          <th style="width: 48%;">الحجم والنتيجة التفصيلية المغطاة</th>
+          <th style="width: 24%;">الحالة والاعتماد</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>اختبارات الميزة 008 الإدارية</strong></td>
+          <td>21 ملف اختبار تغطي 35 اختباراً معقداً للصلاحيات، التدقيق، السحوبات، والتسويات</td>
+          <td><span class="tag tag-pass">ناجح تام (35/35) PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>إجمالي اختبارات الخادم (Full Backend)</strong></td>
+          <td>250 اختباراً ناجحاً عبر 60 فئة (6,471 توكيداً) خلال 56.4 ثانية</td>
+          <td><span class="tag tag-pass">ناجح تام (250/250) PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>اختبارات الواجهة الأمامية (Frontend)</strong></td>
+          <td>128 اختباراً ناجحاً عبر 38 حزمة تغطي عزل الواجهة، الصلاحيات، وتوافق RTL</td>
+          <td><span class="tag tag-pass">ناجح تام (128/128) PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>البناء الإنتاجي (Production Build)</strong></td>
+          <td>توليد تام لـ 71 مساراً ستاتيكياً وديناميكياً عبر Turbopack + 0 أخطاء TypeScript</td>
+          <td><span class="tag tag-done">جاهز للإنتاج (71/71)</span></td>
+        </tr>
+        <tr>
+          <td><strong>قاعدة البيانات والترحيلات</strong></td>
+          <td>5 ترحيلات جديدة مع قيود CHECK الصارمة وفهارس الأداء على <code>knzin_test</code></td>
+          <td><span class="tag tag-sec">مطابق ومؤكد DB-GUARD</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer-bar">
+    <div>منصة كَنزين (KNZiN) · تقرير اعتماد الميزة 008 (لوحة التحكم الإدارية والحوكمة التشغيلية)</div>
+    <div>صفحة 1 من 2</div>
+    <span>KNZiN-REP-008-P1 · Confidential &amp; Proprietary</span>
+  </div>
+</div>
+
+<!-- ================= PAGE 2 ================= -->
+<div class="page">
+  <div class="page-content">
+    <div class="header-bar">
+      <div>
+        <div class="brand-title">منصة كَنزين · KNZiN Platform</div>
+        <div class="brand-sub">تقرير الحالة الهندسية والاعتماد التنفيذي · الميزة 008 (الضوابط والاعتماد النهائي)</div>
+      </div>
+      <div class="header-meta">
+        <div><strong>Status:</strong> Ready &amp; Converged</div>
+        <div><strong>Gate:</strong> /speckit-converge PASS</div>
+        <div><strong>Next:</strong> Feature 007 Payments</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <span>4. مصفوفة الصلاحيات والحوكمة الأمنية والمالية المشددة</span>
+      <span class="section-title-en">Security Matrix &amp; Financial Governance Controls</span>
+    </div>
+
+    <div class="highlight-box">
+      <strong>مبدأ العزل المطلق للامتيازات (Zero Super-Admin Bypass):</strong> لا يحتوي النظام على أي صلاحية تجاوز عامة (<code>Gate::before</code>). كل عملية تتطلب صلاحية صريحة مسجلة وموثقة في جدول <code>admin_capabilities</code>، حتى حساب مدير الصلاحيات لا يستطيع اعتماد دفعات أو تسوية سحوبات دون امتلاك الصلاحية التخصصية المحددة.
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%;">رمز الصلاحية الإدارية</th>
+          <th style="width: 22%;">الجهة والمستوى</th>
+          <th style="width: 53%;">النطاق الوظيفي والضمانات الأمنية المفروضة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>manage_admin_capabilities</code></td>
+          <td>إدارة المشرفين</td>
+          <td>إدارة وتفويض الصلاحيات مع منع المنح الذاتي وقفل المسؤول الأخير لمنع العزل التام للمنصة.</td>
+        </tr>
+        <tr>
+          <td><code>manage_platform_settings</code></td>
+          <td>الإعدادات والسياسات</td>
+          <td>تعديل نسبة العمولة (BPS) وحد السحب، وتثبيت النسبة مستقبلياً فقط لحماية العمليات السابقة.</td>
+        </tr>
+        <tr>
+          <td><code>settle_affiliate_payout</code></td>
+          <td>العمليات المالية</td>
+          <td>صرف السحوبات وإلزامية تسجيل MTCN ورفع إيصال الحوالة البنكية وتصفير المستحق ذرياً.</td>
+        </tr>
+        <tr>
+          <td><code>adjudicate_affiliate_coprize</code></td>
+          <td>التحكيم الجنائي</td>
+          <td>فحص جوائز الشريك 40% وإصدار التسويات العكسية التعويضية (<code>reversal_debit</code>) عند الإلغاء.</td>
+        </tr>
+        <tr>
+          <td><code>issue_kyc_approval</code></td>
+          <td>الامتثال وتوثيق الهوية</td>
+          <td>اعتماد هويات الفائزين بالجائزة الكبرى وفق المتطلبات القانونية الصارمة قبل صرف الجائزة.</td>
+        </tr>
+        <tr>
+          <td><code>issue_draw_audit_approval</code></td>
+          <td>التدقيق الجنائي للسحوبات</td>
+          <td>مطابقة واعتماد السحوبات الترويجية وتدقيق نزاهة البذور العشوائية قبل إعلان الفائز النهائي.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-title">
+      <span>5. دورة حياة السحوبات العشوائية وسجل التدقيق الجنائي</span>
+      <span class="section-title-en">CSPRNG Commit-Reveal &amp; Immutable Audit Trail</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="scope-card">
+        <div class="scope-card-title">النزاهة الرياضية المثبتة (Provably Fair RNG)</div>
+        <div class="scope-card-desc">
+          تعتمد المنصة بروتوكول التخمين والكشف (Commit-Reveal): توليد ونشر تجزئة SHA-256 قبل فتح تجميع التذاكر، وقفل النافذة تلقائياً عند انتهاء الوقت، ثم نشر البذرة العشوائية في لوحة الفائزين (Hall of Fame) لتمكين المتدربين من التحقق الرياضي المستقل.
+        </div>
+      </div>
+      <div class="scope-card">
+        <div class="scope-card-title">سجل التدقيق غير القابل للتعديل (Immutable Audit)</div>
+        <div class="scope-card-desc">
+          جدول <code>admin_activity_logs</code> محمي ضد التعديل والحذف برمجياً. يسجل هوية المشرف، معرف الطلب، الصلاحية المستخدمة، التبرير الإداري الإلزامي، وبصمة IP المملحة (Salted SHA-256) مع لقطة لحالتي الكيان قبل وبعد كل عملية.
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <span>6. حدود الميزة والواجهات البينية (Clean Boundaries)</span>
+      <span class="section-title-en">Architecture Isolation &amp; Inter-Feature Contracts</span>
+    </div>
+
+    <p style="font-size: 7.2pt; margin-bottom: 4px;">
+      1. <strong>الميزة 005 (مركز المتدربين) و 006 (التسويق بالعمولة):</strong> الميزة 008 هي الواجهة الحاكمة لهذه الأنظمة دون خرق عقودها البرمجية أو المساس باستقلالية دفاتر الأستاذ المحاسبية.<br>
+      2. <strong>الميزة 007 (بوابات الدفع الإلكتروني):</strong> تم تصميم جداول وقوائم الميزة 008 لتستقبل آلياً عمليات الدفع المؤكدة من زين كاش وآسيا حوالة فور اكتمال الميزة 007 دون الحاجة لأي تعديل معماري.
+    </p>
+
+    <div class="section-title">
+      <span>7. الحالة النهائية والاعتماد وخارطة الطريق (Sign-off &amp; Roadmap)</span>
+      <span class="section-title-en">Final Acceptance &amp; Trajectory</span>
+    </div>
+
+    <table style="margin-bottom: 4px;">
+      <thead>
+        <tr>
+          <th style="width: 25%;">المؤشر الهندسي</th>
+          <th style="width: 35%;">القيمة المحققة والمؤكدة</th>
+          <th style="width: 40%;">الأثر التشغيلي</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>اكتمال المهام (Tasks)</strong></td>
+          <td>147 من أصل 147 منجزة ومحققة (100%)</td>
+          <td>إغلاق كامل لمتطلبات <code>specs/008-admin-panel/tasks.md</code></td>
+        </tr>
+        <tr>
+          <td><strong>بوابة التقارب (Convergence)</strong></td>
+          <td><code>CONVERGED ✅</code> وفق بروتوكول SpecKit</td>
+          <td>مطابقة تامة بين المواصفات، المخطط، والكود المطبق</td>
+        </tr>
+        <tr>
+          <td><strong>سلامة الهيكل والأنماط</strong></td>
+          <td>0 أخطاء TypeScript وبناء إنتاجي تام لـ 71 مساراً</td>
+          <td>جاهزية النشر المباشر على خوادم الإنتاج والـ CDN</td>
+        </tr>
+        <tr>
+          <td><strong>المحطة التالية في الخارطة</strong></td>
+          <td><strong>الميزة 007: بوابات الدفع (ZainCash + AsiaHawala)</strong></td>
+          <td>بدء مرحلة التحليل والتنفيذ لبوابات الدفع والتسوية اللحظية</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box" style="margin-bottom: 0; background: #f0fdf4; border-color: #bbf7d0; color: #166534;">
+      <strong>قرار الاعتماد الهندسي (Engineering Sign-off):</strong> يُقر الفريق الهندسي بأن الميزة 008 مكتملة بنسبة 100% ومتحققة عبر 250 اختبار خادم و 128 اختبار واجهة وبناء إنتاجي تام. نوصي باعتماد الميزة والانتقال الفوري إلى الميزة 007.
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div>منصة كَنزين (KNZiN) · تقرير اعتماد الميزة 008 (لوحة التحكم الإدارية والحوكمة التشغيلية)</div>
+    <div>صفحة 2 من 2</div>
+    <span>KNZiN-REP-008-P2 · Final Sign-off Document</span>
+  </div>
+</div>
+
+</body>
+</html>

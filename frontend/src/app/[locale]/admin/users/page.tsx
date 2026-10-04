@@ -103,6 +103,54 @@ export default function AdminUsersPage() {
     },
   ];
 
+  const renderUserMobileCard = (item: UserItem) => {
+    const caps = item.capabilities || [];
+
+    return (
+      <div className="space-y-3" data-testid={`user-card-${item.id}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <span className="font-bold text-content-primary text-sm block truncate">{item.email}</span>
+            <span className="font-mono text-xs text-brand-gold">{item.learner_code}</span>
+          </div>
+          <StatusBadge status={item.status} />
+        </div>
+
+        <div className="p-2.5 rounded-xl bg-surface-elevated/60 border border-border-subtle text-xs space-y-1.5">
+          <span className="text-[11px] text-content-muted block">{isAr ? 'الصلاحيات الإدارية:' : 'Capabilities:'}</span>
+          {caps.length === 0 ? (
+            <span className="text-xs text-content-muted">{isAr ? 'مستخدم عادي (لا توجد)' : 'None (Regular User)'}</span>
+          ) : (
+            <div className="flex flex-wrap gap-1">
+              {caps.map((c: string) => (
+                <span
+                  key={c}
+                  className="px-2 py-0.5 rounded-md bg-brand-gold/10 text-brand-gold border border-brand-gold/20 text-[10px] font-mono"
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          )}
+          <span className="text-[10px] text-content-muted block pt-1 border-t border-border-subtle">
+            {isAr ? 'تاريخ التسجيل: ' : 'Registered: '}{formatDate(item.created_at, locale)}
+          </span>
+        </div>
+
+        <div className="pt-1">
+          <button
+            onClick={() => setSelectedUser(item)}
+            className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary transition-colors"
+            data-testid={`manage-user-caps-${item.id}`}
+          >
+            <Shield className="w-3.5 h-3.5 text-brand-gold" />
+            <span>{isAr ? 'إدارة الصلاحيات' : 'Manage Access'}</span>
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <AdminGuard requiredCapability="manage_admin_capabilities">
       <div className="space-y-6" data-testid="admin-users-page">
@@ -163,6 +211,7 @@ export default function AdminUsersPage() {
           lastPage={meta?.last_page}
           onPageChange={(p) => setPage(p)}
           emptyMessage={isAr ? 'لم يتم العثور على مستخدمين.' : 'No users found.'}
+          mobileRenderer={renderUserMobileCard}
         />
 
         {/* Capability Manager Dialog */}

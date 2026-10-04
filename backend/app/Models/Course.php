@@ -27,6 +27,9 @@ class Course extends Model
         'bundle_promotional_tickets',
         'display_price_label',
         'is_active',
+        'outcomes',
+        'curriculum_summary_ar',
+        'curriculum_summary_en',
     ];
 
     /**
@@ -40,6 +43,7 @@ class Course extends Model
             'bundle_price_cents' => 'integer',
             'bundle_promotional_tickets' => 'integer',
             'is_active' => 'boolean',
+            'outcomes' => 'array',
         ];
     }
 

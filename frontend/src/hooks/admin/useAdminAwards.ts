@@ -17,7 +17,7 @@ export function useAdminAwards() {
 
   const grantMutation = useMutation<any, ApiError, GrantAwardPayload>({
     mutationFn: (payload) =>
-      apiClient<any>('/admin/awards/promotional-tickets', {
+      apiClient<any>('/admin/awards', {
         method: 'POST',
         body: JSON.stringify(payload),
       }),

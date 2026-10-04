@@ -191,8 +191,8 @@ export function LessonSidebar({
           </div>
           <p className="text-[11px] text-slate-300 mt-1 leading-snug">
             {locale === 'ar'
-              ? 'افتح جميع الأجزاء الـ 6 واحصل على 15 تذكرة سحب مجانية'
-              : 'Unlock all 6 parts and receive 15 free promotional raffle tickets'}
+              ? 'افتح جميع أجزاء الدورة واحصل على 15 تذكرة سحب مجانية'
+              : 'Unlock all course parts and receive 15 free promotional raffle tickets'}
           </p>
         </div>
 

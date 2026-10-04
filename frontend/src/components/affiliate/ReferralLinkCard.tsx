@@ -40,7 +40,7 @@ export function ReferralLinkCard({ referralInfo }: ReferralLinkCardProps) {
   };
 
   return (
-    <div className="bg-surface border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-xs">
+    <div id="referral" className="scroll-mt-24 bg-surface border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-xs">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
           <LinkIcon className="w-6 h-6" />

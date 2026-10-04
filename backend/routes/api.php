@@ -9,6 +9,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DrawController;
 use App\Http\Controllers\LessonPlaybackController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\TicketController;
@@ -41,12 +43,22 @@ Route::prefix('v1')->group(function () {
     // Public Activity Feed Endpoints (US3 - Feature 004)
     Route::get('/activity/recent', [ActivityController::class, 'recent']);
 
+    // Public Landing Page CMS Content
+    Route::get('/content/landing', [\App\Http\Controllers\PublicLandingCmsController::class, 'index']);
+
     // Referral Resolution Endpoints (Feature 006 - US1)
     Route::get('/referrals/resolve/{codeOrSlug}', [ReferralController::class, 'resolve'])->middleware('throttle:60,1');
 
     // Checkout Endpoints (US1) - Throttled 60 req/min (DEF-02G)
     Route::post('/checkout/orders', [CheckoutController::class, 'store'])->middleware('throttle:60,1');
     Route::get('/checkout/orders/{orderNumber}', [CheckoutController::class, 'show']);
+    Route::post('/checkout/orders/{orderNumber}/pay', [PaymentController::class, 'pay'])->middleware('throttle:60,1');
+    Route::get('/checkout/orders/{orderNumber}/payment-status', [PaymentController::class, 'paymentStatus']);
+
+    // Payment Webhook Ingestion Endpoints (Feature 007)
+    Route::post('/payments/webhooks/simulator', [PaymentWebhookController::class, 'simulator']);
+    Route::match(['get', 'post'], '/payments/webhooks/zaincash', [PaymentWebhookController::class, 'zaincash']);
+    Route::post('/payments/webhooks/asiahawala', [PaymentWebhookController::class, 'asiahawala']);
 
     // Learner Hub & Ticket Ledger (Feature 005)
     Route::get('/user/dashboard', [DashboardController::class, 'index'])->middleware('auth:sanctum');
@@ -82,6 +94,10 @@ Route::prefix('v1')->group(function () {
             return $disk->response($filePath);
         }
 
+        if (!app()->environment('local', 'testing')) {
+            abort(404, 'Protected video stream not found.');
+        }
+
         return response('SIMULATED_STREAM_CHUNKS_FOR_' . strtoupper($courseSlug) . '_PART_' . $partNumber, 200, [
             'Content-Type' => 'video/mp4',
             'Cache-Control' => 'no-cache, private',
@@ -98,6 +114,10 @@ Route::prefix('v1')->group(function () {
 
         if ($disk->exists($filePath)) {
             return $disk->download($filePath);
+        }
+
+        if (!app()->environment('local', 'testing')) {
+            abort(404, 'Protected resource file not found.');
         }
 
         return response('SIMULATED_PDF_DOWNLOAD_PAYLOAD_FOR_' . strtoupper($resourceId), 200, [
@@ -121,6 +141,11 @@ Route::prefix('v1')->group(function () {
         Route::middleware('admin.capability:manage_platform_settings')->group(function () {
             Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'show']);
             Route::patch('/settings', [\App\Http\Controllers\Admin\AdminSettingsController::class, 'update']);
+
+            // Landing Page CMS Management
+            Route::get('/cms/landing', [\App\Http\Controllers\Admin\AdminLandingCmsController::class, 'index']);
+            Route::get('/cms/landing/{section}', [\App\Http\Controllers\Admin\AdminLandingCmsController::class, 'show']);
+            Route::put('/cms/landing/{section}', [\App\Http\Controllers\Admin\AdminLandingCmsController::class, 'update']);
         });
 
         // Affiliate oversight (manage_platform_settings OR settle_affiliate_payout)
@@ -169,6 +194,19 @@ Route::prefix('v1')->group(function () {
             Route::patch('/draws/{drawId}/winner', [\App\Http\Controllers\Admin\AdminDrawWinnerController::class, 'update']);
 
             Route::post('/awards', [\App\Http\Controllers\Admin\AdminPromotionalAwardController::class, 'store']);
+
+            // Courses & Curriculum management
+            Route::get('/courses', [\App\Http\Controllers\Admin\AdminCourseController::class, 'index']);
+            Route::post('/courses', [\App\Http\Controllers\Admin\AdminCourseController::class, 'store']);
+            Route::get('/courses/{id}', [\App\Http\Controllers\Admin\AdminCourseController::class, 'show']);
+            Route::patch('/courses/{id}', [\App\Http\Controllers\Admin\AdminCourseController::class, 'update']);
+            Route::delete('/courses/{id}', [\App\Http\Controllers\Admin\AdminCourseController::class, 'destroy']);
+            Route::post('/courses/{id}/toggle-status', [\App\Http\Controllers\Admin\AdminCourseController::class, 'toggleStatus']);
+
+            Route::post('/courses/{id}/parts', [\App\Http\Controllers\Admin\AdminCourseController::class, 'storePart']);
+            Route::patch('/courses/{id}/parts/{partId}', [\App\Http\Controllers\Admin\AdminCourseController::class, 'updatePart']);
+            Route::delete('/courses/{id}/parts/{partId}', [\App\Http\Controllers\Admin\AdminCourseController::class, 'destroyPart']);
+            Route::post('/courses/{id}/parts/reorder', [\App\Http\Controllers\Admin\AdminCourseController::class, 'reorderParts']);
         });
 
         // Users & Capabilities, and Centralized Audit Logs (manage_admin_capabilities)

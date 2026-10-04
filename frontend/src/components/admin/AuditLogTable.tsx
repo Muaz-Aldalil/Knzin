@@ -34,7 +34,80 @@ export function AuditLogTable({ logs, isLoading }: AuditLogTableProps) {
 
   return (
     <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden shadow-xs">
-      <div className="overflow-x-auto">
+      {/* Mobile Audit Cards View (< md) */}
+      <div className="md:hidden divide-y divide-border-subtle">
+        {logs.map((log) => {
+          const isExpanded = expandedId === log.id;
+          const isSuccess = log.outcome === 'success';
+
+          return (
+            <div key={log.id} className="p-4 space-y-2.5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 font-mono text-xs">
+                  <span className="text-content-muted">#{log.id}</span>
+                  <span className="text-content-secondary">•</span>
+                  <span className="font-bold text-brand-gold">{log.action}</span>
+                </div>
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    isSuccess
+                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                      : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                  }`}
+                >
+                  {isSuccess ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                  <span>{log.outcome}</span>
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-content-secondary">
+                <span className="truncate max-w-[200px] font-medium text-content-primary">
+                  {log.actor?.email || 'System'}
+                </span>
+                <span className="text-[11px] text-content-muted whitespace-nowrap">
+                  {formatDate(log.created_at, locale)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-surface-elevated/60 border border-border-subtle text-xs font-mono">
+                <span className="text-content-secondary truncate">
+                  {log.target_type}:{log.target_id}
+                </span>
+                <span className="text-brand-gold/90 text-[10px] bg-brand-gold/10 px-2 py-0.5 rounded border border-brand-gold/20 shrink-0">
+                  {log.capability_used}
+                </span>
+              </div>
+
+              {log.reason && (
+                <p className="text-xs text-content-secondary italic">
+                  {isAr ? 'السبب: ' : 'Reason: '}{log.reason}
+                </p>
+              )}
+
+              {log.metadata && (
+                <div>
+                  <button
+                    onClick={() => setExpandedId(isExpanded ? null : log.id)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-elevated hover:bg-surface border border-border-subtle text-xs text-content-secondary transition-colors"
+                  >
+                    <Code className="w-3 h-3 text-brand-gold" />
+                    <span>{isExpanded ? (isAr ? 'إخفاء البيانات' : 'Hide Payload') : (isAr ? 'عرض البيانات المشفرة' : 'View Payload')}</span>
+                    {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                  </button>
+                  {isExpanded && (
+                    <div className="mt-2 p-3 bg-brand-navy/90 rounded-xl border border-border-subtle overflow-x-auto text-[11px] font-mono text-emerald-400">
+                      <pre>{JSON.stringify(log.metadata, null, 2)}</pre>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop Table View (>= md) */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-start text-xs">
           <thead className="bg-surface-elevated/70 border-b border-border-subtle text-content-secondary font-semibold">
             <tr>

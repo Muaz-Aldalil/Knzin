@@ -6,6 +6,7 @@ import { Link } from '@/i18n/routing';
 import { Users, Loader2, AlertCircle, ShoppingBag, ShieldCheck, Sparkles, CheckCircle2, Clock } from 'lucide-react';
 import { useAffiliateDashboard } from '@/hooks/useAffiliateDashboard';
 import { useAffiliateLedger, LedgerEntryType } from '@/hooks/useAffiliateLedger';
+import { usePublicLandingCms } from '@/hooks/admin/useAdminCms';
 import { AffiliateKpiCards } from './AffiliateKpiCards';
 import { ReferralLinkCard } from './ReferralLinkCard';
 import { AffiliateLedgerTable } from './AffiliateLedgerTable';
@@ -19,6 +20,9 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
   const t = useTranslations('affiliate');
   const locale = useLocale();
   const isRtl = locale === 'ar';
+
+  const { data: cmsData } = usePublicLandingCms();
+  const affCms = cmsData?.sections?.affiliate_referral;
 
   const {
     referralInfo,
@@ -173,10 +177,10 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
             <span>{isRtl ? 'برنامج شركاء كنزيْن الرسمي' : 'Official KNZiN Partner Program'}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-content-primary tracking-tight">
-            {t('title')}
+            {(isRtl ? affCms?.hero_title_ar : affCms?.hero_title_en) || t('title')}
           </h1>
           <p className="text-sm text-content-secondary mt-1 max-w-2xl">
-            {t('subtitle', { rate: `${activeRatePercent}%` })}
+            {(isRtl ? affCms?.hero_subtitle_ar : affCms?.hero_subtitle_en) || t('subtitle', { rate: `${activeRatePercent}%` })}
           </p>
         </div>
 

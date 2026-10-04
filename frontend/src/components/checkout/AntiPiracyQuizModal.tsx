@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, ShieldAlert, Award, ArrowLeft, ArrowRight, X } from 'lucide-react';
 
@@ -24,11 +25,16 @@ export default function AntiPiracyQuizModal({
   initialAnswers,
 }: AntiPiracyQuizModalProps) {
   const t = useTranslations('quiz');
+  const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<number>(1);
   const [experienceLevel, setExperienceLevel] = useState<string>(initialAnswers?.experience_level || 'beginner');
   const [learningGoal, setLearningGoal] = useState<string>(initialAnswers?.learning_goal || 'launch_workshop');
   const [weeklyHours, setWeeklyHours] = useState<string>(initialAnswers?.weekly_hours || '6_to_10');
   const [isFinished, setIsFinished] = useState<boolean>(!!initialAnswers);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Keyboard accessibility: Escape key closes modal (DEF-10B)
   useEffect(() => {
@@ -44,7 +50,7 @@ export default function AntiPiracyQuizModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleNext = () => {
     if (step < 3) {
@@ -72,15 +78,18 @@ export default function AntiPiracyQuizModal({
     }
   };
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="quiz-modal-title"
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-h-[90dvh] flex flex-col overflow-hidden">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-h-[90dvh] flex flex-col overflow-hidden"
+      >
         {/* Close Button (Logical End Corner) */}
         <button
           onClick={onClose}
@@ -231,6 +240,7 @@ export default function AntiPiracyQuizModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
