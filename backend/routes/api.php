@@ -8,7 +8,10 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DrawController;
+use App\Http\Controllers\Admin\AdminBroadcastController;
 use App\Http\Controllers\LessonPlaybackController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\ProgressController;
@@ -43,8 +46,9 @@ Route::prefix('v1')->group(function () {
     // Public Activity Feed Endpoints (US3 - Feature 004)
     Route::get('/activity/recent', [ActivityController::class, 'recent']);
 
-    // Public Landing Page CMS Content
+    // Public Landing & Site-Wide CMS Content
     Route::get('/content/landing', [\App\Http\Controllers\PublicLandingCmsController::class, 'index']);
+    Route::get('/content/site-wide', [\App\Http\Controllers\PublicLandingCmsController::class, 'siteWide']);
 
     // Referral Resolution Endpoints (Feature 006 - US1)
     Route::get('/referrals/resolve/{codeOrSlug}', [ReferralController::class, 'resolve'])->middleware('throttle:60,1');
@@ -80,6 +84,20 @@ Route::prefix('v1')->group(function () {
     Route::post('/progress', [ProgressController::class, 'recordProgress'])->middleware('auth:sanctum');
     Route::get('/user/active-learning', [ProgressController::class, 'getActiveLearning'])->middleware('auth:sanctum');
     Route::get('/courses/{slug}/progress', [ProgressController::class, 'getCourseProgress'])->middleware('auth:sanctum');
+
+    // Feature 009: In-App Notification Center & Marketing Preferences (US2 & US6)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::get('/notifications/preferences', [NotificationPreferenceController::class, 'show']);
+        Route::put('/notifications/preferences', [NotificationPreferenceController::class, 'update']);
+    });
+
+    // Feature 009: Cryptographically signed one-click marketing email unsubscribe (US6)
+    Route::get('/notifications/unsubscribe', [NotificationPreferenceController::class, 'unsubscribe'])
+        ->name('api.v1.notifications.unsubscribe');
 
     // Media Protection Streaming & Downloads (US2 - Feature 005)
     Route::get('/media/stream/{courseSlug}/{partNumber}', function ($courseSlug, $partNumber, Request $request) {
@@ -136,6 +154,7 @@ Route::prefix('v1')->group(function () {
     ])->group(function () {
         // Session profile & capabilities (UI hint only)
         Route::get('/me', [\App\Http\Controllers\Admin\AdminSessionController::class, 'me']);
+        Route::post('/session/extend', [\App\Http\Controllers\Admin\AdminSessionController::class, 'extend']);
 
         // Platform settings (manage_platform_settings)
         Route::middleware('admin.capability:manage_platform_settings')->group(function () {
@@ -146,6 +165,9 @@ Route::prefix('v1')->group(function () {
             Route::get('/cms/landing', [\App\Http\Controllers\Admin\AdminLandingCmsController::class, 'index']);
             Route::get('/cms/landing/{section}', [\App\Http\Controllers\Admin\AdminLandingCmsController::class, 'show']);
             Route::put('/cms/landing/{section}', [\App\Http\Controllers\Admin\AdminLandingCmsController::class, 'update']);
+
+            // Administrative Broadcast Dispatch (US6)
+            Route::post('/notifications/broadcast', [AdminBroadcastController::class, 'store']);
         });
 
         // Affiliate oversight (manage_platform_settings OR settle_affiliate_payout)

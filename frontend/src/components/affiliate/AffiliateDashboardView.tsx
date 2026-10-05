@@ -6,7 +6,7 @@ import { Link } from '@/i18n/routing';
 import { Users, Loader2, AlertCircle, ShoppingBag, ShieldCheck, Sparkles, CheckCircle2, Clock } from 'lucide-react';
 import { useAffiliateDashboard } from '@/hooks/useAffiliateDashboard';
 import { useAffiliateLedger, LedgerEntryType } from '@/hooks/useAffiliateLedger';
-import { usePublicLandingCms } from '@/hooks/admin/useAdminCms';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 import { AffiliateKpiCards } from './AffiliateKpiCards';
 import { ReferralLinkCard } from './ReferralLinkCard';
 import { AffiliateLedgerTable } from './AffiliateLedgerTable';
@@ -20,9 +20,10 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
   const t = useTranslations('affiliate');
   const locale = useLocale();
   const isRtl = locale === 'ar';
+  const isAr = locale === 'ar';
 
-  const { data: cmsData } = usePublicLandingCms();
-  const affCms = cmsData?.sections?.affiliate_referral;
+  const { data: cmsData } = useSiteWideCms();
+  const affPortal = cmsData?.sections?.affiliate_portal;
 
   const {
     referralInfo,
@@ -57,18 +58,26 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
   if (isUnauthenticated) {
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
+    const onboardingTitle =
+      (isAr ? affPortal?.onboarding_title_ar : affPortal?.onboarding_title_en) ||
+      (isRtl ? 'تسجيل الدخول إلى بوابة الشركاء والمسوّقين' : 'Sign In to Your Affiliate Portal');
+
+    const onboardingDesc =
+      (isAr ? affPortal?.onboarding_desc_ar : affPortal?.onboarding_desc_en) ||
+      (isRtl
+        ? `سجّل الدخول للحصول على رابط الإحالة الخاص بك، ومتابعة عمولات المبيعات (${activeRatePercent}%)، ومكافأة الفوز بالجائزة الكبرى (40%).`
+        : `Sign in to access your unique referral link, track ${activeRatePercent}% sales commissions, and claim 40% co-prize rewards.`);
+
     return (
       <div className="max-w-2xl mx-auto my-16 p-8 rounded-3xl bg-surface border border-border-subtle text-center shadow-xs">
         <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
           <Users className="w-7 h-7" />
         </div>
         <h2 className="text-xl font-bold text-content-primary">
-          {isRtl ? 'تسجيل الدخول إلى بوابة الشركاء والمسوّقين' : 'Sign In to Your Affiliate Portal'}
+          {onboardingTitle}
         </h2>
         <p className="mt-2 text-sm text-content-secondary max-w-md mx-auto">
-          {isRtl
-            ? `سجّل الدخول للحصول على رابط الإحالة الخاص بك، ومتابعة عمولات المبيعات (${activeRatePercent}%)، ومكافأة الفوز بالجائزة الكبرى (40%).`
-            : `Sign in to access your unique referral link, track ${activeRatePercent}% sales commissions, and claim 40% co-prize rewards.`}
+          {onboardingDesc}
         </p>
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
@@ -177,24 +186,43 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
             <span>{isRtl ? 'برنامج شركاء كنزيْن الرسمي' : 'Official KNZiN Partner Program'}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-content-primary tracking-tight">
-            {(isRtl ? affCms?.hero_title_ar : affCms?.hero_title_en) || t('title')}
+            {(isAr ? affPortal?.banner_title_ar : affPortal?.banner_title_en) || t('title')}
           </h1>
           <p className="text-sm text-content-secondary mt-1 max-w-2xl">
-            {(isRtl ? affCms?.hero_subtitle_ar : affCms?.hero_subtitle_en) || t('subtitle', { rate: `${activeRatePercent}%` })}
+            {(isAr ? affPortal?.banner_subtitle_ar : affPortal?.banner_subtitle_en) || t('subtitle', { rate: `${activeRatePercent}%` })}
           </p>
         </div>
 
-        {/* Dynamic Admin Threshold Notice Banner */}
+        {/* Dynamic Admin Policy Notice Banner */}
         <div className="bg-surface-secondary border border-border-subtle rounded-2xl p-4 flex items-start gap-3 max-w-md">
           <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
           <div className="text-xs text-content-secondary">
             <span className="font-semibold text-content-primary block mb-0.5">
-              {isRtl ? 'سياسة السحب النشطة' : 'Active Withdrawal Policy'}
+              {(isAr ? affPortal?.policy_notice_title_ar : affPortal?.policy_notice_title_en) || (isRtl ? 'سياسة السحب والامتثال' : 'Active Withdrawal Policy')}
             </span>
-            {t('minimumThresholdNotice', { amount: activeMinPayoutFormatted })}
+            <p>
+              {(isAr ? affPortal?.policy_notice_text_ar : affPortal?.policy_notice_text_en) || t('minimumThresholdNotice', { amount: activeMinPayoutFormatted })}
+            </p>
           </div>
         </div>
       </div>
+
+      {/* Co-Prize 40% Partner Rules Presentation (Feature 006) */}
+      {affPortal && affPortal.is_visible !== false && (
+        <div className="p-5 rounded-2xl bg-brand-gold/10 border border-brand-gold/25 flex items-start gap-4">
+          <div className="p-2.5 rounded-xl bg-brand-gold/20 text-brand-gold shrink-0">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-content-primary">
+              {isAr ? affPortal.coprize_rules_title_ar : affPortal.coprize_rules_title_en}
+            </h3>
+            <p className="text-xs text-content-secondary leading-relaxed">
+              {isAr ? affPortal.coprize_rules_desc_ar : affPortal.coprize_rules_desc_en}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* KPI Cards */}
       {kpis && (

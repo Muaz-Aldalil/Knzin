@@ -8,6 +8,7 @@ use App\Models\CoursePart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
+use App\Notifications\OrderConfirmationNotification;
 use App\Services\AffiliateAttributionService;
 use App\Services\AffiliateCommissionService;
 use Illuminate\Support\Facades\DB;
@@ -147,6 +148,20 @@ class OrderService
 
             // 3. Asynchronously dispatch ticket minting strictly after transaction commit
             GenerateTicketsJob::dispatch($lockedOrder->id)->afterCommit();
+
+            // 4. Dispatch order confirmation notification strictly after transaction commit
+            DB::afterCommit(function () use ($lockedOrder) {
+                if ($lockedOrder->user) {
+                    $notificationId = \Ramsey\Uuid\Uuid::uuid5(
+                        \Ramsey\Uuid\Uuid::NAMESPACE_OID,
+                        "order_confirmed:{$lockedOrder->id}:{$lockedOrder->user_id}"
+                    )->toString();
+
+                    if (!DB::table('notifications')->where('id', $notificationId)->exists()) {
+                        $lockedOrder->user->notify(new OrderConfirmationNotification($lockedOrder));
+                    }
+                }
+            });
 
             return $lockedOrder->fresh(['items', 'user', 'courseEntitlements']);
         });

@@ -14,13 +14,34 @@ class PublicLandingCmsController extends ApiController
     }
 
     /**
-     * Get published landing content for public visitor pages.
+     * Get published CMS content for public visitor pages.
+     * Default returns legacy landing sections (count 11).
+     * With ?scope=all, returns all 20 site-wide application sections.
      */
     public function index(Request $request): JsonResponse
     {
-        $sections = $this->landingCmsService->getAllSections();
+        $sections = $request->query('scope') === 'all'
+            ? $this->landingCmsService->getAllCmsSections()
+            : $this->landingCmsService->getAllSections();
 
         // Shape as key-value map for fast lookup on frontend: { [section]: content }
+        $contentMap = [];
+        foreach ($sections as $sectionKey => $data) {
+            $contentMap[$sectionKey] = $data['content'];
+        }
+
+        return $this->successResponse([
+            'sections' => $contentMap,
+        ]);
+    }
+
+    /**
+     * Dedicated site-wide public endpoint returning all application sections.
+     */
+    public function siteWide(Request $request): JsonResponse
+    {
+        $sections = $this->landingCmsService->getAllCmsSections();
+
         $contentMap = [];
         foreach ($sections as $sectionKey => $data) {
             $contentMap[$sectionKey] = $data['content'];

@@ -2,24 +2,42 @@
 
 import React, { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 import { WhatsAppFallbackDialog } from '@/components/layout/WhatsAppFallbackDialog';
 
 export function FloatingWhatsAppButton() {
   const locale = useLocale();
   const t = useTranslations('whatsapp');
   const [isFallbackOpen, setIsFallbackOpen] = useState(false);
+  const { data: cmsData } = useSiteWideCms();
+  const siteShell = cmsData?.sections?.site_shell;
+
+  if (siteShell && siteShell.whatsapp_enabled === false) {
+    return null;
+  }
+
+  const isAr = locale === 'ar';
+  const customUrl = siteShell?.whatsapp_url?.trim();
+  const buttonLabel =
+    (isAr ? siteShell?.whatsapp_button_label_ar : siteShell?.whatsapp_button_label_en) ||
+    t('buttonLabel');
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const configuredUrl = process.env.NEXT_PUBLIC_WHATSAPP_SUPPORT_URL;
+    const configuredUrl =
+      customUrl && customUrl.length > 0
+        ? customUrl
+        : process.env.NEXT_PUBLIC_WHATSAPP_SUPPORT_URL;
 
     if (!configuredUrl || configuredUrl.trim() === '') {
       setIsFallbackOpen(true);
       return;
     }
 
-    const greeting = t('prefilledGreeting');
+    const greeting =
+      (isAr ? siteShell?.whatsapp_greeting_ar : siteShell?.whatsapp_greeting_en) ||
+      t('prefilledGreeting');
     const separator = configuredUrl.includes('?') ? '&' : '?';
     const finalUrl = `${configuredUrl.trim()}${separator}text=${encodeURIComponent(greeting)}`;
 
@@ -31,7 +49,7 @@ export function FloatingWhatsAppButton() {
       <button
         type="button"
         onClick={handleClick}
-        aria-label={t('buttonLabel')}
+        aria-label={buttonLabel}
         className="fixed bottom-6 end-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white shadow-lg hover:shadow-2xl shadow-[#25D366]/30 hover:scale-105 active:scale-95 transition-all duration-200 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-[#25D366]/40 cursor-pointer group"
       >
         {/* WhatsApp Brand SVG */}

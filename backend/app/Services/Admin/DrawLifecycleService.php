@@ -6,7 +6,11 @@ use App\Exceptions\AdminStateConflictException;
 use App\Exceptions\ProtectedFieldException;
 use App\Models\Draw;
 use App\Models\DrawWinner;
+use App\Models\Prize;
+use App\Models\Ticket;
 use App\Models\User;
+use App\Notifications\NewPrizeNotification;
+use App\Notifications\WinnerKycNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -191,6 +195,19 @@ class DrawLifecycleService
                 );
             }
 
+            // Hook NewPrizeNotification to parent draw publication
+            $prizes = Prize::where('draw_id', $lockedDraw->id)->get();
+            if ($prizes->isNotEmpty()) {
+                DB::afterCommit(function () use ($lockedDraw, $prizes) {
+                    $users = User::where('status', 'active')->get();
+                    foreach ($prizes as $prize) {
+                        foreach ($users as $user) {
+                            $user->notify(new NewPrizeNotification($prize, $lockedDraw, $user));
+                        }
+                    }
+                });
+            }
+
             return $lockedDraw;
         });
     }
@@ -238,6 +255,18 @@ class DrawLifecycleService
                         'has_revealed_seed' => $revealedSeed !== null,
                     ]
                 );
+            }
+
+            // Hook Winner KYC notification dispatch strictly after transaction commits
+            $winner = DrawWinner::where('draw_id', $lockedDraw->id)->first();
+            if ($winner) {
+                $ticket = Ticket::where('serial_number', $winner->winning_ticket_serial)->first();
+                if ($ticket && $ticket->user) {
+                    $winnerUser = $ticket->user;
+                    DB::afterCommit(function () use ($winnerUser, $winner, $lockedDraw) {
+                        $winnerUser->notify(new WinnerKycNotification($winner, $lockedDraw));
+                    });
+                }
             }
 
             return $lockedDraw;

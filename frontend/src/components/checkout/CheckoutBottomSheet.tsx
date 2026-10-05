@@ -10,6 +10,7 @@ import AntiPiracyQuizModal, { QuizAnswers } from './AntiPiracyQuizModal';
 import PaymentGatewaySelector, { PaymentGatewayType } from './PaymentGatewaySelector';
 import { useCheckout } from '@/hooks/useCheckout';
 import { useAuth } from '@/hooks/useAuth';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 import { apiClient } from '@/lib/api-client';
 
 export interface CheckoutItemData {
@@ -39,7 +40,11 @@ export default function CheckoutBottomSheet({
   const tCommon = useTranslations('common');
   const locale = useLocale();
   const isRtl = locale === 'ar';
+  const isAr = locale === 'ar';
   const router = useRouter();
+
+  const { data: cmsData } = useSiteWideCms();
+  const cartCms = cmsData?.sections?.checkout_cart;
 
   const { user, isLoggedIn } = useAuth();
 
@@ -247,6 +252,26 @@ export default function CheckoutBottomSheet({
                 </div>
               </div>
             </div>
+
+            {/* CMS Free Ticket Reassurance & Trust Notice */}
+            {cartCms && cartCms.is_visible !== false && (
+              <div className="p-3.5 rounded-xl bg-brand-gold/10 border border-brand-gold/25 flex items-start gap-2.5">
+                <Ticket className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
+                <div className="text-xs space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-brand-gold/20 text-brand-gold">
+                      {isAr ? cartCms.trust_badge_ar : cartCms.trust_badge_en}
+                    </span>
+                    <span className="font-bold text-content-primary">
+                      {isAr ? cartCms.trust_headline_ar : cartCms.trust_headline_en}
+                    </span>
+                  </div>
+                  <p className="text-content-secondary leading-relaxed text-[11px] pt-0.5">
+                    {isAr ? cartCms.ticket_gift_notice_ar : cartCms.ticket_gift_notice_en}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Authentication Gate or Verified User Card */}
             {isLoggedIn && user ? (

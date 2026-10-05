@@ -14,6 +14,7 @@ interface SiteFrameProps {
 export function SiteFrame({ children }: SiteFrameProps) {
   const pathname = usePathname();
   const isAdmin = pathname?.includes('/admin');
+  const isAuth = pathname?.includes('/auth/login') || pathname?.includes('/auth/callback');
 
   if (isAdmin) {
     return <div className="min-h-screen">{children}</div>;
@@ -26,7 +27,7 @@ export function SiteFrame({ children }: SiteFrameProps) {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
-      <Footer />
+      {!isAuth && <Footer />}
       <FloatingWhatsAppButton />
     </>
   );

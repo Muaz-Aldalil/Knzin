@@ -3,7 +3,8 @@
 import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useActivityFeed } from '@/hooks/useActivityFeed';
-import { ActivityEventType } from '@/types/activity';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
+import { ActivityEventType, ActivityEvent } from '@/types/activity';
 
 function getBadgeStyles(type: ActivityEventType): string {
   switch (type) {
@@ -21,9 +22,26 @@ export function ActivityTicker() {
   const locale = useLocale();
   const t = useTranslations('ticker');
   const { events } = useActivityFeed();
+  const { data: cmsData } = useSiteWideCms();
+  const siteShell = cmsData?.sections?.site_shell;
 
-  // If somehow no events, display static fallback
-  const displayEvents = events.length > 0 ? events : [];
+  if (siteShell && siteShell.ticker_enabled === false) {
+    return null;
+  }
+
+  // Map CMS announcements if present
+  const cmsEvents: ActivityEvent[] = (siteShell?.ticker_announcements || []).map((item) => ({
+    id: `cms_${item.id}`,
+    type: 'bulletin' as ActivityEventType,
+    text_ar: item.text_ar,
+    text_en: item.text_en,
+    highlight_label_ar: (locale === 'ar' ? item.highlight_label_ar : item.highlight_label_en) || (locale === 'ar' ? 'إعلان المنصة' : 'Announcement'),
+    highlight_label_en: item.highlight_label_en || 'Announcement',
+    timestamp: new Date().toISOString(),
+  }));
+
+  const combinedEvents = [...cmsEvents, ...events];
+  const displayEvents = combinedEvents.length > 0 ? combinedEvents : [];
 
   return (
     <div

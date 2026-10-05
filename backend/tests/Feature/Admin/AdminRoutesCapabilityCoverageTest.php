@@ -12,7 +12,7 @@ class AdminRoutesCapabilityCoverageTest extends TestCase
         $adminRoutes = collect(Route::getRoutes()->getRoutes())
             ->filter(fn ($r) => str_starts_with($r->uri(), 'api/v1/admin'));
 
-        $this->assertCount(43, $adminRoutes, 'Expected exactly 43 admin routes.');
+        $this->assertCount(45, $adminRoutes, 'Expected exactly 45 admin routes.');
 
         foreach ($adminRoutes as $route) {
             $uri = $route->uri();
@@ -28,12 +28,12 @@ class AdminRoutesCapabilityCoverageTest extends TestCase
                 "Admin route [{$uri}] is missing 'admin.principal' middleware."
             );
 
-            // Invariant 2 & 3: GET /me is the sole exception to admin.capability
-            if ($uri === 'api/v1/admin/me') {
+            // Invariant 2 & 3: GET /me and POST /session/extend are the intentional session exceptions to admin.capability
+            if (in_array($uri, ['api/v1/admin/me', 'api/v1/admin/session/extend'], true)) {
                 $hasCapabilityMiddleware = collect($middleware)->contains(fn ($m) => str_starts_with($m, 'admin.capability'));
                 $this->assertFalse(
                     $hasCapabilityMiddleware,
-                    "Route [GET /api/v1/admin/me] is the sole intentional exception and must not require a specific capability."
+                    "Route [{$uri}] is an intentional session exception and must not require a specific capability."
                 );
             } else {
                 $hasCapabilityMiddleware = collect($middleware)->contains(fn ($m) => str_starts_with($m, 'admin.capability'));

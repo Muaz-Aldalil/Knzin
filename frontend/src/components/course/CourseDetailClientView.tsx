@@ -8,8 +8,9 @@ import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/Che
 import { LearningOutcomes } from '@/components/course/LearningOutcomes';
 import { CourseProgressBar } from '@/components/course/CourseProgressBar';
 import { fetchCourseProgress } from '@/lib/progress';
-import { Loader2, AlertCircle, Ticket, ArrowRight, Check } from 'lucide-react';
+import { Loader2, AlertCircle, Ticket, ArrowRight, Check, ShieldCheck } from 'lucide-react';
 import { Link } from '@/i18n/routing';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 
 interface CourseDetailClientViewProps {
   slug: string;
@@ -18,8 +19,11 @@ interface CourseDetailClientViewProps {
 
 export default function CourseDetailClientView({ slug, initialCourse }: CourseDetailClientViewProps) {
   const locale = useLocale();
+  const isAr = locale === 'ar';
   const t = useTranslations('catalog');
   const tCommon = useTranslations('common');
+  const { data: cmsData } = useSiteWideCms();
+  const courseDetail = cmsData?.sections?.course_detail;
 
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItemData | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -167,13 +171,33 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
               </span>
             </span>
           </div>
+
+          {/* CMS Golden Guarantee Banner */}
+          {courseDetail && courseDetail.is_visible !== false && (
+            <div className="p-4 rounded-xl bg-brand-gold/10 border border-brand-gold/25 flex items-start gap-3 mt-4">
+              <ShieldCheck className="w-5 h-5 text-brand-gold shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-brand-gold/20 text-brand-gold">
+                    {isAr ? courseDetail.guarantee_badge_ar : courseDetail.guarantee_badge_en}
+                  </span>
+                  <span className="text-xs font-bold text-content-primary">
+                    {isAr ? courseDetail.guarantee_headline_ar : courseDetail.guarantee_headline_en}
+                  </span>
+                </div>
+                <p className="text-xs text-content-secondary leading-relaxed">
+                  {isAr ? courseDetail.guarantee_description_ar : courseDetail.guarantee_description_en}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Full Bundle Purchase Card (1 col) - Preserving white background requirement */}
         <div className="p-5 rounded-xl bg-white dark:bg-slate-900 border border-border-subtle text-content-primary space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-primary">
-              {t('bundleOffer')}
+              {(isAr ? courseDetail?.bundle_promo_badge_ar : courseDetail?.bundle_promo_badge_en) || t('bundleOffer')}
             </span>
             <span className="text-accent text-xs font-semibold flex items-center gap-1">
               <Ticket className="w-3.5 h-3.5" />
@@ -191,7 +215,7 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
               </bdi>
             </div>
             <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-              {t('bundleSavings')}
+              {(isAr ? courseDetail?.bundle_promo_title_ar : courseDetail?.bundle_promo_title_en) || t('bundleSavings')}
             </p>
           </div>
 
@@ -203,9 +227,10 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
           </button>
 
           <p className="text-[11px] text-content-muted text-center leading-relaxed">
-            {locale === 'ar'
-              ? `يشمل جميع الأجزاء الـ ${course.parts?.length || course.parts_count || 6} كاملة + ${course.bundle_promotional_tickets} تذكرة سحب ترويجية مجانية على الجوائز الكبرى.`
-              : `Includes all ${course.parts?.length || course.parts_count || 6} parts + ${course.bundle_promotional_tickets} free promotional raffle tickets.`}
+            {(isAr ? courseDetail?.bundle_promo_desc_ar : courseDetail?.bundle_promo_desc_en) ||
+              (locale === 'ar'
+                ? `يشمل جميع الأجزاء الـ ${course.parts?.length || course.parts_count || 6} كاملة + ${course.bundle_promotional_tickets} تذكرة سحب ترويجية مجانية على الجوائز الكبرى.`
+                : `Includes all ${course.parts?.length || course.parts_count || 6} parts + ${course.bundle_promotional_tickets} free promotional raffle tickets.`)}
           </p>
         </div>
       </div>

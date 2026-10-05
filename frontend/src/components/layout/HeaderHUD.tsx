@@ -34,6 +34,9 @@ import { SearchCommandDialog } from '@/components/search/SearchCommandDialog';
 import MobileNavSheet from './MobileNavSheet';
 import { HowItWorksModal } from './HowItWorksModal';
 import { TicketLedgerDrawer } from './TicketLedgerDrawer';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { NotificationDrawer } from '@/components/notifications/NotificationDrawer';
+import { useNotifications } from '@/hooks/useNotifications';
 import { useLearnerTickets } from '@/hooks/useLearnerTickets';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAccess } from '@/hooks/admin/useAdminAccess';
@@ -99,6 +102,8 @@ export default function HeaderHUD() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [isTicketsDrawerOpen, setIsTicketsDrawerOpen] = useState(false);
+  const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
+  const { unreadCount } = useNotifications();
   const [isMac, setIsMac] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -280,6 +285,15 @@ export default function HeaderHUD() {
             <Ticket className="w-3.5 h-3.5 text-accent" />
             <span>{totalTickets} <span className="hidden sm:inline text-content-muted">{tCommon('ticket')}</span></span>
           </button>
+
+          {/* Notifications HUD Bell (authenticated users / active sessions) */}
+          {user && (
+            <NotificationBell
+              unreadCount={unreadCount}
+              onClick={() => setIsNotificationDrawerOpen(true)}
+              isOpen={isNotificationDrawerOpen}
+            />
+          )}
 
           {/* Desktop-only: Wallet Balance HUD (>= 1024px) */}
           <div
@@ -481,6 +495,12 @@ export default function HeaderHUD() {
       <TicketLedgerDrawer
         isOpen={isTicketsDrawerOpen}
         onClose={() => setIsTicketsDrawerOpen(false)}
+      />
+
+      {/* Feature 009: In-App Notifications Center Drawer */}
+      <NotificationDrawer
+        isOpen={isNotificationDrawerOpen}
+        onClose={() => setIsNotificationDrawerOpen(false)}
       />
     </header>
   );

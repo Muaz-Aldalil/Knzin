@@ -92,3 +92,44 @@ Ratified the comprehensive 31-section KNZiN Agent Constitution and Engineering O
 3. **Recommendation Discipline**: When a genuine product/business decision reaches the human, the agent must provide a structured recommendation: Decision, Evidence, Options, Recommendation, Reasoning, Trade-off, Downstream effect, Decision required.
 4. **Source of Truth & Financial Integrity**: Strict separation of authoritative state vs derived representations, zero floating-point math, server-to-server webhook authority, and atomic state transitions.
 
+---
+
+## [DEC-007] Feature 009 Notifications Scope & Delivery Channel Boundary
+**Status:** APPROVED  
+**Date:** 2026-10-04  
+
+### Decision
+1. **Launch Delivery Channels:** Feature 009 launches strictly with **In-App Notifications** (notification center, unread badge, interactive inbox, and read state) and **Transactional & Marketing Email Notifications** (order confirmation, ticket issuance, winner KYC alerts, live draw alerts, abandoned pending order recovery, and administrative broadcasts with unsubscribe).
+2. **WhatsApp Scope Deferral:** WhatsApp delivery is officially **out of scope for Feature 009** and deferred to a post-launch operational phase.
+3. **No Partial WhatsApp Implementation:** Feature 009 must not introduce speculative WhatsApp provider abstractions, credentials, phone-number checkout capture, message templates, webhook handlers, or delivery infrastructure. WhatsApp may be documented only as a potential future external integration seam.
+4. **Authority Boundary:** Notifications are strictly downstream observers of authoritative business state. Notifications must never create, alter, settle, calculate, or reverse financial or draw truth.
+
+---
+
+## [DEC-008] Developer Attribution, Company Branding Assets & Identity (ديجتال أيج / DigAge)
+**Status:** IMPLEMENTED  
+**Date:** 2026-10-05  
+
+### Decision
+1. **Developer Identity**: The developer organization that engineered and built the KNZiN application is **ديجتال أيج** (DigAge / Digital Age).
+2. **Brand Visual Tokens**:
+   * `Dig`: `#00bcd4` (Cyan)
+   * `Age`: `#e91e63` (Magenta / Deep Pink)
+   * Arabic Company Name: `ديجتال أيج`
+3. **Asset Mapping & Preservation**:
+   * Original file in frontend root: `frontend/Simple Suits Store Black Logo بدون خلفيه.png` (verified transparent brain-chip vector/raster icon).
+   * Static public asset: `frontend/public/digage-logo.png` (served via Next.js `<Image />` with automatic optimization).
+4. **Footer Presentation Contract**:
+   * Rendered in `frontend/src/components/layout/Footer.tsx`.
+   * Layout hierarchy: Prominent enlarged logo on top (`w-16 h-16 sm:w-20 sm:h-20` / 80px), company name at bottom.
+   * Conditional locale rendering: Displays strictly the language-specific brand name:
+     - Arabic (`ar`): `© ٢٠٢٦ <span style="color: #00bcd4">ديجتال</span> <span style="color: #e91e63">أيج</span> للحلول التقنية`
+     - English (`en`): `© 2026 <span style="color: #00bcd4">Dig</span><span style="color: #e91e63">Age</span> for Tech Solutions`
+5. **Canonical External URL & Linking**:
+   * Official site: `https://digagesolutions.com/`
+   * Interaction contract: Logo and company text are separate, independent `<a>` tags with `target="_blank"` and `rel="noopener noreferrer"`. The outer container is not a link.
+
+
+
+
+

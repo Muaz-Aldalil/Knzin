@@ -10,6 +10,7 @@ import { fetchAdminCapabilities } from '@/lib/admin/access';
 import { resolvePostLoginDestination, sanitizeRedirectTarget } from '@/lib/auth-redirect';
 import { Mail, ArrowLeft, ArrowRight, ShieldCheck, Sparkles, Loader2, KeyRound, UserCheck, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { DeveloperAttribution } from '@/components/layout/DeveloperAttribution';
 
 function LoginContent() {
   const locale = useLocale();
@@ -365,6 +366,11 @@ function LoginContent() {
             </div>
           </form>
         )}
+
+        {/* Developer Attribution at bottom of login dialog */}
+        <div className="w-full border-t border-border-subtle mt-8 pt-6">
+          <DeveloperAttribution logoSize={56} />
+        </div>
       </div>
     </div>
   );

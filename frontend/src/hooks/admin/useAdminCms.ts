@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient, ApiError } from '@/lib/api-client';
-import { CmsSectionName, CmsSectionEnvelope, PublicLandingCmsData } from '@/types/cms';
+import { CmsSectionName, CmsSectionEnvelope, PublicLandingCmsData, SiteWideCmsData } from '@/types/cms';
 
 export function useAdminCmsSection<T = any>(section: CmsSectionName, enabled: boolean = true) {
   const queryClient = useQueryClient();
@@ -25,6 +25,7 @@ export function useAdminCmsSection<T = any>(section: CmsSectionName, enabled: bo
       queryClient.setQueryData(['admin', 'cms', section], data);
       queryClient.invalidateQueries({ queryKey: ['admin', 'cms'] });
       queryClient.invalidateQueries({ queryKey: ['public', 'landing', 'cms'] });
+      queryClient.invalidateQueries({ queryKey: ['public', 'site-wide', 'cms'] });
     },
   });
 
@@ -42,13 +43,13 @@ export function useAdminCmsSection<T = any>(section: CmsSectionName, enabled: bo
   };
 }
 
-export function usePublicLandingCms() {
-  const [displayedData, setDisplayedData] = useState<PublicLandingCmsData | null>(null);
+export function useSiteWideCms() {
+  const [displayedData, setDisplayedData] = useState<SiteWideCmsData | null>(null);
   const [hasUpdate, setHasUpdate] = useState(false);
 
-  const query = useQuery<PublicLandingCmsData, ApiError>({
-    queryKey: ['public', 'landing', 'cms'],
-    queryFn: () => apiClient<PublicLandingCmsData>('/content/landing'),
+  const query = useQuery<SiteWideCmsData, ApiError>({
+    queryKey: ['public', 'site-wide', 'cms'],
+    queryFn: () => apiClient<SiteWideCmsData>('/content/site-wide'),
     staleTime: 10 * 1000,
     refetchInterval: 15 * 1000, // Background poll every 15s for live updates
     refetchOnWindowFocus: true,
@@ -83,5 +84,16 @@ export function usePublicLandingCms() {
     hasUpdate,
     applyUpdate,
     dismissUpdate,
+  };
+}
+
+/**
+ * Backward-compatible wrapper for existing components
+ */
+export function usePublicLandingCms() {
+  const siteWide = useSiteWideCms();
+  return {
+    ...siteWide,
+    data: siteWide.data as unknown as PublicLandingCmsData,
   };
 }

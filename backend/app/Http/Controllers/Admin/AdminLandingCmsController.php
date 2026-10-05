@@ -17,11 +17,15 @@ class AdminLandingCmsController extends ApiController
     }
 
     /**
-     * Get all CMS sections for admin editor.
+     * Get CMS sections for admin editor.
+     * Default returns legacy landing sections (count 11).
+     * With ?scope=all, returns all 20 site-wide application sections.
      */
     public function index(Request $request): JsonResponse
     {
-        $sections = $this->landingCmsService->getAllSections();
+        $sections = $request->query('scope') === 'all'
+            ? $this->landingCmsService->getAllCmsSections()
+            : $this->landingCmsService->getAllSections();
 
         return $this->successResponse([
             'sections' => $sections,

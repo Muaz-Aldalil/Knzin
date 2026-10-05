@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\Order;
+use App\Models\Ticket;
+use App\Notifications\TicketIssuanceNotification;
 use App\Services\TicketMintingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -57,6 +59,18 @@ class GenerateTicketsJob implements ShouldQueue
         try {
             $minted = $mintingService->mintForOrder($order);
             Log::info("GenerateTicketsJob: Successfully minted {$minted} tickets for order {$order->id}.");
+
+            if ($minted > 0 && $order->user) {
+                $notificationId = \Ramsey\Uuid\Uuid::uuid5(
+                    \Ramsey\Uuid\Uuid::NAMESPACE_OID,
+                    "ticket_issuance:{$order->id}:{$order->user_id}"
+                )->toString();
+
+                if (!\Illuminate\Support\Facades\DB::table('notifications')->where('id', $notificationId)->exists()) {
+                    $serials = Ticket::where('order_id', $order->id)->pluck('serial_number')->toArray();
+                    $order->user->notify(new TicketIssuanceNotification($order, $serials));
+                }
+            }
         } catch (\Throwable $e) {
             Log::error("GenerateTicketsJob: Failed to mint tickets for order {$order->id}: {$e->getMessage()}", [
                 'exception' => $e,

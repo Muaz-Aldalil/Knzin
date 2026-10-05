@@ -8,6 +8,8 @@ use App\Models\CoursePart;
 use App\Models\LessonProgress;
 use App\Models\OrderItem;
 use App\Models\User;
+use App\Notifications\CourseContentUpdatedNotification;
+use App\Notifications\NewCourseNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -63,6 +65,15 @@ class AdminCourseService
                 reasonCode: 'COURSE_CREATED'
             );
 
+            if ($course->is_active) {
+                DB::afterCommit(function () use ($course) {
+                    $users = User::where('status', 'active')->get();
+                    foreach ($users as $user) {
+                        $user->notify(new NewCourseNotification($course, $user));
+                    }
+                });
+            }
+
             return $course;
         });
     }
@@ -109,6 +120,11 @@ class AdminCourseService
             $course->update($updateFields);
             $fresh = $course->fresh();
 
+            $hasLearnerChanges = $course->wasChanged([
+                'title_ar', 'title_en', 'description_ar', 'description_en',
+                'curriculum_summary_ar', 'curriculum_summary_en', 'outcomes', 'cover_image_url'
+            ]);
+
             $this->auditWriter->record(
                 context: $auditContext,
                 action: 'update_course',
@@ -119,6 +135,10 @@ class AdminCourseService
                 outcome: 'success',
                 reasonCode: 'COURSE_UPDATED'
             );
+
+            if ($hasLearnerChanges) {
+                $this->notifyEntitledLearners($fresh);
+            }
 
             return $fresh;
         });
@@ -144,6 +164,15 @@ class AdminCourseService
                 outcome: 'success',
                 reasonCode: $course->is_active ? 'COURSE_ACTIVATED' : 'COURSE_PAUSED'
             );
+
+            if ($course->is_active) {
+                DB::afterCommit(function () use ($course) {
+                    $users = User::where('status', 'active')->get();
+                    foreach ($users as $user) {
+                        $user->notify(new NewCourseNotification($course, $user));
+                    }
+                });
+            }
 
             return $course;
         });
@@ -247,6 +276,8 @@ class AdminCourseService
                 reasonCode: 'COURSE_PART_CREATED'
             );
 
+            $this->notifyEntitledLearners($course);
+
             return $part;
         });
     }
@@ -304,6 +335,12 @@ class AdminCourseService
             $part->update($updateFields);
             $fresh = $part->fresh();
 
+            $hasLearnerChanges = $part->wasChanged([
+                'title_ar', 'title_en', 'syllabus_ar', 'syllabus_en',
+                'resource_types', 'duration_minutes', 'is_active', 'is_free',
+                'video_url', 'pdf_url', 'pdf_title_ar', 'pdf_title_en', 'part_number'
+            ]);
+
             $this->auditWriter->record(
                 context: $auditContext,
                 action: 'update_course_part',
@@ -314,6 +351,13 @@ class AdminCourseService
                 outcome: 'success',
                 reasonCode: 'COURSE_PART_UPDATED'
             );
+
+            if ($hasLearnerChanges) {
+                $parentCourse = Course::find($part->course_id);
+                if ($parentCourse) {
+                    $this->notifyEntitledLearners($parentCourse);
+                }
+            }
 
             return $fresh;
         });
@@ -337,6 +381,8 @@ class AdminCourseService
                 })
                 ->exists();
 
+            $courseId = $part->course_id;
+
             if ($hasEntitlements || $hasProgress || $hasOrders) {
                 // Safeguard: deactivating protects student records
                 $part->update(['is_active' => false]);
@@ -351,6 +397,11 @@ class AdminCourseService
                     outcome: 'success',
                     reasonCode: 'PART_ARCHIVED_ACTIVE_STUDENTS'
                 );
+
+                $parentCourse = Course::find($courseId);
+                if ($parentCourse) {
+                    $this->notifyEntitledLearners($parentCourse);
+                }
 
                 return [
                     'action_taken' => 'archived',
@@ -372,6 +423,11 @@ class AdminCourseService
                 outcome: 'success',
                 reasonCode: 'PART_HARD_DELETED'
             );
+
+            $parentCourse = Course::find($courseId);
+            if ($parentCourse) {
+                $this->notifyEntitledLearners($parentCourse);
+            }
 
             return [
                 'action_taken' => 'deleted',
@@ -419,7 +475,44 @@ class AdminCourseService
                 reasonCode: 'PARTS_REORDERED'
             );
 
+            if (!empty($afterState)) {
+                $this->notifyEntitledLearners($course);
+            }
+
             return CoursePart::where('course_id', $course->id)->orderBy('part_number', 'asc')->get()->toArray();
+        });
+    }
+
+    /**
+     * Increment course content version and notify all actively entitled learners via in-app notification.
+     */
+    protected function notifyEntitledLearners(Course $course): void
+    {
+        $course->increment('content_version');
+        $version = (int) $course->fresh()->content_version;
+
+        DB::afterCommit(function () use ($course, $version) {
+            $userIds = CourseEntitlement::where('course_id', $course->id)
+                ->where('status', 'active')
+                ->pluck('user_id')
+                ->unique();
+
+            if ($userIds->isEmpty()) {
+                return;
+            }
+
+            $users = User::whereIn('id', $userIds)->where('status', 'active')->get();
+
+            foreach ($users as $user) {
+                $notificationId = \Ramsey\Uuid\Uuid::uuid5(
+                    \Ramsey\Uuid\Uuid::NAMESPACE_OID,
+                    "admin_update:course:{$course->id}:v{$version}:{$user->id}"
+                )->toString();
+
+                if (!DB::table('notifications')->where('id', $notificationId)->exists()) {
+                    $user->notify(new CourseContentUpdatedNotification($course, $version, $user));
+                }
+            }
         });
     }
 

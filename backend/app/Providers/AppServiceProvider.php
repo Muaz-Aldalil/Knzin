@@ -34,6 +34,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\AffiliateCoPrizeServiceInterface::class,
             \App\Services\AffiliateCoPrizeService::class
         );
+
+        $this->app->singleton(
+            \Illuminate\Notifications\Channels\DatabaseChannel::class,
+            \App\Channels\DatabaseChannel::class
+        );
     }
 
     /**

@@ -18,3 +18,10 @@ export async function fetchAdminCapabilities(): Promise<AdminCapability[] | null
     return null;
   }
 }
+
+/**
+ * Extends the active administrative session by refreshing the Sanctum token's lifetime.
+ */
+export async function extendAdminSession(): Promise<AdminSession> {
+  return await apiClient<AdminSession>('/admin/session/extend', { method: 'POST' });
+}

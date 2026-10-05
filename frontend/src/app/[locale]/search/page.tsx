@@ -23,6 +23,7 @@ import { SearchResponse, SearchResult, SortOption } from '@/lib/search/types';
 import { Badge } from '@/components/ui/badge';
 import { SearchInput } from '@/components/ui/search-input';
 import { formatTimestamp } from '@/lib/video';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 
 const SUGGESTED_QUERIES_AR = [
   'علاج خدوش الصبغ بالنانو',
@@ -51,6 +52,10 @@ function SearchResultsContent() {
   const searchParams = useSearchParams();
   const locale = useLocale();
   const isRtl = locale === 'ar';
+  const isAr = locale === 'ar';
+
+  const { data: cmsData } = useSiteWideCms();
+  const searchCms = cmsData?.sections?.search_page;
 
   const initialQuery = searchParams.get('q') || '';
   const initialSort = (searchParams.get('sort') as SortOption) || 'relevance';
@@ -114,67 +119,103 @@ function SearchResultsContent() {
     router.replace(`/search?${params.toString()}`);
   };
 
-  return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-16">
-      {/* Top Header & Search Bar */}
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-secondary dark:text-white">
-            {locale === 'ar' ? 'البحث المهني الذكي' : 'Intelligent Vocational Search'}
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            {locale === 'ar'
-              ? 'ابحث باللغة الطبيعية عن مهارة، تقنية، أو أداة للوصول مباشرة إلى الدقيقة المحددة في الفيديو.'
-              : 'Search in natural language to deep-link directly to precise video timestamps.'}
-          </p>
-        </div>
+    const heroHeadline =
+      (isAr ? searchCms?.hero_headline_ar : searchCms?.hero_headline_en) ||
+      (isAr ? 'البحث المهني الذكي' : 'Intelligent Vocational Search');
 
-        {/* Search Input Bar */}
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <div className="relative flex-1 w-full">
-            <SearchInput
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearchSubmit(query);
-                }
-              }}
-              placeholder={
-                locale === 'ar'
-                  ? 'ابحث مثلاً: علاج خدوش الصبغ، شورت الباور، نظام التصميم في فيجما...'
-                  : 'Search skills, tools, e.g. nano ceramic, power IC short, figma design...'
-              }
-              size="lg"
-            />
+    const heroSubtitle =
+      (isAr ? searchCms?.hero_subtitle_ar : searchCms?.hero_subtitle_en) ||
+      (isAr
+        ? 'ابحث باللغة الطبيعية عن مهارة، تقنية، أو أداة للوصول مباشرة إلى الدقيقة المحددة في الفيديو.'
+        : 'Search in natural language to deep-link directly to precise video timestamps.');
+
+    const placeholderText =
+      (isAr ? searchCms?.search_placeholder_ar : searchCms?.search_placeholder_en) ||
+      (isAr
+        ? 'ابحث مثلاً: علاج خدوش الصبغ، شورت الباور، نظام التصميم في فيجما...'
+        : 'Search skills, tools, e.g. nano ceramic, power IC short, figma design...');
+
+    const suggestedQueries =
+      ((isAr ? searchCms?.suggested_queries_ar : searchCms?.suggested_queries_en)?.length
+        ? (isAr ? searchCms?.suggested_queries_ar : searchCms?.suggested_queries_en)
+        : null) || (isAr ? SUGGESTED_QUERIES_AR : SUGGESTED_QUERIES_EN);
+
+    const tipsTitle = isAr ? searchCms?.search_tips_title_ar : searchCms?.search_tips_title_en;
+    const tipsItems = isAr ? searchCms?.search_tips_items_ar : searchCms?.search_tips_items_en;
+
+    return (
+      <div className="max-w-5xl mx-auto space-y-8 pb-16">
+        {/* Top Header & Search Bar */}
+        <div className="space-y-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-secondary dark:text-white">
+              {heroHeadline}
+            </h1>
+            <p className="text-sm text-slate-500 mt-1">
+              {heroSubtitle}
+            </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => handleSearchSubmit(query)}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black transition-all shadow-md shadow-primary/20 shrink-0"
-          >
-            {locale === 'ar' ? 'بحث' : 'Search'}
-          </button>
-        </div>
+          {/* Search Input Bar */}
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <SearchInput
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearchSubmit(query);
+                  }
+                }}
+                placeholder={placeholderText}
+                size="lg"
+              />
+            </div>
 
-        {/* Suggested Queries Chips */}
-        <div className="flex items-center gap-2 flex-wrap text-xs">
-          <span className="text-slate-400 font-medium">
-            {locale === 'ar' ? 'مقترحات شائعة:' : 'Suggestions:'}
-          </span>
-          {(locale === 'ar' ? SUGGESTED_QUERIES_AR : SUGGESTED_QUERIES_EN).map((sq, idx) => (
             <button
-              key={idx}
               type="button"
-              onClick={() => handleSearchSubmit(sq)}
-              className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 hover:bg-primary-light hover:text-primary dark:hover:bg-primary/10 text-slate-600 dark:text-slate-300 font-medium transition-colors border border-slate-200/60 dark:border-slate-700/60"
+              onClick={() => handleSearchSubmit(query)}
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black transition-all shadow-md shadow-primary/20 shrink-0 cursor-pointer"
             >
-              {sq}
+              {locale === 'ar' ? 'بحث' : 'Search'}
             </button>
-          ))}
+          </div>
+
+          {/* Suggested Queries Chips */}
+          {searchCms?.is_visible !== false && suggestedQueries && suggestedQueries.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap text-xs">
+              <span className="text-slate-400 font-medium">
+                {locale === 'ar' ? 'مقترحات شائعة:' : 'Suggestions:'}
+              </span>
+              {suggestedQueries.map((sq, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleSearchSubmit(sq)}
+                  className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 hover:bg-primary-light hover:text-primary dark:hover:bg-primary/10 text-slate-600 dark:text-slate-300 font-medium transition-colors border border-slate-200/60 dark:border-slate-700/60 cursor-pointer"
+                >
+                  {sq}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Search Tips if configured */}
+          {tipsItems && tipsItems.length > 0 && (
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+              {tipsTitle && (
+                <span className="font-bold text-content-primary block">
+                  {tipsTitle}
+                </span>
+              )}
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-content-secondary">
+                {tipsItems.map((tip, idx) => (
+                  <span key={idx}>• {tip}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
 
       {/* Results Header: Count & Sort */}
       {data && (
@@ -252,12 +293,14 @@ function SearchResultsContent() {
           </div>
           <div className="space-y-1">
             <h3 className="text-base font-bold text-secondary dark:text-white">
-              {locale === 'ar' ? 'لم يتم العثور على نتائج مباشرة' : 'No direct matches found'}
+              {(isAr ? searchCms?.empty_title_ar : searchCms?.empty_title_en) ||
+                (locale === 'ar' ? 'لم يتم العثور على نتائج مباشرة' : 'No direct matches found')}
             </h3>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
-              {locale === 'ar'
-                ? 'جرّب البحث بكلمات أخرى أو تصفح الدورات المهنية الشاملة المتاحة في الدليل.'
-                : 'Try different keywords or explore our complete vocational courses.'}
+              {(isAr ? searchCms?.empty_desc_ar : searchCms?.empty_desc_en) ||
+                (locale === 'ar'
+                  ? 'جرّب البحث بكلمات أخرى أو تصفح الدورات المهنية الشاملة المتاحة في الدليل.'
+                  : 'Try different keywords or explore our complete vocational courses.')}
             </p>
           </div>
           <div className="pt-2">

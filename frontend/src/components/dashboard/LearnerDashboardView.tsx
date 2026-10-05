@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { BookOpen, CheckCircle, Ticket, Sparkles, Loader2, AlertCircle, ArrowUpRight } from 'lucide-react';
 import { useLearnerDashboard, EnrolledCourseItem } from '@/hooks/useLearnerDashboard';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 import { JumpBackInHero } from './JumpBackInHero';
 import { EnrolledCourseCard } from './EnrolledCourseCard';
 import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/CheckoutBottomSheet';
@@ -12,6 +13,10 @@ import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/Che
 export function LearnerDashboardView() {
   const locale = useLocale();
   const isRtl = locale === 'ar';
+  const isAr = locale === 'ar';
+
+  const { data: cmsData } = useSiteWideCms();
+  const learnerCms = cmsData?.sections?.learner_dashboard;
 
   const {
     summary,
@@ -42,18 +47,26 @@ export function LearnerDashboardView() {
 
   // State 1: Unauthenticated
   if (isUnauthenticated) {
+    const unauthTitle =
+      (isAr ? learnerCms?.unauthenticated_title_ar : learnerCms?.unauthenticated_title_en) ||
+      (isRtl ? 'تسجيل الدخول إلى لوحة التدريب' : 'Sign In to Your Learning Hub');
+
+    const unauthDesc =
+      (isAr ? learnerCms?.unauthenticated_desc_ar : learnerCms?.unauthenticated_desc_en) ||
+      (isRtl
+        ? 'سجّل الدخول للوصول إلى دوراتك المهنية المشتركة، ومتابعة تقدمك العملي، وتذاكر السحب المكتسبة.'
+        : 'Sign in to access your enrolled vocational courses, continue learning, and view your promotional tickets.');
+
     return (
       <div className="max-w-2xl mx-auto my-16 p-8 rounded-3xl bg-surface border border-border-subtle text-center shadow-sm">
         <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
           <BookOpen className="w-7 h-7" />
         </div>
         <h2 className="text-xl font-bold text-content-primary">
-          {isRtl ? 'تسجيل الدخول إلى لوحة التدريب' : 'Sign In to Your Learning Hub'}
+          {unauthTitle}
         </h2>
         <p className="mt-2 text-sm text-content-secondary max-w-md mx-auto">
-          {isRtl
-            ? 'سجّل الدخول للوصول إلى دوراتك المهنية المشتركة، ومتابعة تقدمك العملي، وتذاكر السحب المكتسبة.'
-            : 'Sign in to access your enrolled vocational courses, continue learning, and view your promotional tickets.'}
+          {unauthDesc}
         </p>
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
@@ -120,12 +133,14 @@ export function LearnerDashboardView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-content-primary tracking-tight">
-            {isRtl ? 'لوحة تدريبي ودوراتي' : 'My Learning Hub'}
+            {(isAr ? learnerCms?.welcome_title_ar : learnerCms?.welcome_title_en) ||
+              (isRtl ? 'لوحة تدريبي ودوراتي' : 'My Learning Hub')}
           </h1>
           <p className="mt-1 text-sm text-content-secondary font-medium">
-            {isRtl
-              ? 'متابعة مسارك المهني، إنجاز الورش، والتذاكر الترويجية المكتسبة'
-              : 'Track your vocational curriculum, workshop completions, and earned raffle tickets'}
+            {(isAr ? learnerCms?.welcome_subtitle_ar : learnerCms?.welcome_subtitle_en) ||
+              (isRtl
+                ? 'متابعة مسارك المهني، إنجاز الورش، والتذاكر الترويجية المكتسبة'
+                : 'Track your vocational curriculum, workshop completions, and earned raffle tickets')}
           </p>
         </div>
 
@@ -212,12 +227,14 @@ export function LearnerDashboardView() {
             </div>
             <div className="max-w-md mx-auto">
               <h3 className="text-base font-bold text-content-primary">
-                {isRtl ? 'لم تشترك في أي دورة مهنية بعد' : 'No Enrolled Courses Yet'}
+                {(isAr ? learnerCms?.empty_headline_ar : learnerCms?.empty_headline_en) ||
+                  (isRtl ? 'لم تشترك في أي دورة مهنية بعد' : 'No Enrolled Courses Yet')}
               </h3>
               <p className="mt-1 text-xs text-content-secondary">
-                {isRtl
-                  ? 'ابدأ باكتساب مهارات عملية من سوق العمل بـ 2$ فقط للجزء أو 10$ للحقيبة كاملة واحصل على تذاكر سحب مجانية.'
-                  : 'Start learning practical trade skills for $2 per part or $10 for a full bundle with free bonus tickets.'}
+                {(isAr ? learnerCms?.empty_desc_ar : learnerCms?.empty_desc_en) ||
+                  (isRtl
+                    ? 'ابدأ باكتساب مهارات عملية من سوق العمل بـ 2$ فقط للجزء أو 10$ للحقيبة كاملة واحصل على تذاكر سحب مجانية.'
+                    : 'Start learning practical trade skills for $2 per part or $10 for a full bundle with free bonus tickets.')}
               </p>
             </div>
             <div>
@@ -225,7 +242,10 @@ export function LearnerDashboardView() {
                 href="/"
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-xs"
               >
-                <span>{isRtl ? 'استكشف دليل الدورات' : 'Explore Courses'}</span>
+                <span>
+                  {(isAr ? learnerCms?.empty_cta_label_ar : learnerCms?.empty_cta_label_en) ||
+                    (isRtl ? 'استكشف دليل الدورات' : 'Explore Courses')}
+                </span>
               </Link>
             </div>
           </div>

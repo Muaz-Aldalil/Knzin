@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useWatchDepth } from '@/components/analytics/use-watch-depth';
 import { Link } from '@/i18n/routing';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 import { LessonWatermarkOverlay } from './LessonWatermarkOverlay';
 import { WatermarkData, PaywallPricing } from '@/hooks/useLessonPlayback';
 
@@ -38,108 +39,121 @@ export function LessonVideoPlayer({
   startSeconds = 0,
   watermarkText = 'KNZIN-LEARNER',
   watermarkData,
-  pricing,
-  nextPart,
-  onBuyPart,
-  onBuyBundle,
-  onVideoStart,
-}: LessonVideoPlayerProps) {
-  const locale = useLocale();
-  const isRtl = locale === 'ar';
-  const [isPlaying, setIsPlaying] = useState(startSeconds > 0 && isUnlocked);
-  const [dismissCompletionCard, setDismissCompletionCard] = useState(false);
-  const parsedVideo = parseVideoUrl(videoUrl, startSeconds);
+    pricing,
+    nextPart,
+    onBuyPart,
+    onBuyBundle,
+    onVideoStart,
+  }: LessonVideoPlayerProps) {
+    const locale = useLocale();
+    const isRtl = locale === 'ar';
+    const isAr = locale === 'ar';
+    const { data: cmsData } = useSiteWideCms();
+    const lessonCms = cmsData?.sections?.lesson_player;
+    const [isPlaying, setIsPlaying] = useState(startSeconds > 0 && isUnlocked);
+    const [dismissCompletionCard, setDismissCompletionCard] = useState(false);
+    const parsedVideo = parseVideoUrl(videoUrl, startSeconds);
 
-  // Watch depth tracking & MySQL database persistence
-  const { depth, isCompleted } = useWatchDepth({
-    durationSeconds,
-    isPlaying: isPlaying && isUnlocked,
-    startSeconds,
-    courseSlug,
-    partNumber,
-  });
+    // Watch depth tracking & MySQL database persistence
+    const { depth, isCompleted } = useWatchDepth({
+      durationSeconds,
+      isPlaying: isPlaying && isUnlocked,
+      startSeconds,
+      courseSlug,
+      partNumber,
+    });
 
-  const handleStartPlay = () => {
-    setIsPlaying(true);
-    onVideoStart?.(startSeconds);
-  };
-
-  // Autoplay if startSeconds was provided
-  useEffect(() => {
-    if (startSeconds > 0 && isUnlocked) {
+    const handleStartPlay = () => {
       setIsPlaying(true);
-    }
-  }, [startSeconds, isUnlocked]);
+      onVideoStart?.(startSeconds);
+    };
 
-  // Locked State
-  if (!isUnlocked) {
-    return (
-      <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col items-center justify-center p-6 text-center">
-        {/* Subtle background ambient graphic */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-secondary/80 via-slate-950/90 to-primary/20 pointer-events-none" />
+    // Autoplay if startSeconds was provided
+    useEffect(() => {
+      if (startSeconds > 0 && isUnlocked) {
+        setIsPlaying(true);
+      }
+    }, [startSeconds, isUnlocked]);
 
-        {/* Content */}
-        <div className="relative z-10 max-w-md space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500 flex items-center justify-center mx-auto shadow-inner">
-            <Lock className="w-7 h-7" />
-          </div>
+    // Locked State
+    if (!isUnlocked) {
+      const paywallHeadline =
+        (isAr ? lessonCms?.paywall_headline_ar : lessonCms?.paywall_headline_en) ||
+        (locale === 'ar'
+          ? `هذا الجزء التدريبي (#${partNumber}) محمي`
+          : `This Training Part (#${partNumber}) is Protected`);
 
-          <div className="space-y-1.5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 text-accent text-xs font-black">
-              <Ticket className="w-3.5 h-3.5" />
-              <span>{pricing?.part_promotional_tickets ?? 1} {locale === 'ar' ? 'تذكرة سحب ترويجية مجانية' : 'Promotional Ticket'}</span>
-            </span>
+      const paywallSubheadline =
+        (isAr ? lessonCms?.paywall_subheadline_ar : lessonCms?.paywall_subheadline_en) ||
+        (locale === 'ar'
+          ? `احصل على المحتوى الكامل، الفيديو بدقة عالية، والملفات المرفقة بـ ${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)}$ فقط بدون أي اشتراكات دورية.`
+          : `Get full access, high-definition video, and downloadable resources for only $${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)} with lifetime access.`);
 
-            <h3 className="text-lg sm:text-xl font-black text-white">
+      const unlockButtonLabel =
+        (isAr ? lessonCms?.paywall_cta_label_ar : lessonCms?.paywall_cta_label_en) ||
+        (locale === 'ar'
+          ? `فتح هذا الجزء (${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)}$)`
+          : `Unlock This Part ($${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)})`);
+
+      return (
+        <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col items-center justify-center p-6 text-center">
+          {/* Subtle background ambient graphic */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-secondary/80 via-slate-950/90 to-primary/20 pointer-events-none" />
+
+          {/* Content */}
+          <div className="relative z-10 max-w-md space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500 flex items-center justify-center mx-auto shadow-inner">
+              <Lock className="w-7 h-7" />
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 text-accent text-xs font-black">
+                <Ticket className="w-3.5 h-3.5" />
+                <span>{pricing?.part_promotional_tickets ?? 1} {locale === 'ar' ? 'تذكرة سحب ترويجية مجانية' : 'Promotional Ticket'}</span>
+              </span>
+
+              <h3 className="text-lg sm:text-xl font-black text-white">
+                {paywallHeadline}
+              </h3>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                {paywallSubheadline}
+              </p>
+            </div>
+
+            {/* Action CTAs */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={onBuyPart}
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>{unlockButtonLabel}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onBuyBundle}
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-accent" />
+                <span>
+                  {locale === 'ar'
+                    ? `الباقة كاملة ${((pricing?.bundle_price_cents ?? 1000) / 100).toFixed(2)}$ (${pricing?.bundle_promotional_tickets ?? 15} تذكرة)`
+                    : `Full Bundle $${((pricing?.bundle_price_cents ?? 1000) / 100).toFixed(2)} (${pricing?.bundle_promotional_tickets ?? 15} Tickets)`}
+                </span>
+              </button>
+            </div>
+
+            <p className="text-[11px] text-slate-400">
               {locale === 'ar'
-                ? `هذا الجزء التدريبي (#${partNumber}) محمي`
-                : `This Training Part (#${partNumber}) is Protected`}
-            </h3>
-
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              {locale === 'ar'
-                ? `احصل على المحتوى الكامل، الفيديو بدقة عالية، والملفات المرفقة بـ ${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)}$ فقط بدون أي اشتراكات دورية.`
-                : `Get full access, high-definition video, and downloadable resources for only $${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)} with lifetime access.`}
+                ? 'مشمول بدرع الحماية القانوني وضمان الوصول الفوري'
+                : 'Backed by the Canonical Legal Shield & Instant Access'}
             </p>
           </div>
-
-          {/* Action CTAs */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={onBuyPart}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>
-                {locale === 'ar'
-                  ? `فتح هذا الجزء (${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)}$)`
-                  : `Unlock This Part ($${((pricing?.part_price_cents ?? 200) / 100).toFixed(2)})`}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onBuyBundle}
-              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-accent" />
-              <span>
-                {locale === 'ar'
-                  ? `الباقة كاملة ${((pricing?.bundle_price_cents ?? 1000) / 100).toFixed(2)}$ (${pricing?.bundle_promotional_tickets ?? 15} تذكرة)`
-                  : `Full Bundle $${((pricing?.bundle_price_cents ?? 1000) / 100).toFixed(2)} (${pricing?.bundle_promotional_tickets ?? 15} Tickets)`}
-              </span>
-            </button>
-          </div>
-
-          <p className="text-[11px] text-slate-400">
-            {locale === 'ar'
-              ? 'مشمول بدرع الحماية القانوني وضمان الوصول الفوري'
-              : 'Backed by the Canonical Legal Shield & Instant Access'}
-          </p>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   return (
     <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-800 shadow-2xl group">
@@ -246,14 +260,19 @@ export function LessonVideoPlayer({
               </div>
             </div>
           ) : (
-            <div className="mt-4">
-              <p className="text-sm text-slate-300">
-                {isRtl ? 'تهانينا! لقد أنهيت جميع أجزاء هذه الدورة المهنية بنجاح.' : 'Congratulations! You have completed all parts of this course.'}
+            <div className="mt-4 space-y-2">
+              <h4 className="text-base font-bold text-accent">
+                {(isAr ? lessonCms?.completion_banner_title_ar : lessonCms?.completion_banner_title_en) ||
+                  (isRtl ? 'تهانينا! لقد أنهيت جميع أجزاء هذه الدورة المهنية بنجاح.' : 'Congratulations! You have completed all parts of this course.')}
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-300">
+                {(isAr ? lessonCms?.completion_banner_desc_ar : lessonCms?.completion_banner_desc_en) ||
+                  (isRtl ? 'تم توثيق تقدمك وإصدار تذاكر السحب المؤهلة في محفظتك.' : 'Your progress has been certified and tickets recorded in your ledger.')}
               </p>
               <button
                 type="button"
                 onClick={() => setDismissCompletionCard(true)}
-                className="mt-3 px-4 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold hover:bg-slate-700 transition-colors"
+                className="mt-3 px-4 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold hover:bg-slate-700 transition-colors cursor-pointer"
               >
                 {isRtl ? 'إغلاق' : 'Close'}
               </button>

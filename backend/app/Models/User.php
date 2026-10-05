@@ -112,6 +112,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get notification preferences for this user.
+     */
+    public function notificationPreferences(): HasOne
+    {
+        return $this->hasOne(NotificationPreference::class);
+    }
+
+    /**
      * Get the verified user account this record merged into.
      */
     public function mergedIntoUser(): BelongsTo

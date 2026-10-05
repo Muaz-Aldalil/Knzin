@@ -89,7 +89,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
 ];
 
 export const ADMIN_NAV_LABELS: Record<string, { ar: string; en: string }> = {
-  dashboard: { ar: 'لوحة المراقبة', en: 'Dashboard' },
+  dashboard: { ar: 'لوحة التحكم الإدارية', en: 'Dashboard' },
   settings: { ar: 'إعدادات المنصة', en: 'Platform Settings' },
   affiliates: { ar: 'دليل المسوقين', en: 'Affiliate Oversight' },
   payouts: { ar: 'طلبات السحب', en: 'Payout Settlements' },
@@ -141,7 +141,7 @@ export interface AdminNavGroupItem {
 export const ADMIN_NAV_GROUPS: AdminNavGroupItem[] = [
   {
     id: 'dashboard',
-    labelAr: 'لوحة المراقبة',
+    labelAr: 'لوحة التحكم الإدارية',
     labelEn: 'Dashboard',
     icon: 'LayoutDashboard',
     path: '/admin',

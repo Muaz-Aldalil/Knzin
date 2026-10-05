@@ -30,6 +30,7 @@ class Course extends Model
         'outcomes',
         'curriculum_summary_ar',
         'curriculum_summary_en',
+        'content_version',
     ];
 
     /**
@@ -44,6 +45,7 @@ class Course extends Model
             'bundle_promotional_tickets' => 'integer',
             'is_active' => 'boolean',
             'outcomes' => 'array',
+            'content_version' => 'integer',
         ];
     }
 

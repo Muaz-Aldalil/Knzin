@@ -37,6 +37,7 @@ class Order extends Model
         'quiz_answers',
         'quiz_completed_at',
         'expires_at',
+        'recovery_notification_sent_at',
     ];
 
     /**
@@ -57,6 +58,7 @@ class Order extends Model
             'quiz_answers' => 'array',
             'quiz_completed_at' => 'datetime',
             'expires_at' => 'datetime',
+            'recovery_notification_sent_at' => 'datetime',
         ];
     }
 

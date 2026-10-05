@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { CheckCircle2, Ticket, Clock, CreditCard, ShieldCheck, ArrowRight, Smartphone } from 'lucide-react';
 import { CreatedOrder } from '@/hooks/useCheckout';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 import PaymentStatusMonitor from './PaymentStatusMonitor';
 
 interface OrderSummaryCardProps {
@@ -13,8 +14,11 @@ interface OrderSummaryCardProps {
 
 export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
   const locale = useLocale();
+  const isAr = locale === 'ar';
   const t = useTranslations('orderSummary');
   const tCommon = useTranslations('common');
+  const { data: cmsData } = useSiteWideCms();
+  const cartCms = cmsData?.sections?.checkout_cart;
 
   const formattedExpiresAt = new Date(order.expires_at).toLocaleString(
     locale === 'ar' ? 'ar-IQ' : 'en-US',
@@ -24,6 +28,13 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
     }
   );
 
+  const celebrationTitle =
+    (isAr ? cartCms?.order_celebration_title_ar : cartCms?.order_celebration_title_en) ||
+    t('title');
+
+  const celebrationDesc =
+    (isAr ? cartCms?.order_celebration_desc_ar : cartCms?.order_celebration_desc_en);
+
   return (
     <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden">
       {/* Top Success Banner */}
@@ -32,8 +43,13 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
           <CheckCircle2 className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-          {t('title')}
+          {celebrationTitle}
         </h1>
+        {celebrationDesc && (
+          <p className="text-xs text-white/90 mt-1 max-w-md mx-auto">
+            {celebrationDesc}
+          </p>
+        )}
         <div className="inline-flex items-center gap-1.5 px-3 py-1 mt-2.5 rounded-full bg-white/20 text-xs font-semibold text-white">
           <Clock className="w-3.5 h-3.5" />
           <span>{t('statusPending')}</span>

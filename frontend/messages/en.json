@@ -177,7 +177,8 @@
   },
   "footer": {
     "copyright": "© 2026 KNZiN. All rights reserved. Licensed vocational learning platform in Iraq.",
-    "disclaimer": "Raffle tickets included with courses are complimentary promotional gifts and non-refundable."
+    "disclaimer": "Raffle tickets included with courses are complimentary promotional gifts and non-refundable.",
+    "developerSubtitle": "Platform Engineering & Development"
   },
   "theHook": {
     "badge": "Our Vision & Mission",

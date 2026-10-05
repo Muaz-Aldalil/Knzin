@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { BookOpen, Ticket, Trophy, ArrowRight, ArrowLeft } from 'lucide-react';
-import { useLocale } from 'next-intl';
 
 interface HowItWorksModalProps {
   open: boolean;
@@ -24,36 +24,78 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
   const t = useTranslations('howItWorks');
   const locale = useLocale();
   const isRtl = locale === 'ar';
+  const isAr = locale === 'ar';
+  const { data: cmsData } = useSiteWideCms();
+  const siteShell = cmsData?.sections?.site_shell;
 
-  const steps = [
+  const defaultStepIcons = [BookOpen, Ticket, Trophy];
+  const stepStyles = [
     {
-      step: 1,
-      icon: BookOpen,
-      title: t('step1_title'),
-      desc: t('step1_desc'),
-      badge: t('step1_badge'),
       iconBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
       badgeBg: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
     },
     {
-      step: 2,
-      icon: Ticket,
-      title: t('step2_title'),
-      desc: t('step2_desc'),
-      badge: t('step2_badge'),
       iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
       badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
     },
     {
-      step: 3,
-      icon: Trophy,
-      title: t('step3_title'),
-      desc: t('step3_desc'),
-      badge: t('step3_badge'),
       iconBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
       badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
     },
   ];
+
+  const modalTitle =
+    (isAr ? siteShell?.how_it_works_title_ar : siteShell?.how_it_works_title_en) ||
+    t('title');
+
+  const modalSubtitle =
+    (isAr ? siteShell?.how_it_works_subtitle_ar : siteShell?.how_it_works_subtitle_en) ||
+    t('subtitle');
+
+  const steps =
+    siteShell?.how_it_works_steps && siteShell.how_it_works_steps.length > 0
+      ? siteShell.how_it_works_steps.map((s, idx) => {
+          const style = stepStyles[idx % stepStyles.length];
+          const Icon = defaultStepIcons[idx % defaultStepIcons.length];
+          return {
+            step: s.step || idx + 1,
+            icon: Icon,
+            title: isAr ? s.title_ar : s.title_en,
+            desc: isAr ? s.desc_ar : s.desc_en,
+            badge: (isAr ? s.badge_ar : s.badge_en) || (isAr ? `خطوة ${idx + 1}` : `Step ${idx + 1}`),
+            iconBg: style.iconBg,
+            badgeBg: style.badgeBg,
+          };
+        })
+      : [
+          {
+            step: 1,
+            icon: BookOpen,
+            title: t('step1_title'),
+            desc: t('step1_desc'),
+            badge: t('step1_badge'),
+            iconBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+            badgeBg: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+          },
+          {
+            step: 2,
+            icon: Ticket,
+            title: t('step2_title'),
+            desc: t('step2_desc'),
+            badge: t('step2_badge'),
+            iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+            badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+          },
+          {
+            step: 3,
+            icon: Trophy,
+            title: t('step3_title'),
+            desc: t('step3_desc'),
+            badge: t('step3_badge'),
+            iconBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+            badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+          },
+        ];
 
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
@@ -71,10 +113,10 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
             <span className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
               <BookOpen className="h-5 w-5" />
             </span>
-            {t('title')}
+            {modalTitle}
           </DialogTitle>
           <DialogDescription className="text-sm text-content-muted">
-            {t('subtitle')}
+            {modalSubtitle}
           </DialogDescription>
         </DialogHeader>
 

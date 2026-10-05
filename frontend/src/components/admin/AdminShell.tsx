@@ -8,6 +8,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/components/providers/ThemeProvider';
 import { AdminNav } from './AdminNav';
 import { HowItWorksModal } from '@/components/layout/HowItWorksModal';
+import { AdminSessionTimeoutModal } from './AdminSessionTimeoutModal';
+import { DraftRestoreBanner } from './DraftRestoreBanner';
+import { saveCurrentPageDraft } from '@/lib/admin/draft-preservation';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -38,12 +41,33 @@ interface AdminShellProps {
 }
 
 export function AdminShell({ children }: AdminShellProps) {
-  const { user, capabilities } = useAdminSession();
+  const {
+    user,
+    capabilities,
+    remainingSeconds,
+    isWarning,
+    isExpired,
+    extendSession,
+    isExtending,
+  } = useAdminSession();
   const { logout } = useAuth();
   const locale = useLocale();
   const isAr = locale === 'ar';
   const { resolvedTheme, toggleTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
+
+  // Session expiration handler: Auto-save client draft, clear session, and cleanly redirect to login
+  useEffect(() => {
+    if (!isExpired) return;
+
+    if (typeof window !== 'undefined') {
+      saveCurrentPageDraft(window.location.pathname);
+      void logout().then(() => {
+        const redirectUrl = `/${locale}/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+        window.location.href = redirectUrl;
+      });
+    }
+  }, [isExpired, locale, logout]);
 
   const tNav = useTranslations('nav');
   const tHowItWorks = useTranslations('howItWorks');
@@ -166,10 +190,11 @@ export function AdminShell({ children }: AdminShellProps) {
       <DropdownMenuItem asChild>
         <Link
           href={`/${locale}/admin`}
+          data-testid="admin-dropdown-dashboard"
           className="flex items-center gap-2 w-full cursor-pointer text-xs"
         >
           <LayoutDashboard className="w-4 h-4 text-brand-gold" />
-          <span>{isAr ? 'لوحة المراقبة' : 'Admin Dashboard'}</span>
+          <span>{isAr ? 'لوحة التحكم الإدارية' : 'Admin Dashboard'}</span>
         </Link>
       </DropdownMenuItem>
 
@@ -494,6 +519,7 @@ export function AdminShell({ children }: AdminShellProps) {
 
         {/* Page Inner Content */}
         <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
+          <DraftRestoreBanner />
           {children}
         </main>
       </div>
@@ -502,6 +528,17 @@ export function AdminShell({ children }: AdminShellProps) {
       <HowItWorksModal
         open={isHowItWorksOpen}
         onOpenChange={setIsHowItWorksOpen}
+      />
+
+      {/* 1-Minute Warning Countdown Modal for Admin Session */}
+      <AdminSessionTimeoutModal
+        isOpen={isWarning}
+        remainingSeconds={remainingSeconds}
+        onExtend={async () => {
+          await extendSession();
+        }}
+        onSignOut={handleLogout}
+        isExtending={isExtending}
       />
     </div>
   );
