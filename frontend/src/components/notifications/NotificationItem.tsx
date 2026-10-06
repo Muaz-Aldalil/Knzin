@@ -14,6 +14,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { NotificationItem as NotificationItemType } from '@/types/notification';
+import { sanitizeRelativePath } from '@/lib/safe-url';
 
 interface NotificationItemProps {
   notification: NotificationItemType;
@@ -123,7 +124,10 @@ export function NotificationItem({
     }
     if (action_type === 'navigate' && action_url) {
       onCloseDrawer?.();
-      router.push(action_url);
+      const safePath = sanitizeRelativePath(action_url, '');
+      if (safePath) {
+        router.push(safePath);
+      }
     }
   };
 

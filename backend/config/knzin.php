@@ -39,6 +39,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Authentication & Verification Security
+    |--------------------------------------------------------------------------
+    */
+    'auth' => [
+        'expose_dev_otp' => (bool) env('KNZIN_EXPOSE_DEV_OTP', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Administrative Provisioning & Bootstrap
     |--------------------------------------------------------------------------
     |
@@ -47,7 +56,7 @@ return [
     |
     */
     'admin' => [
-        'bootstrap_token' => env('KNZIN_ADMIN_BOOTSTRAP_TOKEN', 'knzin-bootstrap-secret-change-in-prod'),
+        'bootstrap_token' => env('KNZIN_ADMIN_BOOTSTRAP_TOKEN', env('APP_ENV') === 'production' ? null : 'knzin-bootstrap-secret-change-in-prod'),
         'session_max_age_minutes' => (int) env('KNZIN_ADMIN_SESSION_MAX_AGE_MINUTES', 480),
     ],
 
@@ -61,8 +70,8 @@ return [
     |
     */
     'subsystems' => [
-        'compliance_kyc_secret' => env('KNZIN_COMPLIANCE_KYC_SECRET', 'knzin-kyc-subsystem-auth-secret-default'),
-        'draw_audit_secret' => env('KNZIN_DRAW_AUDIT_SECRET', 'knzin-draw-audit-subsystem-auth-secret-default'),
+        'compliance_kyc_secret' => env('KNZIN_COMPLIANCE_KYC_SECRET', env('APP_ENV') === 'production' ? null : 'knzin-kyc-subsystem-auth-secret-default'),
+        'draw_audit_secret' => env('KNZIN_DRAW_AUDIT_SECRET', env('APP_ENV') === 'production' ? null : 'knzin-draw-audit-subsystem-auth-secret-default'),
     ],
 ];
 

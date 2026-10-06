@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\IdempotencyConflictException;
 use App\Jobs\GenerateTicketsJob;
 use App\Models\Course;
 use App\Models\CoursePart;
@@ -24,13 +25,21 @@ class OrderService
     public function createOrder(array $data, ?string $clientIp = '127.0.0.1', ?string $userAgent = null): array
     {
         return DB::transaction(function () use ($data, $clientIp, $userAgent) {
-            // 1. Strict Idempotency Check with Row Lock inside transaction (DEF-01E)
+            // 1. Strict Idempotency Check with Row Lock inside transaction (DEF-01E / PENT-01)
             $existingOrder = Order::with(['items', 'user'])
                 ->where('idempotency_key', $data['idempotency_key'])
                 ->lockForUpdate()
                 ->first();
 
             if ($existingOrder) {
+                // Authoritative ownership verification: prevent cross-account order replay & disclosure
+                $requestedEmail = strtolower(trim($data['email'] ?? ''));
+                $existingEmail = strtolower(trim($existingOrder->user?->email ?? ''));
+
+                if ($existingEmail !== '' && $requestedEmail !== '' && $existingEmail !== $requestedEmail) {
+                    throw new IdempotencyConflictException('Idempotency key belongs to another customer order.');
+                }
+
                 return [
                     'order' => $existingOrder,
                     'is_duplicate' => true,
@@ -72,8 +81,17 @@ class OrderService
                 $displayPriceLabel = $course->display_price_label;
             }
 
-            // Standard commercial market Iraqi Dinar rounding (Decision D-2)
-            $paidAmountGateway = ($itemType === 'part') ? 2600 : 13000;
+            // Standard commercial market Iraqi Dinar rounding (Decision D-2) or dynamic rate for custom pricing
+            $defaultPaidAmount = ($itemType === 'part')
+                ? (int) config('payments.amounts.part', 2600)
+                : (int) config('payments.amounts.bundle', 13000);
+
+            if (($itemType === 'part' && $totalAmountCents !== 200) || ($itemType === 'bundle' && $totalAmountCents !== 1000)) {
+                $rate = (float) self::FROZEN_EXCHANGE_RATE;
+                $paidAmountGateway = (int) round(($totalAmountCents / 100) * ($rate * 1000));
+            } else {
+                $paidAmountGateway = $defaultPaidAmount;
+            }
 
             // 4. Create Order and OrderItem
             $orderNumber = 'KNZ-ORD-' . date('Y') . '-' . strtoupper(Str::random(6));

@@ -90,6 +90,7 @@ export function useAuth() {
     } finally {
       localStorage.removeItem('knzin_auth_token');
       localStorage.removeItem('knzin_user');
+      localStorage.removeItem('knzin_guest_email');
       queryClient.clear();
       setToken(null);
       setUser(null);

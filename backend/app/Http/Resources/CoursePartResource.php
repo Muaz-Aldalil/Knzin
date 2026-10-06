@@ -14,6 +14,9 @@ class CoursePartResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $isAdmin = (bool) ($request->is('api/v1/admin/*') || $request->user('sanctum')?->isAdmin());
+        $isFree = (bool) ($this->is_free ?? ($this->part_number === 1));
+
         return [
             'id' => $this->id,
             'course_id' => $this->course_id,
@@ -27,10 +30,10 @@ class CoursePartResource extends JsonResource
             'display_price_label' => $this->display_price_label,
             'resource_types' => $this->resource_types ?? ['video', 'pdf'],
             'duration_minutes' => (int) $this->duration_minutes,
-            'is_free' => (bool) ($this->is_free ?? ($this->part_number === 1)),
+            'is_free' => $isFree,
             'is_active' => (bool) $this->is_active,
-            'video_url' => $this->video_url,
-            'pdf_url' => $this->pdf_url,
+            'video_url' => ($isAdmin || $isFree) ? $this->video_url : null,
+            'pdf_url' => ($isAdmin || $isFree) ? $this->pdf_url : null,
             'pdf_title_ar' => $this->pdf_title_ar,
             'pdf_title_en' => $this->pdf_title_en,
             'created_at' => $this->created_at?->toIso8601String(),

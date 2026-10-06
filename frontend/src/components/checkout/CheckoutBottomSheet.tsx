@@ -58,6 +58,11 @@ export default function CheckoutBottomSheet({
 
   const [selectedGateway, setSelectedGateway] = useState<PaymentGatewayType>('zaincash');
   const [isInitiatingPayment, setIsInitiatingPayment] = useState(false);
+  const [checkoutIdempotencyKey, setCheckoutIdempotencyKey] = useState<string>(() => {
+    return typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `idemp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  });
 
   const { createOrder, isLoading, error: apiError } = useCheckout();
 
@@ -73,6 +78,17 @@ export default function CheckoutBottomSheet({
       setEmail(user.email);
     }
   }, [user]);
+
+  // Reset idempotency key per checkout session on open
+  useEffect(() => {
+    if (isOpen) {
+      setCheckoutIdempotencyKey(
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `idemp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+      );
+    }
+  }, [isOpen, item?.courseId, item?.partId, item?.itemType]);
 
   // Lock body scroll when dialog is open to prevent underlying page from scrolling
   useEffect(() => {
@@ -141,6 +157,7 @@ export default function CheckoutBottomSheet({
         item_type: item.itemType,
         course_part_id: item.partId || null,
         quiz_answers: quizAnswers,
+        idempotency_key: checkoutIdempotencyKey,
       });
 
       // Save email for session continuity

@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { ConcludedDrawItem } from '@/types/draws';
 import { SeedCommitmentBadge } from './SeedCommitmentBadge';
 import { Trophy, ExternalLink, CheckCircle2, Ticket, MapPin, Calendar } from 'lucide-react';
+import { sanitizeCtaUrl } from '@/lib/safe-url';
 
 interface ConcludedDrawsListProps {
   draws: ConcludedDrawItem[];
@@ -138,9 +139,9 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
                 {item.winner?.prize_delivered ? t('prizeDelivered') : t('prizeProcessing')}
               </span>
 
-              {item.broadcast_replay_url && (
+              {item.broadcast_replay_url && /^https?:\/\//i.test(item.broadcast_replay_url) && (
                 <a
-                  href={item.broadcast_replay_url}
+                  href={sanitizeCtaUrl(item.broadcast_replay_url, '#')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"

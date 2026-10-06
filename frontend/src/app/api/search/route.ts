@@ -14,8 +14,8 @@ function checkRateLimit(ip: string): { allowedLlm: boolean; blocked: boolean } {
   const now = Date.now();
   const entry = searchRateLimits.get(ip);
 
-  // Periodically cleanup expired entries
-  if (searchRateLimits.size > 5000) {
+  // Proactive cleanup to prevent unbounded map memory growth
+  if (searchRateLimits.size > 1000) {
     for (const [key, value] of searchRateLimits.entries()) {
       if (now > value.resetAt) searchRateLimits.delete(key);
     }
@@ -53,7 +53,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    // Prioritize trusted proxy headers; for forwarded chains use the closest proxy hop
+    const clientIp =
+      req.headers.get('cf-connecting-ip') ||
+      req.headers.get('x-real-ip') ||
+      req.headers.get('x-forwarded-for')?.split(',').pop()?.trim() ||
+      '127.0.0.1';
     const rateStatus = checkRateLimit(clientIp);
 
     if (rateStatus.blocked) {

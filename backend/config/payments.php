@@ -57,7 +57,7 @@ return [
     'gateways' => [
         'zaincash' => [
             'msisdn' => env('ZAINCASH_MSISDN', '9647833000000'),
-            'secret' => env('ZAINCASH_SECRET', 'test_secret_key_change_in_production'),
+            'secret' => env('ZAINCASH_SECRET', env('APP_ENV') === 'production' ? null : 'test_secret_key_change_in_production'),
             'merchant_id' => env('ZAINCASH_MERCHANT_ID', '5ff8561dad82562d9502e614'),
             'is_production' => (bool) env('ZAINCASH_IS_PRODUCTION', false),
             'init_url' => env(
@@ -84,7 +84,7 @@ return [
         'asiahawala' => [
             'merchant_id' => env('ASIAHAWALA_MERCHANT_ID', 'AH_TEST_MERCHANT_01'),
             'api_key' => env('ASIAHAWALA_API_KEY', 'ah_test_api_key_12345'),
-            'secret_key' => env('ASIAHAWALA_SECRET_KEY', 'ah_test_secret_key_67890'),
+            'secret_key' => env('ASIAHAWALA_SECRET_KEY', env('APP_ENV') === 'production' ? null : 'ah_test_secret_key_67890'),
             'endpoint' => env('ASIAHAWALA_ENDPOINT', 'https://sandbox.asiahawala.iq'),
             'callback_url' => env('ASIAHAWALA_CALLBACK_URL', 'http://127.0.0.1:8000/api/v1/payments/webhooks/asiahawala'),
         ],

@@ -42,7 +42,7 @@ class CheckoutController extends ApiController
     /**
      * Get order details by public reference number.
      */
-    public function show(string $orderNumber): JsonResponse
+    public function show(string $orderNumber, \Illuminate\Http\Request $request): JsonResponse
     {
         $order = $this->orderService->getOrderByNumber($orderNumber);
 
@@ -53,6 +53,34 @@ class CheckoutController extends ApiController
                 [],
                 Response::HTTP_NOT_FOUND
             );
+        }
+
+        // Authorize order access (PENT-04)
+        /** @var \App\Models\User|null $authUser */
+        $authUser = $request->user('sanctum') ?? $request->user();
+
+        if ($authUser) {
+            if ($authUser->id !== $order->user_id && !$authUser->isAdmin()) {
+                return $this->failResponse(
+                    'ERR_FORBIDDEN',
+                    'You are not authorized to view this order.',
+                    [],
+                    Response::HTTP_FORBIDDEN
+                );
+            }
+        } else {
+            // For unauthenticated access, require matching customer email
+            $queryEmail = strtolower(trim((string) $request->query('email', '')));
+            $orderEmail = strtolower(trim($order->user?->email ?? ''));
+
+            if ($orderEmail !== '' && $queryEmail !== $orderEmail) {
+                return $this->failResponse(
+                    'ERR_UNAUTHORIZED',
+                    'Authentication or verified order email required to view order details.',
+                    [],
+                    Response::HTTP_UNAUTHORIZED
+                );
+            }
         }
 
         return $this->successResponse(new OrderResource($order));

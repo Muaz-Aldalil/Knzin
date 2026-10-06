@@ -21,11 +21,11 @@ class PrizeService
      */
     public function createPrize(Draw $draw, array $data, User $actor, ?AdminAuditContext $auditContext = null): Prize
     {
-        if ($draw->status === 'completed') {
-            throw new AdminStateConflictException('Cannot add prizes to a concluded draw.');
-        }
-
         return DB::transaction(function () use ($draw, $data, $auditContext) {
+            $lockedDraw = Draw::where('id', $draw->id)->lockForUpdate()->firstOrFail();
+            if ($lockedDraw->status === 'completed') {
+                throw new AdminStateConflictException('Cannot add prizes to a concluded draw.');
+            }
             $valuationCents = isset($data['valuation_usd_cents']) ? (int) $data['valuation_usd_cents'] : 0;
             $defaultIqdLabel = number_format(($valuationCents / 100) * 1310) . ' IQD';
 
@@ -64,12 +64,11 @@ class PrizeService
      */
     public function updatePrize(Prize $prize, array $data, User $actor, ?AdminAuditContext $auditContext = null): Prize
     {
-        $draw = $prize->draw;
-        if ($draw && $draw->status === 'completed') {
-            throw new AdminStateConflictException('Cannot modify prizes of a concluded draw.');
-        }
-
         return DB::transaction(function () use ($prize, $data, $auditContext) {
+            $lockedDraw = Draw::where('id', $prize->draw_id)->lockForUpdate()->first();
+            if ($lockedDraw && $lockedDraw->status === 'completed') {
+                throw new AdminStateConflictException('Cannot modify prizes of a concluded draw.');
+            }
             $before = $prize->only([
                 'title_ar', 'title_en', 'description_ar', 'description_en',
                 'display_iqd_label', 'image_url', 'valuation_usd_cents', 'category'
@@ -106,18 +105,18 @@ class PrizeService
      */
     public function deletePrize(Prize $prize, User $actor, ?AdminAuditContext $auditContext = null): void
     {
-        $draw = $prize->draw;
-        if ($draw && $draw->status === 'completed') {
-            throw new AdminStateConflictException('Cannot delete prizes from a concluded draw.');
-        }
-
-        // Canonical winner protection
-        $hasWinnerReference = DrawWinner::where('prize_id', $prize->id)->exists();
-        if ($hasWinnerReference) {
-            throw new AdminStateConflictException('Cannot delete prize: canonical winner record references this prize.');
-        }
-
         DB::transaction(function () use ($prize, $auditContext) {
+            $lockedDraw = Draw::where('id', $prize->draw_id)->lockForUpdate()->first();
+            if ($lockedDraw && $lockedDraw->status === 'completed') {
+                throw new AdminStateConflictException('Cannot delete prizes from a concluded draw.');
+            }
+
+            // Canonical winner protection
+            $hasWinnerReference = DrawWinner::where('prize_id', $prize->id)->exists();
+            if ($hasWinnerReference) {
+                throw new AdminStateConflictException('Cannot delete prize: canonical winner record references this prize.');
+            }
+
             $before = [
                 'id' => $prize->id,
                 'draw_id' => $prize->draw_id,

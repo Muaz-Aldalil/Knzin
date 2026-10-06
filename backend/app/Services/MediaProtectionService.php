@@ -22,7 +22,7 @@ class MediaProtectionService
     public function generatePlaybackToken(?User $user, Course $course, CoursePart $part): array
     {
         $partNumber = (int) $part->part_number;
-        $isFree = (bool) ($part->is_free || $partNumber === 1);
+        $isFree = (bool) ($part->is_free ?? ($partNumber === 1));
 
         // Free preview part (part 1 by default, or any part configured as free by admin)
         if ($isFree) {

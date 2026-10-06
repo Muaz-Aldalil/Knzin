@@ -73,10 +73,11 @@ export async function apiClient<T = any>(
     headers,
   });
 
-  // Automatically evict stale tokens on 401 Unauthorized (PROD-007)
+  // Automatically evict stale tokens on 401 Unauthorized (PROD-007 & F4)
   if (response.status === 401 && typeof window !== 'undefined') {
     localStorage.removeItem('knzin_auth_token');
     localStorage.removeItem('knzin_user');
+    window.dispatchEvent(new Event('storage'));
   }
 
   const contentType = response.headers.get('content-type');

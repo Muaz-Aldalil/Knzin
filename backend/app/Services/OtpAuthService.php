@@ -61,13 +61,13 @@ class OtpAuthService
             ]);
         }
 
-        $isLocalOrTesting = app()->environment(['local', 'testing']);
+        $exposeDevCode = app()->environment('testing') || (bool) config('knzin.auth.expose_dev_otp', false);
 
         return [
             'email' => $normalizedEmail,
             'expires_in_seconds' => self::CODE_TTL_SECONDS,
-            // Expose dev_code strictly in non-production environments for automated & local verification
-            'dev_code' => $isLocalOrTesting ? $code : null,
+            // Expose dev_code strictly in automated test suite or when explicitly configured via KNZIN_EXPOSE_DEV_OTP
+            'dev_code' => $exposeDevCode ? $code : null,
         ];
     }
 

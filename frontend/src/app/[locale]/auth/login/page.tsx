@@ -72,7 +72,7 @@ function LoginContent() {
     try {
       const res = await sendOtp(targetEmail);
       setEmail(targetEmail);
-      if (res.dev_code) {
+      if (process.env.NODE_ENV !== 'production' && res.dev_code) {
         setDevCode(res.dev_code);
       }
       setStep('otp');
@@ -313,7 +313,7 @@ function LoginContent() {
           /* Step 2: OTP Verification Form */
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             {/* Dev Code Helper Hint in development */}
-            {devCode && (
+            {process.env.NODE_ENV !== 'production' && devCode && (
               <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                 {isRtl ? 'رمز التحقق (بيئة التطوير): ' : 'Dev Verification Code: '}
                 <span className="font-mono text-sm tracking-widest">{devCode}</span>

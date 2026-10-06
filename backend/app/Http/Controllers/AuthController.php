@@ -33,14 +33,13 @@ class AuthController extends ApiController
             ->first();
 
         if ($user) {
-            if ($user->auth_provider === 'google' || $user->isVerified()) {
-                return $this->failResponse(
-                    'AUTH_GOOGLE_ACCOUNT_EXISTS',
-                    'هذا البريد الإلكتروني مسجل بحساب مفعل. يرجى تسجيل الدخول للوصول إلى حسابك.',
-                    [],
-                    Response::HTTP_CONFLICT
-                );
-            }
+            $code = ($user->auth_provider === 'google') ? 'AUTH_GOOGLE_ACCOUNT_EXISTS' : 'AUTH_ACCOUNT_EXISTS';
+            return $this->failResponse(
+                $code,
+                'هذا البريد الإلكتروني مسجل بحساب مسبقاً. يرجى تسجيل الدخول للوصول إلى حسابك.',
+                [],
+                Response::HTTP_CONFLICT
+            );
         } else {
             $user = User::create([
                 'email' => $email,
@@ -192,7 +191,7 @@ class AuthController extends ApiController
             $params['redirect'] = $request->input('redirect');
         }
 
-        $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+        $frontendUrl = config('app.frontend_url', 'http://localhost:3000');
         $redirectUrl = rtrim($frontendUrl, '/') . '/ar/auth/callback?' . http_build_query($params);
 
         return redirect()->away($redirectUrl);

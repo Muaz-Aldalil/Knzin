@@ -27,7 +27,7 @@ class PaymentWebhookController extends ApiController
      */
     public function simulator(Request $request): JsonResponse
     {
-        if (!config('payments.simulator_enabled', false) && !app()->environment(['local', 'testing'])) {
+        if (app()->environment('production') || !config('payments.simulator_enabled', false)) {
             return response()->json([
                 'success' => false,
                 'status' => 'fail',
@@ -198,8 +198,11 @@ class PaymentWebhookController extends ApiController
     ): JsonResponse {
         return DB::transaction(function () use ($gateway, $transactionRef, $verification, $webhookLog) {
             /** @var PaymentTransaction|null $transaction */
-            $transaction = PaymentTransaction::where('gateway_transaction_id', $transactionRef)
-                ->orWhere('id', $transactionRef)
+            $transaction = PaymentTransaction::where('gateway', $gateway)
+                ->where(function ($query) use ($transactionRef) {
+                    $query->where('gateway_transaction_id', $transactionRef)
+                        ->orWhere('id', $transactionRef);
+                })
                 ->lockForUpdate()
                 ->first();
 

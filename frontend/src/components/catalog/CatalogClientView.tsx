@@ -12,6 +12,7 @@ import { FaqAccordion } from '@/components/faq/FaqAccordion';
 import { useCatalog } from '@/hooks/useCatalog';
 import { usePublicLandingCms } from '@/hooks/admin/useAdminCms';
 import { ContentUpdateNotification } from '@/components/common/ContentUpdateNotification';
+import { sanitizeCtaUrl } from '@/lib/safe-url';
 import {
   Loader2,
   AlertCircle,
@@ -94,7 +95,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
         {heroCms?.primary_cta_label_ar && (
           <div className="pt-2 flex items-center justify-center gap-3">
             <a
-              href={heroCms.primary_cta_url || '#catalog'}
+              href={sanitizeCtaUrl(heroCms.primary_cta_url, '#catalog')}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-gold hover:bg-brand-gold-hover text-brand-navy font-bold text-sm shadow-md transition-all"
             >
               <span>{isAr ? heroCms.primary_cta_label_ar : heroCms.primary_cta_label_en}</span>
@@ -122,7 +123,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
             </div>
 
             <a
-              href={bannerCms.cta_url || '#catalog'}
+              href={sanitizeCtaUrl(bannerCms.cta_url, '#catalog')}
               className="shrink-0 px-5 py-3 rounded-xl bg-brand-gold hover:bg-brand-gold-hover text-brand-navy font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2"
             >
               <span>{isAr ? bannerCms.cta_label_ar : bannerCms.cta_label_en}</span>
@@ -209,7 +210,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
               </div>
 
               <Link
-                href={`/${locale}${referralCms.cta_url || '/affiliate'}`}
+                href={`/${locale}${sanitizeCtaUrl(referralCms.cta_url, '/affiliate').startsWith('/') ? sanitizeCtaUrl(referralCms.cta_url, '/affiliate') : '/affiliate'}`}
                 className="mt-3 inline-flex items-center justify-between w-full py-2.5 px-4 rounded-xl bg-surface-elevated hover:bg-surface border border-border-subtle text-xs font-bold text-content-primary transition-colors"
               >
                 <span>{isAr ? referralCms.cta_label_ar : referralCms.cta_label_en}</span>

@@ -44,7 +44,7 @@ class PaymentController extends ApiController
         $gateway = $request->input('gateway');
         $locale = $request->input('locale', 'ar');
 
-        if ($gateway === 'simulator' && !config('payments.simulator_enabled', false) && !app()->environment(['local', 'testing'])) {
+        if ($gateway === 'simulator' && (app()->environment('production') || !config('payments.simulator_enabled', false))) {
             return response()->json([
                 'success' => false,
                 'status' => 'fail',

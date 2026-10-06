@@ -22,7 +22,15 @@ export default function OrderSummaryPage() {
   } = useQuery<CreatedOrder>({
     queryKey: ['order', orderNumber],
     queryFn: async () => {
-      return await apiClient<CreatedOrder>(`/checkout/orders/${orderNumber}`);
+      let emailParam = '';
+      if (typeof window !== 'undefined') {
+        const searchParams = new URLSearchParams(window.location.search);
+        emailParam = searchParams.get('email') || localStorage.getItem('knzin_guest_email') || '';
+      }
+      const endpoint = emailParam
+        ? `/checkout/orders/${orderNumber}?email=${encodeURIComponent(emailParam)}`
+        : `/checkout/orders/${orderNumber}`;
+      return await apiClient<CreatedOrder>(endpoint);
     },
     enabled: !!orderNumber,
   });

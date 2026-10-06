@@ -168,7 +168,7 @@ export function LessonVideoPlayer({
       )}
 
       {isPlaying ? (
-        parsedVideo.embedUrl ? (
+        parsedVideo.provider !== 'direct' && parsedVideo.embedUrl ? (
           <iframe
             src={parsedVideo.embedUrl}
             title={partTitle}

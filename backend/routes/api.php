@@ -66,7 +66,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/payments/webhooks/asiahawala', [PaymentWebhookController::class, 'asiahawala']);
 
     // Payment Sandbox Simulator & Financial Testing Tools (Feature 007 / 010)
-    Route::prefix('payments/simulator')->group(function () {
+    Route::prefix('payments/simulator')->middleware('throttle:60,1')->group(function () {
         Route::get('/transactions', [PaymentSimulatorController::class, 'listTransactions']);
         Route::post('/seed-scenario', [PaymentSimulatorController::class, 'seedScenario']);
         Route::post('/fast-forward-maturation', [PaymentSimulatorController::class, 'fastForwardMaturation']);
@@ -113,7 +113,11 @@ Route::prefix('v1')->group(function () {
 
     // Media Protection Streaming & Downloads (US2 - Feature 005)
     Route::get('/media/stream/{courseSlug}/{partNumber}', function ($courseSlug, $partNumber, Request $request) {
-        if ((int) $partNumber > 1 && !$request->hasValidSignature()) {
+        $course = \App\Models\Course::where('slug', $courseSlug)->first();
+        $part = $course ? \App\Models\CoursePart::where('course_id', $course->id)->where('part_number', (int) $partNumber)->first() : null;
+        $isFree = $part ? (bool) ($part->is_free ?? ((int) $partNumber === 1)) : false;
+
+        if (!$isFree && !$request->hasValidSignature()) {
             abort(403, 'Invalid or expired media signature.');
         }
 

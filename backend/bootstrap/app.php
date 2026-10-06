@@ -3,6 +3,7 @@
 use App\Exceptions\AdminStateConflictException;
 use App\Exceptions\AmbiguousCommitException;
 use App\Exceptions\CoPrizeApprovalsIncompleteException;
+use App\Exceptions\IdempotencyConflictException;
 use App\Exceptions\LastAdminLockoutException;
 use App\Exceptions\PayoutStateConflictException;
 use App\Exceptions\ProtectedFieldException;
@@ -87,6 +88,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 'status' => 'fail',
                 'code' => 'ERR_STATE_CONFLICT',
                 'message' => $e->getMessage() ?: 'State conflict.',
+            ], 409);
+        });
+
+        $exceptions->render(function (IdempotencyConflictException $e, Request $request) {
+            return response()->json([
+                'status' => 'fail',
+                'code' => 'ERR_IDEMPOTENCY_KEY_CONFLICT',
+                'message' => $e->getMessage() ?: 'Idempotency key belongs to another customer order.',
             ], 409);
         });
 
