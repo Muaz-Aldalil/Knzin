@@ -850,3 +850,20 @@ All project reports, documentation exports, printable summaries, and PDF generat
 * The **OpenCode CLI** acts as the implementer: executing the document rendering, styling, and PDF compilation.
 * You must not bypass this delegation model for PDF artifacts unless the human owner explicitly authorizes direct generation.
 
+---
+
+# 33. EXECUTION TRANSPARENCY & STATUS BANNERS
+
+The human operator must never experience silence or ambiguity regarding agent activity during background tasks or network events.
+
+### Background Task Transparency
+Whenever initiating or waiting on an asynchronous command or background task (such as test suites, builds, or migrations), you MUST output an explicit status message before concluding your turn:
+
+> ⏳ **Running Background Tasks/Tests:** `[Command or Task Name]` — *Awaiting process completion...*
+
+### Network Drop & Reconnection Protocol
+Whenever recovering from a network drop or socket disconnect, you MUST immediately open your turn acknowledging the event:
+
+> ⚠️ **Internet Disconnected / Connection Re-established:** *Resuming execution from [last active step]...*
+
+
