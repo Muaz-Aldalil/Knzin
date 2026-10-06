@@ -182,6 +182,9 @@ export function LessonVideoPlayer({
             controls
             autoPlay
             playsInline
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onEnded={() => setIsPlaying(false)}
             className="w-full h-full object-contain bg-black"
           />
         )

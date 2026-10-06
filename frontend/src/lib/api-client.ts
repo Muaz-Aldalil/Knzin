@@ -40,7 +40,13 @@ export class ApiError extends Error {
   }
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === 'production' ? '/api/v1' : 'http://localhost:8000/api/v1');
+
+export function getApiBaseUrl(): string {
+  return API_BASE_URL;
+}
 
 export async function apiClient<T = any>(
   endpoint: string,
@@ -66,6 +72,12 @@ export async function apiClient<T = any>(
     ...options,
     headers,
   });
+
+  // Automatically evict stale tokens on 401 Unauthorized (PROD-007)
+  if (response.status === 401 && typeof window !== 'undefined') {
+    localStorage.removeItem('knzin_auth_token');
+    localStorage.removeItem('knzin_user');
+  }
 
   const contentType = response.headers.get('content-type');
   const isJson = contentType && contentType.includes('application/json');

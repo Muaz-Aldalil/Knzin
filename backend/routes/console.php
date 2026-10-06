@@ -9,13 +9,13 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 // Phase 7: Scheduled hourly run for 48h order TTL expiration
-Schedule::command('orders:expire-pending')->hourly();
+Schedule::command('orders:expire-pending')->hourly()->withoutOverlapping(30);
 
 // Feature 005: Scheduled reconciliation for asynchronous ticket generation
-Schedule::command('knzin:reconcile-ticket-generation')->everyFiveMinutes();
+Schedule::command('knzin:reconcile-ticket-generation')->everyFiveMinutes()->withoutOverlapping(10);
 
 // Feature 006: Scheduled hourly maturation for affiliate sales commissions
-Schedule::command('knzin:mature-commissions')->hourly();
+Schedule::command('knzin:mature-commissions')->hourly()->withoutOverlapping(30);
 
 // Feature 007: Scheduled reconciliation for dropped payment transactions
 Schedule::command('payments:reconcile')->everyFiveMinutes()->withoutOverlapping(10);

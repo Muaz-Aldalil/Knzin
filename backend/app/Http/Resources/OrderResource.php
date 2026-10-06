@@ -18,7 +18,6 @@ class OrderResource extends JsonResource
         return [
             'id' => $this->id,
             'order_number' => $this->order_number,
-            'user_id' => $this->user_id,
             'total_amount_cents' => (int) $this->total_amount_cents,
             'currency' => $this->currency,
             'exchange_rate' => (string) $this->exchange_rate,
@@ -26,7 +25,6 @@ class OrderResource extends JsonResource
             'display_price_label' => $this->display_price_label,
             'promotional_tickets_granted' => (int) $this->promotional_tickets_granted,
             'status' => $this->status,
-            'idempotency_key' => $this->idempotency_key,
             'legal_terms_agreed' => (bool) $this->legal_terms_agreed,
             'expires_at' => $this->expires_at instanceof \Carbon\CarbonInterface
                 ? $this->expires_at->toIso8601String()

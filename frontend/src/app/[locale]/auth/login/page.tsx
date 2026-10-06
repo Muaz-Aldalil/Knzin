@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
-import { ApiError } from '@/lib/api-client';
+import { ApiError, getApiBaseUrl } from '@/lib/api-client';
 import { fetchAdminCapabilities } from '@/lib/admin/access';
 import { resolvePostLoginDestination, sanitizeRedirectTarget } from '@/lib/auth-redirect';
 import { Mail, ArrowLeft, ArrowRight, ShieldCheck, Sparkles, Loader2, KeyRound, UserCheck, AlertCircle } from 'lucide-react';
@@ -54,7 +54,7 @@ function LoginContent() {
     }
   }, [isLoggedIn, goToDestination]);
 
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+  const backendUrl = getApiBaseUrl();
 
   const handleSendOtp = async (e?: React.FormEvent, customEmail?: string) => {
     if (e) e.preventDefault();

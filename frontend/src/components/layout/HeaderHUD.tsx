@@ -41,6 +41,7 @@ import { useLearnerTickets } from '@/hooks/useLearnerTickets';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAccess } from '@/hooks/admin/useAdminAccess';
 import { USER_MENU_ITEMS, UserMenuItemId } from '@/lib/user-menu';
+import { getApiBaseUrl } from '@/lib/api-client';
 
 const USER_MENU_ICONS: Record<UserMenuItemId, { icon: React.ElementType; className: string }> = {
   'learning-hub': { icon: UserIcon, className: 'text-primary' },
@@ -146,7 +147,7 @@ export default function HeaderHUD() {
   };
 
   const handleGoogleLogin = () => {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+    const backendUrl = getApiBaseUrl();
     window.location.href = `${backendUrl}/auth/google/redirect`;
   };
 

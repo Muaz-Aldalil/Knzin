@@ -11,6 +11,7 @@ import { AffiliateKpiCards } from './AffiliateKpiCards';
 import { ReferralLinkCard } from './ReferralLinkCard';
 import { AffiliateLedgerTable } from './AffiliateLedgerTable';
 import { PayoutRequestModal } from './PayoutRequestModal';
+import { getApiBaseUrl } from '@/lib/api-client';
 
 interface AffiliateDashboardViewProps {
   onOpenPayoutModal?: () => void;
@@ -56,7 +57,7 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
 
   // State 1: Unauthenticated Guard
   if (isUnauthenticated) {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+    const backendUrl = getApiBaseUrl();
 
     const onboardingTitle =
       (isAr ? affPortal?.onboarding_title_ar : affPortal?.onboarding_title_en) ||
@@ -80,12 +81,12 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
           {onboardingDesc}
         </p>
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href={`${backendUrl}/auth/google/redirect`}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold transition-all shadow-xs"
+          <Link
+            href="/auth/login?redirect=/affiliate"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold transition-all shadow-xs cursor-pointer"
           >
-            <span>{isRtl ? 'الدخول عبر حساب Google' : 'Sign in with Google'}</span>
-          </a>
+            <span>{isRtl ? 'تسجيل الدخول / حساب جديد' : 'Sign In / Register'}</span>
+          </Link>
           <Link
             href="/"
             className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-xl bg-surface-secondary hover:bg-surface-elevated text-content-secondary text-sm font-semibold transition-colors border border-border-subtle"

@@ -30,34 +30,34 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/guest', [AuthController::class, 'guest'])->middleware('throttle:60,1');
     Route::post('/auth/otp/send', [AuthController::class, 'sendOtp'])->middleware('throttle:10,1');
     Route::post('/auth/otp/verify', [AuthController::class, 'verifyOtp'])->middleware('throttle:15,1');
-    Route::get('/auth/google/redirect', [AuthController::class, 'googleRedirect']);
-    Route::get('/auth/google/callback', [AuthController::class, 'googleCallback']);
+    Route::get('/auth/google/redirect', [AuthController::class, 'googleRedirect'])->middleware('throttle:30,1');
+    Route::get('/auth/google/callback', [AuthController::class, 'googleCallback'])->middleware('throttle:30,1');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/auth/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
-    // Catalog Endpoints (US2)
-    Route::get('/catalog/courses', [CatalogController::class, 'index']);
-    Route::get('/catalog/courses/{slug}', [CatalogController::class, 'show']);
+    // Catalog Endpoints (US2) - Throttled 120 req/min (PROD-029)
+    Route::get('/catalog/courses', [CatalogController::class, 'index'])->middleware('throttle:120,1');
+    Route::get('/catalog/courses/{slug}', [CatalogController::class, 'show'])->middleware('throttle:120,1');
 
-    // Promotional Draws Endpoints (US1 & US3)
-    Route::get('/draws/active', [DrawController::class, 'active']);
-    Route::get('/draws/concluded', [DrawController::class, 'concluded']);
+    // Promotional Draws Endpoints (US1 & US3) - Throttled 120 req/min (PROD-029)
+    Route::get('/draws/active', [DrawController::class, 'active'])->middleware('throttle:120,1');
+    Route::get('/draws/concluded', [DrawController::class, 'concluded'])->middleware('throttle:120,1');
 
-    // Public Activity Feed Endpoints (US3 - Feature 004)
-    Route::get('/activity/recent', [ActivityController::class, 'recent']);
+    // Public Activity Feed Endpoints (US3 - Feature 004) - Throttled 120 req/min (PROD-029)
+    Route::get('/activity/recent', [ActivityController::class, 'recent'])->middleware('throttle:120,1');
 
-    // Public Landing & Site-Wide CMS Content
-    Route::get('/content/landing', [\App\Http\Controllers\PublicLandingCmsController::class, 'index']);
-    Route::get('/content/site-wide', [\App\Http\Controllers\PublicLandingCmsController::class, 'siteWide']);
+    // Public Landing & Site-Wide CMS Content - Throttled 120 req/min (PROD-029)
+    Route::get('/content/landing', [\App\Http\Controllers\PublicLandingCmsController::class, 'index'])->middleware('throttle:120,1');
+    Route::get('/content/site-wide', [\App\Http\Controllers\PublicLandingCmsController::class, 'siteWide'])->middleware('throttle:120,1');
 
     // Referral Resolution Endpoints (Feature 006 - US1)
     Route::get('/referrals/resolve/{codeOrSlug}', [ReferralController::class, 'resolve'])->middleware('throttle:60,1');
 
-    // Checkout Endpoints (US1) - Throttled 60 req/min (DEF-02G)
+    // Checkout Endpoints (US1) - Throttled 60 req/min (DEF-02G, PROD-029)
     Route::post('/checkout/orders', [CheckoutController::class, 'store'])->middleware('throttle:60,1');
-    Route::get('/checkout/orders/{orderNumber}', [CheckoutController::class, 'show']);
+    Route::get('/checkout/orders/{orderNumber}', [CheckoutController::class, 'show'])->middleware('throttle:60,1');
     Route::post('/checkout/orders/{orderNumber}/pay', [PaymentController::class, 'pay'])->middleware('throttle:60,1');
-    Route::get('/checkout/orders/{orderNumber}/payment-status', [PaymentController::class, 'paymentStatus']);
+    Route::get('/checkout/orders/{orderNumber}/payment-status', [PaymentController::class, 'paymentStatus'])->middleware('throttle:60,1');
 
     // Payment Webhook Ingestion Endpoints (Feature 007)
     Route::post('/payments/webhooks/simulator', [PaymentWebhookController::class, 'simulator']);

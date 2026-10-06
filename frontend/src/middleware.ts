@@ -13,6 +13,7 @@ export default function middleware(request: NextRequest) {
       maxAge: 30 * 24 * 60 * 60,
       path: "/",
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
   }
 
@@ -22,6 +23,7 @@ export default function middleware(request: NextRequest) {
       maxAge: 30 * 24 * 60 * 60,
       path: "/",
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
   }
 

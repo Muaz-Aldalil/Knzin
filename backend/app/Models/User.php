@@ -140,7 +140,7 @@ class User extends Authenticatable
      */
      public function isVerified(): bool
      {
-         return !is_null($this->email_verified_at) && $this->auth_provider === 'google';
+         return !is_null($this->email_verified_at) && $this->auth_provider !== 'guest';
      }
 
     /**

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { getApiBaseUrl } from '@/lib/api-client';
 
 interface GoogleLoginButtonProps {
   className?: string;
@@ -15,7 +16,7 @@ export default function GoogleLoginButton({
   const t = useTranslations('nav');
 
   const handleLogin = () => {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+    const backendUrl = getApiBaseUrl();
     let url = `${backendUrl}/auth/google/redirect`;
 
     if (mockEmail) {

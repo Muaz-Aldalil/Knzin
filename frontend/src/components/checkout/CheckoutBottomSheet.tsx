@@ -146,18 +146,6 @@ export default function CheckoutBottomSheet({
       // Save email for session continuity
       localStorage.setItem('knzin_guest_email', cleanEmail);
 
-      // Record purchased part or bundle entitlement for immediate session unlock (DEF-05C)
-      try {
-        const key = `knzin_purchased_parts_${item.courseId}`;
-        const existing = JSON.parse(localStorage.getItem(key) || '[]');
-        if (item.itemType === 'bundle') {
-          localStorage.setItem(key, JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
-        } else if (item.partNumber) {
-          const updated = Array.from(new Set([...existing, item.partNumber]));
-          localStorage.setItem(key, JSON.stringify(updated));
-        }
-      } catch {}
-
       // Immediately initiate gateway checkout session (Feature 007 - US5)
       try {
         setIsInitiatingPayment(true);
