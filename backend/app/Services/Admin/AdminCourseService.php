@@ -67,10 +67,11 @@ class AdminCourseService
 
             if ($course->is_active) {
                 DB::afterCommit(function () use ($course) {
-                    $users = User::where('status', 'active')->get();
-                    foreach ($users as $user) {
-                        $user->notify(new NewCourseNotification($course, $user));
-                    }
+                    User::where('status', 'active')->chunkById(250, function ($users) use ($course) {
+                        foreach ($users as $user) {
+                            $user->notify(new NewCourseNotification($course, $user));
+                        }
+                    });
                 });
             }
 
@@ -167,10 +168,11 @@ class AdminCourseService
 
             if ($course->is_active) {
                 DB::afterCommit(function () use ($course) {
-                    $users = User::where('status', 'active')->get();
-                    foreach ($users as $user) {
-                        $user->notify(new NewCourseNotification($course, $user));
-                    }
+                    User::where('status', 'active')->chunkById(250, function ($users) use ($course) {
+                        foreach ($users as $user) {
+                            $user->notify(new NewCourseNotification($course, $user));
+                        }
+                    });
                 });
             }
 
@@ -501,18 +503,18 @@ class AdminCourseService
                 return;
             }
 
-            $users = User::whereIn('id', $userIds)->where('status', 'active')->get();
+            User::whereIn('id', $userIds)->where('status', 'active')->chunkById(250, function ($users) use ($course, $version) {
+                foreach ($users as $user) {
+                    $notificationId = \Ramsey\Uuid\Uuid::uuid5(
+                        \Ramsey\Uuid\Uuid::NAMESPACE_OID,
+                        "admin_update:course:{$course->id}:v{$version}:{$user->id}"
+                    )->toString();
 
-            foreach ($users as $user) {
-                $notificationId = \Ramsey\Uuid\Uuid::uuid5(
-                    \Ramsey\Uuid\Uuid::NAMESPACE_OID,
-                    "admin_update:course:{$course->id}:v{$version}:{$user->id}"
-                )->toString();
-
-                if (!DB::table('notifications')->where('id', $notificationId)->exists()) {
-                    $user->notify(new CourseContentUpdatedNotification($course, $version, $user));
+                    if (!DB::table('notifications')->where('id', $notificationId)->exists()) {
+                        $user->notify(new CourseContentUpdatedNotification($course, $version, $user));
+                    }
                 }
-            }
+            });
         });
     }
 

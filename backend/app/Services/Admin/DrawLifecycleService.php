@@ -199,12 +199,13 @@ class DrawLifecycleService
             $prizes = Prize::where('draw_id', $lockedDraw->id)->get();
             if ($prizes->isNotEmpty()) {
                 DB::afterCommit(function () use ($lockedDraw, $prizes) {
-                    $users = User::where('status', 'active')->get();
-                    foreach ($prizes as $prize) {
-                        foreach ($users as $user) {
-                            $user->notify(new NewPrizeNotification($prize, $lockedDraw, $user));
+                    User::where('status', 'active')->chunkById(250, function ($users) use ($prizes, $lockedDraw) {
+                        foreach ($prizes as $prize) {
+                            foreach ($users as $user) {
+                                $user->notify(new NewPrizeNotification($prize, $lockedDraw, $user));
+                            }
                         }
-                    }
+                    });
                 });
             }
 

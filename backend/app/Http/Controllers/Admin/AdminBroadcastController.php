@@ -44,23 +44,23 @@ class AdminBroadcastController extends ApiController
             return $record;
         });
 
-        // Query active users who haven't opted out of admin broadcasts
-        $recipients = User::query()
-            ->where('status', 'active')
-            ->with('notificationPreferences')
-            ->get();
-
         $sentCount = 0;
 
-        foreach ($recipients as $recipient) {
-            $prefs = $recipient->notificationPreferences;
-            if ($prefs && ($prefs->unsubscribed_at !== null || $prefs->admin_broadcasts === false)) {
-                continue;
-            }
+        // Query active users in flat memory chunks who haven't opted out of admin broadcasts
+        User::query()
+            ->where('status', 'active')
+            ->with('notificationPreferences')
+            ->chunkById(250, function ($recipients) use ($broadcast, &$sentCount) {
+                foreach ($recipients as $recipient) {
+                    $prefs = $recipient->notificationPreferences;
+                    if ($prefs && ($prefs->unsubscribed_at !== null || $prefs->admin_broadcasts === false)) {
+                        continue;
+                    }
 
-            $recipient->notify(new AdminBroadcastNotification($broadcast, $recipient));
-            $sentCount++;
-        }
+                    $recipient->notify(new AdminBroadcastNotification($broadcast, $recipient));
+                    $sentCount++;
+                }
+            });
 
         $broadcast->update(['sent_count' => $sentCount]);
 

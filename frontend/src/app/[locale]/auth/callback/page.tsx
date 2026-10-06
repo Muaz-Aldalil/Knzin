@@ -28,6 +28,10 @@ function CallbackContent() {
 
     if (token && email) {
       processedRef.current = true;
+      // Immediately scrub the token and sensitive credentials from browser URL and history
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
       setMergedCount(merged);
       login(token, {
         id: email,

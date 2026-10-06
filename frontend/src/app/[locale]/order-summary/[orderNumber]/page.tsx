@@ -22,29 +22,7 @@ export default function OrderSummaryPage() {
   } = useQuery<CreatedOrder>({
     queryKey: ['order', orderNumber],
     queryFn: async () => {
-      try {
-        return await apiClient<CreatedOrder>(`/checkout/orders/${orderNumber}`);
-      } catch {
-        // Fallback realistic demo order for inspection and testing
-        return {
-          id: 'demo-order-123',
-          order_number: orderNumber || 'KNZ-782910',
-          user_id: 'user-ahmed-demo',
-          total_amount_cents: 1000,
-          currency: 'USD',
-          exchange_rate: '1300.00',
-          paid_amount_gateway: 13000,
-          display_price_label: '13,000 IQD',
-          promotional_tickets_granted: 15,
-          status: 'completed',
-          idempotency_key: 'idem-demo-99',
-          legal_terms_agreed: true,
-          terms_agreed_ip: '192.168.1.1',
-          terms_agreed_at: new Date().toISOString(),
-          expires_at: new Date(Date.now() + 86400000).toISOString(),
-          created_at: new Date().toISOString(),
-        };
-      }
+      return await apiClient<CreatedOrder>(`/checkout/orders/${orderNumber}`);
     },
     enabled: !!orderNumber,
   });

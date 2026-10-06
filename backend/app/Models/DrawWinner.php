@@ -55,4 +55,12 @@ class DrawWinner extends Model
     {
         return $this->belongsTo(Prize::class);
     }
+
+    /**
+     * The canonical winning ticket associated with this winner record.
+     */
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo(Ticket::class, 'winning_ticket_serial', 'serial_number');
+    }
 }

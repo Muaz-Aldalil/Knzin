@@ -7,6 +7,40 @@ import { captureServerEvent } from '@/lib/posthog-server';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+// In-memory sliding-window IP rate limiter to protect OpenAI API credits from denial-of-wallet attacks
+const searchRateLimits = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): { allowedLlm: boolean; blocked: boolean } {
+  const now = Date.now();
+  const entry = searchRateLimits.get(ip);
+
+  // Periodically cleanup expired entries
+  if (searchRateLimits.size > 5000) {
+    for (const [key, value] of searchRateLimits.entries()) {
+      if (now > value.resetAt) searchRateLimits.delete(key);
+    }
+  }
+
+  if (!entry || now > entry.resetAt) {
+    searchRateLimits.set(ip, { count: 1, resetAt: now + 60_000 });
+    return { allowedLlm: true, blocked: false };
+  }
+
+  entry.count++;
+
+  // More than 60 requests per minute is abusive traffic
+  if (entry.count > 60) {
+    return { allowedLlm: false, blocked: true };
+  }
+
+  // More than 15 requests per minute bypasses LLM and falls back to deterministic catalog search
+  if (entry.count > 15) {
+    return { allowedLlm: false, blocked: false };
+  }
+
+  return { allowedLlm: true, blocked: false };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.json();
@@ -19,12 +53,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    const rateStatus = checkRateLimit(clientIp);
+
+    if (rateStatus.blocked) {
+      return NextResponse.json(
+        { error: 'Too many search requests. Please slow down.' },
+        { status: 429, headers: { 'Retry-After': '60' } }
+      );
+    }
+
     const { query, sort, distinctId, sessionId } = parseResult.data;
 
     let response;
 
-    // Check if OpenAI key exists for LLM-powered stage 1 grounding
-    if (process.env.OPENAI_API_KEY) {
+    // Check if OpenAI key exists for LLM-powered stage 1 grounding and rate limit allows LLM
+    if (process.env.OPENAI_API_KEY && rateStatus.allowedLlm) {
       try {
         const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',

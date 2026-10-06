@@ -21,7 +21,7 @@ return [
     | SimulatorDriver without making external telco network calls.
     |
     */
-    'simulator_enabled' => (bool) env('KNZIN_PAYMENT_SIMULATOR', true),
+    'simulator_enabled' => (bool) env('KNZIN_PAYMENT_SIMULATOR', false),
 
     /*
     |--------------------------------------------------------------------------

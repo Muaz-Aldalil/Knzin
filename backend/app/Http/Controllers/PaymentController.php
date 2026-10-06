@@ -44,6 +44,18 @@ class PaymentController extends ApiController
         $gateway = $request->input('gateway');
         $locale = $request->input('locale', 'ar');
 
+        if ($gateway === 'simulator' && !config('payments.simulator_enabled', false) && !app()->environment(['local', 'testing'])) {
+            return response()->json([
+                'success' => false,
+                'status' => 'fail',
+                'error' => [
+                    'code' => 'ERR_SIMULATOR_DISABLED',
+                    'message' => 'بوابة الدفع التجريبية غير متاحة في بيئة الإنتاج',
+                    'message_en' => 'Payment simulator is disabled in production environment',
+                ],
+            ], Response::HTTP_FORBIDDEN);
+        }
+
         return DB::transaction(function () use ($request, $orderNumber, $gateway, $locale) {
             /** @var Order|null $order */
             $order = Order::with('user')->where('order_number', $orderNumber)->lockForUpdate()->first();
