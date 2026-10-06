@@ -4,7 +4,7 @@ import React from 'react';
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import { WinnerKycCard } from '@/components/compliance/WinnerKycCard';
-import { ShieldCheck, ArrowLeft, ArrowRight, MessageCircle, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, MessageCircle, Trophy } from 'lucide-react';
 
 export default function WinnerKycPage() {
   const locale = useLocale();

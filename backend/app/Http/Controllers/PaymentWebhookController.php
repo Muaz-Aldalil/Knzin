@@ -27,7 +27,7 @@ class PaymentWebhookController extends ApiController
      */
     public function simulator(Request $request): JsonResponse
     {
-        if (app()->environment('production')) {
+        if (!config('payments.simulator_enabled', false) && !app()->environment(['local', 'testing'])) {
             return response()->json([
                 'success' => false,
                 'status' => 'fail',

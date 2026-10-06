@@ -17,9 +17,17 @@ export interface AdminUser {
   status: 'active' | 'suspended';
 }
 
+export interface AdminSessionTelemetry {
+  created_at: string;
+  expires_at: string;
+  remaining_seconds: number;
+  max_age_minutes: number;
+}
+
 export interface AdminSession {
   user: AdminUser;
   capabilities: AdminCapability[];
+  session?: AdminSessionTelemetry;
   server_time_utc: string;
 }
 
