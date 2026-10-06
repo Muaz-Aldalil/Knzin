@@ -34,85 +34,89 @@ class EvaluateMissionRemindersCommand extends Command
         $inactivityCutoff = Carbon::now()->subDays(3);
         $cooldownCutoff = Carbon::now()->subDays(7);
 
-        $activeEntitlements = CourseEntitlement::query()
-            ->where('status', 'active')
-            ->with(['course', 'user'])
-            ->get();
-
+        $coursePartsCache = [];
         $processedPairs = [];
         $dispatchedCount = 0;
 
-        foreach ($activeEntitlements as $entitlement) {
-            $user = $entitlement->user;
-            $course = $entitlement->course;
+        CourseEntitlement::query()
+            ->where('status', 'active')
+            ->with(['course', 'user'])
+            ->chunkById(250, function ($entitlements) use ($inactivityCutoff, $cooldownCutoff, &$coursePartsCache, &$processedPairs, &$dispatchedCount) {
+                foreach ($entitlements as $entitlement) {
+                    $user = $entitlement->user;
+                    $course = $entitlement->course;
 
-            if (!$user || !$course) {
-                continue;
-            }
+                    if (!$user || !$course) {
+                        continue;
+                    }
 
-            $pairKey = "{$user->id}:{$course->id}";
-            if (isset($processedPairs[$pairKey])) {
-                continue;
-            }
-            $processedPairs[$pairKey] = true;
+                    $pairKey = "{$user->id}:{$course->id}";
+                    if (isset($processedPairs[$pairKey])) {
+                        continue;
+                    }
+                    $processedPairs[$pairKey] = true;
 
-            // 1. Get all active lesson parts for this course
-            $activePartIds = CoursePart::query()
-                ->where('course_id', $course->id)
-                ->where('is_active', true)
-                ->pluck('id');
+                    // 1. Enforce 7-day minimum repeat cooldown first (avoids running progress queries for recently reminded learners)
+                    $reminder = CourseMissionReminder::query()
+                        ->where('user_id', $user->id)
+                        ->where('course_id', $course->id)
+                        ->first();
 
-            if ($activePartIds->isEmpty()) {
-                continue;
-            }
+                    if ($reminder && $reminder->last_reminded_at > $cooldownCutoff) {
+                        continue;
+                    }
 
-            // 2. Check if learner has completed all active parts
-            $completedCount = LessonProgress::query()
-                ->where('user_id', $user->id)
-                ->whereIn('course_part_id', $activePartIds)
-                ->where('is_completed', true)
-                ->count();
+                    // 2. Cached retrieval of active lesson parts per course (eliminates N+1 queries)
+                    if (!isset($coursePartsCache[$course->id])) {
+                        $coursePartsCache[$course->id] = CoursePart::query()
+                            ->where('course_id', $course->id)
+                            ->where('is_active', true)
+                            ->pluck('id');
+                    }
+                    $activePartIds = $coursePartsCache[$course->id];
 
-            if ($completedCount >= $activePartIds->count()) {
-                // Course completely finished, no mission reminder needed
-                continue;
-            }
+                    if ($activePartIds->isEmpty()) {
+                        continue;
+                    }
 
-            // 3. Determine last_accessed_at (latest last_watched_at or entitlement created_at)
-            $lastWatched = LessonProgress::query()
-                ->where('user_id', $user->id)
-                ->whereIn('course_part_id', $activePartIds)
-                ->max('last_watched_at');
+                    // 3. Check if learner has completed all active parts
+                    $completedCount = LessonProgress::query()
+                        ->where('user_id', $user->id)
+                        ->whereIn('course_part_id', $activePartIds)
+                        ->where('is_completed', true)
+                        ->count();
 
-            $lastAccessedAt = $lastWatched
-                ? Carbon::parse($lastWatched)
-                : $entitlement->created_at;
+                    if ($completedCount >= $activePartIds->count()) {
+                        // Course completely finished, no mission reminder needed
+                        continue;
+                    }
 
-            // Must have been inactive for at least 3 full days
-            if ($lastAccessedAt > $inactivityCutoff) {
-                continue;
-            }
+                    // 4. Determine last_accessed_at (latest last_watched_at or entitlement created_at)
+                    $lastWatched = LessonProgress::query()
+                        ->where('user_id', $user->id)
+                        ->whereIn('course_part_id', $activePartIds)
+                        ->max('last_watched_at');
 
-            // 4. Enforce 7-day minimum repeat cooldown tracked in course_mission_reminders
-            $reminder = CourseMissionReminder::query()
-                ->where('user_id', $user->id)
-                ->where('course_id', $course->id)
-                ->first();
+                    $lastAccessedAt = $lastWatched
+                        ? Carbon::parse($lastWatched)
+                        : $entitlement->created_at;
 
-            if ($reminder && $reminder->last_reminded_at > $cooldownCutoff) {
-                continue;
-            }
+                    // Must have been inactive for at least 3 full days
+                    if ($lastAccessedAt > $inactivityCutoff) {
+                        continue;
+                    }
 
-            // 5. Dispatch reminder & update tracking timestamp
-            $user->notify(new MissionReminderNotification($course, $user));
+                    // 5. Dispatch reminder & update tracking timestamp
+                    $user->notify(new MissionReminderNotification($course, $user));
 
-            CourseMissionReminder::updateOrCreate(
-                ['user_id' => $user->id, 'course_id' => $course->id],
-                ['last_reminded_at' => Carbon::now()]
-            );
+                    CourseMissionReminder::updateOrCreate(
+                        ['user_id' => $user->id, 'course_id' => $course->id],
+                        ['last_reminded_at' => Carbon::now()]
+                    );
 
-            $dispatchedCount++;
-        }
+                    $dispatchedCount++;
+                }
+            });
 
         $this->info("Processed {$dispatchedCount} course mission reminders.");
 

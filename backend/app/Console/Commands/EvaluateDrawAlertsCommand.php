@@ -45,24 +45,26 @@ class EvaluateDrawAlertsCommand extends Command
         $dispatchedCount = 0;
 
         foreach ($draws as $draw) {
-            // Find users who hold promotional tickets
-            $ticketUserIds = Ticket::query()->distinct()->pluck('user_id');
-            $users = User::query()->whereIn('id', $ticketUserIds)->get();
+            // Stream ticket holders in flat chunks using indexed EXISTS check instead of full-table pluck
+            User::query()
+                ->where('status', 'active')
+                ->whereHas('tickets')
+                ->chunkById(250, function ($users) use ($draw, &$dispatchedCount) {
+                    foreach ($users as $user) {
+                        $notificationId = Uuid::uuid5(
+                            Uuid::NAMESPACE_OID,
+                            "draw_15m:{$draw->id}:{$user->id}"
+                        )->toString();
 
-            foreach ($users as $user) {
-                $notificationId = Uuid::uuid5(
-                    Uuid::NAMESPACE_OID,
-                    "draw_15m:{$draw->id}:{$user->id}"
-                )->toString();
+                        // Idempotency check: skip if alert was already dispatched to this user for this draw
+                        if (DB::table('notifications')->where('id', $notificationId)->exists()) {
+                            continue;
+                        }
 
-                // Idempotency check: skip if alert was already dispatched to this user for this draw
-                if (DB::table('notifications')->where('id', $notificationId)->exists()) {
-                    continue;
-                }
-
-                $user->notify(new LiveDrawAlertNotification($draw, $user));
-                $dispatchedCount++;
-            }
+                        $user->notify(new LiveDrawAlertNotification($draw, $user));
+                        $dispatchedCount++;
+                    }
+                });
         }
 
         $this->info("Processed {$dispatchedCount} live draw alert notifications across {$draws->count()} upcoming draws.");
