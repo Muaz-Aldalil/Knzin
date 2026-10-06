@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CourseResource;
 use App\Models\Course;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class CatalogController extends ApiController
@@ -14,10 +15,12 @@ class CatalogController extends ApiController
      */
     public function index(): JsonResponse
     {
-        $courses = Course::where('is_active', true)
-            ->withCount('parts')
-            ->orderBy('created_at', 'asc')
-            ->get();
+        $courses = Cache::remember('catalog_courses_index', 300, function () {
+            return Course::where('is_active', true)
+                ->withCount('parts')
+                ->orderBy('created_at', 'asc')
+                ->get();
+        });
 
         return $this->successResponse(CourseResource::collection($courses));
     }

@@ -25,42 +25,56 @@ class AffiliateDashboardController extends Controller
         // 0. Sweep any mature pending commissions for this user to ensure DB state matches holding policy
         app(\App\Services\AffiliateCommissionService::class)->sweepMaturedCommissionsForUser($user->id);
 
-        // 1. Calculate available balance: mature credits minus active debits
-        $availableSum = AffiliateLedgerEntry::where('user_id', $user->id)
-            ->matureAvailable()
-            ->sum('amount_cents');
-        $unpaidAvailableCents = max(0, (int) $availableSum);
+        // 1-4. Optimized aggregate ledger query: single database roundtrip for all balances
+        $now = now();
+        $ledgerStats = AffiliateLedgerEntry::where('user_id', $user->id)
+            ->selectRaw("
+                COALESCE(SUM(CASE 
+                    WHEN status = 'available' 
+                      OR (status = 'pending' AND matures_at IS NOT NULL AND matures_at <= ?)
+                    THEN amount_cents 
+                    ELSE 0 
+                END), 0) as available_sum,
+                COALESCE(SUM(CASE 
+                    WHEN status = 'pending' 
+                      AND (matures_at IS NULL OR matures_at > ?)
+                      AND entry_type IN ('sales_commission', 'co_prize_credit')
+                    THEN amount_cents 
+                    ELSE 0 
+                END), 0) as pending_sum,
+                COALESCE(SUM(CASE 
+                    WHEN entry_type IN ('sales_commission', 'co_prize_credit') 
+                    THEN amount_cents 
+                    ELSE 0 
+                END), 0) as total_earned,
+                COALESCE(SUM(CASE 
+                    WHEN entry_type = 'payout_debit' AND status IN ('cleared', 'available') 
+                    THEN amount_cents 
+                    ELSE 0 
+                END), 0) as total_withdrawn
+            ", [$now, $now])
+            ->first();
 
-        // 2. Calculate pending hold balance
-        $pendingSum = AffiliateLedgerEntry::where('user_id', $user->id)
-            ->pendingHold()
-            ->whereIn('entry_type', ['sales_commission', 'co_prize_credit'])
-            ->sum('amount_cents');
-        $unpaidPendingCents = max(0, (int) $pendingSum);
-
-        // 3. Total lifetime earned
-        $totalEarnedCents = (int) AffiliateLedgerEntry::where('user_id', $user->id)
-            ->whereIn('entry_type', ['sales_commission', 'co_prize_credit'])
-            ->sum('amount_cents');
-
-        // 4. Total withdrawn
-        $totalWithdrawnCents = abs((int) AffiliateLedgerEntry::where('user_id', $user->id)
-            ->where('entry_type', 'payout_debit')
-            ->whereIn('status', ['cleared', 'available'])
-            ->sum('amount_cents'));
+        $unpaidAvailableCents = max(0, (int) ($ledgerStats->available_sum ?? 0));
+        $unpaidPendingCents = max(0, (int) ($ledgerStats->pending_sum ?? 0));
+        $totalEarnedCents = (int) ($ledgerStats->total_earned ?? 0);
+        $totalWithdrawnCents = abs((int) ($ledgerStats->total_withdrawn ?? 0));
 
         // 5. Total referred orders
         $referredOrdersCount = ReferralAttribution::where('referrer_user_id', $user->id)->count();
 
-        // 6. Active draw co-prize tickets count
-        $referredOrderIds = ReferralAttribution::where('referrer_user_id', $user->id)->pluck('order_id');
-        $activeCoPrizeTicketsCount = Ticket::whereIn('order_id', $referredOrderIds)->count();
+        // 6. Active draw co-prize tickets count via SQL subquery (prevents in-memory array allocation)
+        $activeCoPrizeTicketsCount = Ticket::whereIn('order_id', function ($query) use ($user) {
+            $query->select('order_id')
+                ->from('referral_attributions')
+                ->where('referrer_user_id', $user->id);
+        })->count();
 
         // 7. Active dynamic admin threshold
         $minPayoutCents = (int) $this->settingsService->get('affiliate.payout_min_cents', 5000);
 
         // 8. Referral URLs (pointing to Next.js Frontend catalog where cookies are captured)
-        $baseUrl = rtrim((string) env('FRONTEND_URL', config('app.frontend_url', 'http://localhost:3000')), '/');
+        $baseUrl = rtrim((string) config('app.frontend_url', 'http://127.0.0.1:3000'), '/');
         $profile = $user->affiliateProfile;
         $customSlug = $profile?->custom_slug;
 

@@ -33,8 +33,8 @@ export function useNotifications(page = 1, perPage = 15, filter: 'all' | 'unread
     queryKey: ['notifications', 'unread-count'],
     queryFn: () => fetchUnreadCount(),
     enabled: hasToken,
-    staleTime: 10000,
-    refetchInterval: 30000, // Poll every 30s in background
+    staleTime: 30000,
+    refetchInterval: 60000, // Poll every 60s in background
   });
 
   // 3. Mark single notification as read mutation with optimistic update

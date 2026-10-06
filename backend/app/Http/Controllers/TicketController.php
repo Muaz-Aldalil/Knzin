@@ -39,13 +39,15 @@ class TicketController extends ApiController
 
         $serverTimeUtc = Carbon::now('UTC');
 
-        // 2. Fetch active and locked promotional draws across tiers ordered by starts_at DESC
-        $draws = Draw::published()
-            ->whereIn('tier', ['hourly', 'daily', 'monthly'])
-            ->where('status', '!=', 'completed')
-            ->where('starts_at', '<=', $serverTimeUtc)
-            ->orderBy('starts_at', 'desc')
-            ->get();
+        // 2. Fetch active and locked promotional draws across tiers ordered by starts_at DESC (cached 15s)
+        $draws = Cache::remember('active_promotional_draws', 15, function () use ($serverTimeUtc) {
+            return Draw::published()
+                ->whereIn('tier', ['hourly', 'daily', 'monthly'])
+                ->where('status', '!=', 'completed')
+                ->where('starts_at', '<=', $serverTimeUtc)
+                ->orderBy('starts_at', 'desc')
+                ->get();
+        });
 
         $selectedDraws = [];
         $activeDraws = [];

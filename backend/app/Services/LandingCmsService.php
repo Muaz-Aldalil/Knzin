@@ -6,6 +6,7 @@ use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Services\Admin\AdminAuditContext;
 use App\Services\Admin\AdminAuditWriter;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -92,25 +93,29 @@ class LandingCmsService
      */
     protected function getSectionsList(array $sectionList): array
     {
-        $keys = array_map(fn ($s) => "landing.{$s}", $sectionList);
-        $settings = PlatformSetting::whereIn('key', $keys)->get()->keyBy('key');
+        $cacheKey = 'cms_sections_' . md5(implode(',', $sectionList));
 
-        $result = [];
-        foreach ($sectionList as $section) {
-            $key = "landing.{$section}";
-            $setting = $settings->get($key);
-            $default = $this->getDefaults($section);
-            $content = $setting && is_array($setting->value) ? array_merge($default, $setting->value) : $default;
+        return Cache::remember($cacheKey, 300, function () use ($sectionList) {
+            $keys = array_map(fn ($s) => "landing.{$s}", $sectionList);
+            $settings = PlatformSetting::whereIn('key', $keys)->get()->keyBy('key');
 
-            $result[$section] = [
-                'section' => $section,
-                'content' => $content,
-                'updated_at' => $setting?->updated_at?->toIso8601String(),
-                'updated_by_user_id' => $setting?->updated_by_user_id,
-            ];
-        }
+            $result = [];
+            foreach ($sectionList as $section) {
+                $key = "landing.{$section}";
+                $setting = $settings->get($key);
+                $default = $this->getDefaults($section);
+                $content = $setting && is_array($setting->value) ? array_merge($default, $setting->value) : $default;
 
-        return $result;
+                $result[$section] = [
+                    'section' => $section,
+                    'content' => $content,
+                    'updated_at' => $setting?->updated_at?->toIso8601String(),
+                    'updated_by_user_id' => $setting?->updated_by_user_id,
+                ];
+            }
+
+            return $result;
+        });
     }
 
     /**
@@ -176,6 +181,9 @@ class LandingCmsService
                 outcome: 'success',
                 reasonCode: 'CMS_SECTION_UPDATED'
             );
+
+            Cache::forget('cms_sections_' . md5(implode(',', self::LANDING_SECTIONS)));
+            Cache::forget('cms_sections_' . md5(implode(',', self::ALL_SECTIONS)));
 
             return [
                 'section' => $section,
