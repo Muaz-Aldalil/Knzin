@@ -72,7 +72,7 @@ function LoginContent() {
     try {
       const res = await sendOtp(targetEmail);
       setEmail(targetEmail);
-      if (process.env.NODE_ENV !== 'production' && res.dev_code) {
+      if (res.dev_code) {
         setDevCode(res.dev_code);
       }
       setStep('otp');
@@ -282,7 +282,7 @@ function LoginContent() {
             )}
 
             {/* Development Mode Quick Shortcuts (Local Development Only) */}
-            {process.env.NODE_ENV !== 'production' && (
+            {(process.env.NODE_ENV !== 'production' || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))) && (
               <div className="mt-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-start">
                 <div className="flex items-center gap-2 mb-2 text-xs font-bold text-amber-600 dark:text-amber-400">
                   <KeyRound className="w-4 h-4" />
@@ -313,7 +313,7 @@ function LoginContent() {
           /* Step 2: OTP Verification Form */
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             {/* Dev Code Helper Hint in development */}
-            {process.env.NODE_ENV !== 'production' && devCode && (
+            {devCode && (
               <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                 {isRtl ? 'رمز التحقق (بيئة التطوير): ' : 'Dev Verification Code: '}
                 <span className="font-mono text-sm tracking-widest">{devCode}</span>

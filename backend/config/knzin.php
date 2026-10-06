@@ -43,7 +43,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'auth' => [
-        'expose_dev_otp' => (bool) env('KNZIN_EXPOSE_DEV_OTP', false),
+        'expose_dev_otp' => (bool) env('KNZIN_EXPOSE_DEV_OTP', env('APP_ENV') === 'local'),
     ],
 
     /*
