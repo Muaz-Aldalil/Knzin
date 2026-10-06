@@ -13,6 +13,7 @@ use App\Http\Controllers\LessonPlaybackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentSimulatorController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ReferralController;
@@ -63,6 +64,17 @@ Route::prefix('v1')->group(function () {
     Route::post('/payments/webhooks/simulator', [PaymentWebhookController::class, 'simulator']);
     Route::match(['get', 'post'], '/payments/webhooks/zaincash', [PaymentWebhookController::class, 'zaincash']);
     Route::post('/payments/webhooks/asiahawala', [PaymentWebhookController::class, 'asiahawala']);
+
+    // Payment Sandbox Simulator & Financial Testing Tools (Feature 007 / 010)
+    Route::prefix('payments/simulator')->group(function () {
+        Route::get('/transactions', [PaymentSimulatorController::class, 'listTransactions']);
+        Route::post('/seed-scenario', [PaymentSimulatorController::class, 'seedScenario']);
+        Route::post('/fast-forward-maturation', [PaymentSimulatorController::class, 'fastForwardMaturation']);
+        Route::post('/simulate-co-prize', [PaymentSimulatorController::class, 'simulateCoPrize']);
+        Route::get('/{transactionRef}', [PaymentSimulatorController::class, 'show']);
+        Route::post('/{transactionRef}/reconcile', [PaymentSimulatorController::class, 'reconcile']);
+        Route::post('/{transactionRef}/refund', [PaymentSimulatorController::class, 'refund']);
+    });
 
     // Learner Hub & Ticket Ledger (Feature 005)
     Route::get('/user/dashboard', [DashboardController::class, 'index'])->middleware('auth:sanctum');
