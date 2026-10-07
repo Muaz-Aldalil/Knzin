@@ -1,10 +1,22 @@
 #!/bin/sh
 set -e
 
+# Normalize APP_KEY if raw 44-character base64 string without base64: prefix
+case "$APP_KEY" in
+    base64:*) ;;
+    *)
+        if [ ${#APP_KEY} -eq 44 ]; then
+            echo "[entrypoint] Auto-prefixing base64: to APP_KEY"
+            export APP_KEY="base64:$APP_KEY"
+        fi
+        ;;
+esac
+
 # Support SSL CA certificate injection via environment variable
 if [ -n "$MYSQL_SSL_CA_CONTENT" ]; then
     printf "%b\n" "$MYSQL_SSL_CA_CONTENT" > /var/www/html/storage/ca.pem
     chmod 644 /var/www/html/storage/ca.pem
+    chown www-data:www-data /var/www/html/storage/ca.pem || true
     export MYSQL_ATTR_SSL_CA=/var/www/html/storage/ca.pem
 fi
 

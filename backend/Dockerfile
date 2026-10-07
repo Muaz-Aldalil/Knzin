@@ -3,9 +3,9 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --ignore-platform-reqs
 COPY . .
-RUN composer dump-autoload --no-dev --optimize --no-scripts
+RUN composer dump-autoload --no-dev --optimize --no-scripts --ignore-platform-reqs
 
-FROM php:8.3-apache
+FROM php:8.4-apache
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
         libzip-dev \
