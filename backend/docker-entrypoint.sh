@@ -12,6 +12,20 @@ case "$APP_KEY" in
         ;;
 esac
 
+# Sanitize database credentials by trimming trailing newlines and carriage returns
+if [ -n "$DB_PASSWORD" ]; then
+    DB_PASSWORD="$(printf '%s' "$DB_PASSWORD" | tr -d '\r\n')"
+    export DB_PASSWORD
+fi
+if [ -n "$DB_HOST" ]; then
+    DB_HOST="$(printf '%s' "$DB_HOST" | tr -d '\r\n')"
+    export DB_HOST
+fi
+if [ -n "$DB_USERNAME" ]; then
+    DB_USERNAME="$(printf '%s' "$DB_USERNAME" | tr -d '\r\n')"
+    export DB_USERNAME
+fi
+
 # Support SSL CA certificate injection via environment variable
 if [ -n "$MYSQL_SSL_CA_CONTENT" ]; then
     printf "%b\n" "$MYSQL_SSL_CA_CONTENT" > /var/www/html/storage/ca.pem
