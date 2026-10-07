@@ -499,7 +499,7 @@ export function AdminShell({ children }: AdminShellProps) {
                 <div className="w-5 h-5 rounded-md bg-brand-gold/20 flex items-center justify-center text-brand-gold font-bold">
                   <Shield className="w-3 h-3 text-brand-gold" />
                 </div>
-                <span className="max-w-[120px] truncate">
+                <span className="max-w-[200px] sm:max-w-[240px] truncate">
                   {user?.display_name || user?.email || (isAr ? 'المشرف' : 'Admin')}
                 </span>
                 <ChevronDown className="w-3 h-3 text-content-muted" />

@@ -20,8 +20,21 @@ class NotificationController extends ApiController
 
         $perPage = min(50, max(1, (int) $request->query('per_page', 15)));
         $filter = $request->query('filter', 'all');
+        $scope = $request->query('scope', 'all');
+
+        if ($scope === 'admin') {
+            if (!$user->isAdmin()) {
+                return $this->failResponse('ERR_UNAUTHORIZED_SCOPE', 'Unauthorized scope access.', [], 403);
+            }
+        }
 
         $query = $user->notifications()->latest();
+
+        if ($scope === 'admin') {
+            $query->whereIn('data->category', ['admin_sales', 'admin_ops']);
+        } elseif ($scope === 'learner') {
+            $query->whereNotIn('data->category', ['admin_sales', 'admin_ops']);
+        }
 
         if ($filter === 'unread') {
             $query->whereNull('read_at');
@@ -57,11 +70,18 @@ class NotificationController extends ApiController
             return $this->failResponse('ERR_UNAUTHORIZED', 'Unauthenticated.', [], 401);
         }
 
-        $count = $user->unreadNotifications()->count();
+        $unreadQuery = $user->unreadNotifications();
+        $totalUnread = (clone $unreadQuery)->count();
+        $adminUnread = $user->isAdmin()
+            ? (clone $unreadQuery)->whereIn('data->category', ['admin_sales', 'admin_ops'])->count()
+            : 0;
+        $learnerUnread = (clone $unreadQuery)->whereNotIn('data->category', ['admin_sales', 'admin_ops'])->count();
 
         return response()->json([
             'data' => [
-                'unread_count' => $count,
+                'unread_count' => $totalUnread,
+                'learner_unread_count' => $learnerUnread,
+                'admin_unread_count' => $adminUnread,
             ],
         ]);
     }
@@ -101,7 +121,7 @@ class NotificationController extends ApiController
     }
 
     /**
-     * Mark all unread notifications as read.
+     * Mark all unread notifications as read (optionally scoped).
      */
     public function markAllAsRead(Request $request): JsonResponse
     {
@@ -110,7 +130,19 @@ class NotificationController extends ApiController
             return $this->failResponse('ERR_UNAUTHORIZED', 'Unauthenticated.', [], 401);
         }
 
-        $user->unreadNotifications()->update(['read_at' => now()]);
+        $scope = $request->query('scope') ?: $request->input('scope', 'all');
+        $query = $user->unreadNotifications();
+
+        if ($scope === 'admin') {
+            if (!$user->isAdmin()) {
+                return $this->failResponse('ERR_UNAUTHORIZED_SCOPE', 'Unauthorized scope access.', [], 403);
+            }
+            $query->whereIn('data->category', ['admin_sales', 'admin_ops']);
+        } elseif ($scope === 'learner') {
+            $query->whereNotIn('data->category', ['admin_sales', 'admin_ops']);
+        }
+
+        $query->update(['read_at' => now()]);
 
         return response()->json([
             'status' => 'success',

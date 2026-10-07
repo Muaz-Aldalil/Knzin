@@ -1,0 +1,267 @@
+openapi: 3.0.3
+info:
+  title: KNZiN Notifications API (Feature 010 — Admin Sales Notifications & Dual-Persona Center)
+  description: Server-authoritative in-app notification center with dual-persona scoping (Learner vs Admin), commercial course purchase alerts, and isolated unread counters.
+  version: 2.0.0
+servers:
+  - url: /api
+    description: Current API Version
+
+paths:
+  /notifications:
+    get:
+      summary: List authenticated user notifications
+      description: Returns a paginated list of notifications for the currently authenticated user in reverse chronological order, optionally filtered by operational persona scope.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: scope
+          in: query
+          required: false
+          description: Filter notifications by persona scope. Non-admin users attempting 'admin' will receive HTTP 403 Forbidden.
+          schema:
+            type: string
+            enum: [all, learner, admin]
+            default: all
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, unread]
+            default: all
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 15
+      responses:
+        '200':
+          description: Paginated notification collection.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NotificationItem'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Forbidden - Non-admin user attempted to access admin-scoped notifications.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /notifications/unread-count:
+    get:
+      summary: Get unread notification badge counts
+      description: Returns aggregated and scoped integer counts of unread notifications for the authenticated user to power the header HUD bell and dual-persona tab badges.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Unread count object with scoped breakdown.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      unread_count:
+                        type: integer
+                        example: 5
+                        description: Combined total unread count across all categories.
+                      learner_unread_count:
+                        type: integer
+                        example: 2
+                        description: Total unread count within learner scope.
+                      admin_unread_count:
+                        type: integer
+                        example: 3
+                        description: Total unread count within admin scope (0 for non-admins).
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /notifications/{id}/read:
+    patch:
+      summary: Mark a single notification as read
+      description: Transitions an unread notification to read status with immediate timestamp recording.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Notification successfully marked as read.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Notification marked as read.
+                  data:
+                    $ref: '#/components/schemas/NotificationItem'
+        '404':
+          description: Notification not found or not owned by user.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /notifications/mark-all-read:
+    post:
+      summary: Mark all unread notifications as read
+      description: Marks all unread notifications as read, optionally isolated to a specific persona scope.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: scope
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, learner, admin]
+            default: all
+      responses:
+        '200':
+          description: All notifications in target scope marked as read.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: All notifications marked as read.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Forbidden - Non-admin attempted scope=admin.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+
+  responses:
+    Unauthorized:
+      description: Unauthenticated request missing valid Sanctum bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    NotificationCategory:
+      type: string
+      enum:
+        - transactional
+        - course_announcements
+        - prize_draw_promotions
+        - admin_broadcasts
+        - admin_sales
+        - admin_ops
+
+    NotificationActionType:
+      type: string
+      enum:
+        - navigate
+        - refresh_course
+
+    NotificationItem:
+      type: object
+      required:
+        - id
+        - category
+        - title
+        - body
+        - action_type
+        - is_read
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        category:
+          $ref: '#/components/schemas/NotificationCategory'
+        title:
+          type: string
+        body:
+          type: string
+        action_type:
+          $ref: '#/components/schemas/NotificationActionType'
+        action_url:
+          type: string
+          nullable: true
+        entity_type:
+          type: string
+          nullable: true
+        entity_id:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
+        is_read:
+          type: boolean
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        code:
+          type: string
+          example: ERR_UNAUTHORIZED_SCOPE
+        message:
+          type: string
+          example: Unauthorized scope access.

@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { BookOpen, Ticket, Trophy, ArrowRight, ArrowLeft } from 'lucide-react';
+import { BookOpen, Ticket, Trophy } from 'lucide-react';
 
 interface HowItWorksModalProps {
   open: boolean;
@@ -23,7 +23,6 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
 }) => {
   const t = useTranslations('howItWorks');
   const locale = useLocale();
-  const isRtl = locale === 'ar';
   const isAr = locale === 'ar';
   const { data: cmsData } = useSiteWideCms();
   const siteShell = cmsData?.sections?.site_shell;
@@ -32,15 +31,15 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
   const stepStyles = [
     {
       iconBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-      badgeBg: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+      badgeTextColor: 'text-blue-600 dark:text-blue-400',
     },
     {
       iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-      badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+      badgeTextColor: 'text-emerald-600 dark:text-emerald-400',
     },
     {
       iconBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-      badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+      badgeTextColor: 'text-amber-600 dark:text-amber-400',
     },
   ];
 
@@ -64,7 +63,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
             desc: isAr ? s.desc_ar : s.desc_en,
             badge: (isAr ? s.badge_ar : s.badge_en) || (isAr ? `خطوة ${idx + 1}` : `Step ${idx + 1}`),
             iconBg: style.iconBg,
-            badgeBg: style.badgeBg,
+            badgeTextColor: style.badgeTextColor,
           };
         })
       : [
@@ -75,7 +74,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
             desc: t('step1_desc'),
             badge: t('step1_badge'),
             iconBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-            badgeBg: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+            badgeTextColor: 'text-blue-600 dark:text-blue-400',
           },
           {
             step: 2,
@@ -84,7 +83,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
             desc: t('step2_desc'),
             badge: t('step2_badge'),
             iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-            badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+            badgeTextColor: 'text-emerald-600 dark:text-emerald-400',
           },
           {
             step: 3,
@@ -93,11 +92,9 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
             desc: t('step3_desc'),
             badge: t('step3_badge'),
             iconBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-            badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+            badgeTextColor: 'text-amber-600 dark:text-amber-400',
           },
         ];
-
-  const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -110,7 +107,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
             id="how-it-works-title"
             className="text-xl sm:text-2xl font-bold text-content-primary flex items-center gap-2"
           >
-            <span className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
+            <span className="hidden sm:inline-flex p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
               <BookOpen className="h-5 w-5" />
             </span>
             {modalTitle}
@@ -121,13 +118,13 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
         </DialogHeader>
 
         <div className="mt-4 space-y-4">
-          {steps.map((item, idx) => {
+          {steps.map((item) => {
             const Icon = item.icon;
             return (
               <div key={item.step} className="relative">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-xl border border-border-subtle bg-surface-secondary/40 hover:bg-surface-secondary/70 transition-colors">
                   <div
-                    className={`p-3 rounded-xl border flex-shrink-0 flex items-center justify-center ${item.iconBg}`}
+                    className={`hidden sm:flex p-3 rounded-xl border flex-shrink-0 items-center justify-center ${item.iconBg}`}
                   >
                     <Icon className="h-6 w-6" />
                   </div>
@@ -137,9 +134,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
                       <h4 className="font-semibold text-content-primary text-base">
                         {item.title}
                       </h4>
-                      <span
-                        className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${item.badgeBg}`}
-                      >
+                      <span className={`text-xs font-bold ${item.badgeTextColor}`}>
                         {item.badge}
                       </span>
                     </div>
@@ -148,12 +143,6 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
                     </p>
                   </div>
                 </div>
-
-                {idx < steps.length - 1 && (
-                  <div className="flex justify-center my-1 text-content-muted/40 sm:hidden">
-                    <ArrowIcon className="h-4 w-4 rotate-90" />
-                  </div>
-                )}
               </div>
             );
           })}

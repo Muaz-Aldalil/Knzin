@@ -240,18 +240,24 @@ export default function AdminPayoutsPage() {
           </div>
 
           {/* Status Filter Tabs */}
-          <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-border-subtle text-xs">
-            {['all', 'requested', 'processing', 'completed', 'rejected'].map((status) => (
+          <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-border-subtle text-xs max-w-full overflow-x-auto scrollbar-none self-start sm:self-auto">
+            {[
+              { id: 'all', ar: 'الكل', en: 'All' },
+              { id: 'requested', ar: 'جديدة (مطلوبة)', en: 'Requested' },
+              { id: 'processing', ar: 'قيد التنفيذ', en: 'Processing' },
+              { id: 'completed', ar: 'مكتملة', en: 'Completed' },
+              { id: 'rejected', ar: 'مرفوضة', en: 'Rejected' },
+            ].map((tab) => (
               <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-3 py-1.5 rounded-lg font-semibold transition-colors capitalize ${
-                  statusFilter === status
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id)}
+                className={`px-3 py-1.5 rounded-lg font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                  statusFilter === tab.id
                     ? 'bg-brand-gold text-brand-navy shadow-xs'
                     : 'text-content-secondary hover:text-content-primary'
                 }`}
               >
-                {status === 'all' ? (isAr ? 'الكل' : 'All') : status}
+                {isAr ? tab.ar : tab.en}
               </button>
             ))}
           </div>

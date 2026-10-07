@@ -94,6 +94,8 @@ export function useLearnerTickets() {
     [syncedCurrentTimeMs]
   );
 
+  const isUnauthenticated = !hasToken || (query.error instanceof ApiError && query.error.httpStatus === 401);
+
   return {
     ticketsData: query.data ?? null,
     totalTickets: query.data?.total_tickets ?? 0,
@@ -101,8 +103,9 @@ export function useLearnerTickets() {
     tickets: query.data?.tickets ?? [],
     isEmpty: query.isSuccess && (!query.data?.tickets || query.data.tickets.length === 0),
     isLoading: query.isLoading,
-    isError: query.isError,
+    isError: query.isError && !isUnauthenticated,
     error: query.error,
+    isUnauthenticated,
     clockSkewMs,
     syncedCurrentTimeMs,
     getTimeRemainingMs,

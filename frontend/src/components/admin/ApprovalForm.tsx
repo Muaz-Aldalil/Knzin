@@ -39,13 +39,13 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
 
     try {
       if (activeTab === 'kyc') {
-        const uid = parseInt(userId, 10);
-        if (isNaN(uid) || uid <= 0) {
-          setErrorMessage(isAr ? 'يرجى إدخال معرف مستخدم صحيح.' : 'Valid User ID required.');
+        const cleanUid = userId.trim();
+        if (!cleanUid) {
+          setErrorMessage(isAr ? 'يرجى إدخال معرف مستخدم صحيح (UUID أو كود المتدرب).' : 'Valid User ID or learner code required.');
           return;
         }
         await issueKyc({
-          subject_user_id: uid,
+          subject_user_id: cleanUid,
           status,
           notes: notes.trim() || undefined,
         });
@@ -53,13 +53,13 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
         setNotes('');
         setSuccessMessage(isAr ? 'تم تسجيل قرار فحص الهوية (KYC) بنجاح.' : 'KYC approval issued successfully.');
       } else {
-        const did = parseInt(drawId, 10);
-        if (isNaN(did) || did <= 0) {
+        const cleanDid = drawId.trim();
+        if (!cleanDid) {
           setErrorMessage(isAr ? 'يرجى إدخال معرف سحب صحيح.' : 'Valid Draw ID required.');
           return;
         }
         await issueDrawIntegrity({
-          draw_id: did,
+          draw_id: cleanDid,
           status,
           notes: notes.trim() || undefined,
         });
@@ -75,19 +75,19 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
 
   return (
     <div className="bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-xs space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h3 className="text-base font-bold text-content-primary flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-brand-gold" />
           <span>{isAr ? 'إصدار موافقة تدقيق جديدة' : 'Issue New Verification Record'}</span>
         </h3>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-border-subtle text-xs">
+        <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-border-subtle text-xs self-start sm:self-auto">
           {canKyc && (
             <button
               type="button"
               onClick={() => setActiveTab('kyc')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 activeTab === 'kyc'
                   ? 'bg-brand-gold text-brand-navy'
                   : 'text-content-secondary hover:text-content-primary'
@@ -101,7 +101,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
             <button
               type="button"
               onClick={() => setActiveTab('draw_integrity')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 activeTab === 'draw_integrity'
                   ? 'bg-brand-gold text-brand-navy'
                   : 'text-content-secondary hover:text-content-primary'
@@ -132,15 +132,14 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
         {activeTab === 'kyc' ? (
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-content-primary block">
-              {isAr ? 'معرف المستخدم الفائز (User ID):' : 'Winner Subject User ID:'}
+              {isAr ? 'معرف المستخدم الفائز (UUID أو كود المتدرب LRN):' : 'Winner Subject User ID (UUID or Learner Code):'}
             </label>
             <input
-              type="number"
-              min="1"
+              type="text"
               required
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              placeholder="e.g. 42"
+              placeholder="e.g. LRN-RR5DB3 or 9d3a4b..."
               className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-brand-gold focus:outline-hidden"
               data-testid="input-kyc-user-id"
             />
@@ -151,12 +150,11 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
               {isAr ? 'معرف السحب (Draw ID):' : 'Target Draw ID:'}
             </label>
             <input
-              type="number"
-              min="1"
+              type="text"
               required
               value={drawId}
               onChange={(e) => setDrawId(e.target.value)}
-              placeholder="e.g. 5"
+              placeholder="e.g. 5 or UUID"
               className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-brand-gold focus:outline-hidden"
               data-testid="input-draw-audit-id"
             />

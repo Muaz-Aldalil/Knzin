@@ -5,6 +5,7 @@ import {
   NotificationActionResponse,
   NotificationPreferencesResponse,
   NotificationPreferences,
+  NotificationScope,
 } from '@/types/notification';
 
 /**
@@ -13,10 +14,12 @@ import {
 export async function fetchNotifications(
   page = 1,
   perPage = 15,
-  filter: 'all' | 'unread' = 'all'
+  filter: 'all' | 'unread' = 'all',
+  scope: NotificationScope = 'all'
 ): Promise<NotificationsResponse> {
+  const scopeQuery = scope !== 'all' ? `&scope=${scope}` : '';
   return apiClient<NotificationsResponse>(
-    `/notifications?page=${page}&per_page=${perPage}&filter=${filter}`,
+    `/notifications?page=${page}&per_page=${perPage}&filter=${filter}${scopeQuery}`,
     { method: 'GET' }
   );
 }
@@ -42,14 +45,17 @@ export async function markNotificationAsRead(
 }
 
 /**
- * Mark all user notifications as read in a single action.
+ * Mark all user notifications as read in a single action (optionally scoped).
  */
-export async function markAllNotificationsAsRead(): Promise<{
+export async function markAllNotificationsAsRead(
+  scope: NotificationScope = 'all'
+): Promise<{
   status: string;
   message: string;
 }> {
+  const scopeQuery = scope !== 'all' ? `?scope=${scope}` : '';
   return apiClient<{ status: string; message: string }>(
-    '/notifications/mark-all-read',
+    `/notifications/mark-all-read${scopeQuery}`,
     { method: 'POST' }
   );
 }

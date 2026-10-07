@@ -24,18 +24,18 @@ const ALL_CAPABILITIES: { key: AdminCapability; labelAr: string; labelEn: string
     descEn: 'Configure commission rates, draw schedules, prizes, and awards.',
   },
   {
+    key: 'adjudicate_affiliate_coprize',
+    labelAr: 'البت في جوائز الشركاء (40%)',
+    labelEn: 'Adjudicate Co-Prizes',
+    descAr: 'الموافقة على صرف أو إلغاء حصة المسوق (40%) من الجائزة الكبرى.',
+    descEn: 'Release or revoke marketing pool co-prizes for referred grand prize winners.',
+  },
+  {
     key: 'settle_affiliate_payout',
     labelAr: 'تسوية طلبات السحب',
     labelEn: 'Settle Affiliate Payouts',
     descAr: 'تنفيذ وتأكيد حوالات الأرباح برقم MTCN ووصل التحويل، أو رفضها.',
     descEn: 'Settle affiliate payouts with MTCN reference & receipt, or reject.',
-  },
-  {
-    key: 'adjudicate_affiliate_coprize',
-    labelAr: 'البت في جوائز الشركاء (40%)',
-    labelEn: 'Adjudicate Co-Prizes',
-    descAr: 'الإفراج عن حصة المسوق (40%) بعد التحقق المزدوج أو استردادها.',
-    descEn: 'Release or claw back 40% affiliate co-prizes based on dual audit.',
   },
   {
     key: 'issue_kyc_approval',
@@ -146,38 +146,38 @@ export function CapabilityManager({
         )}
 
         {/* Capabilities Grid */}
-        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+        <div className="space-y-3 max-h-[60vh] overflow-y-auto px-1">
           {ALL_CAPABILITIES.map((cap) => {
             const hasCap = (user.capabilities || []).includes(cap.key);
 
             return (
               <div
                 key={cap.key}
-                className={`p-4 rounded-2xl border transition-all flex items-start justify-between gap-4 ${
+                className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-start justify-between gap-3 ${
                   hasCap
                     ? 'bg-brand-gold/5 border-brand-gold/30'
                     : 'bg-surface-elevated/40 border-border-subtle'
                 }`}
               >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-1 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold text-sm text-content-primary">
                       {isAr ? cap.labelAr : cap.labelEn}
                     </span>
-                    <span className="font-mono text-[10px] text-content-muted">({cap.key})</span>
+                    <span className="font-mono text-[10px] text-content-muted break-all">({cap.key})</span>
                   </div>
                   <p className="text-xs text-content-secondary leading-relaxed">
                     {isAr ? cap.descAr : cap.descEn}
                   </p>
                 </div>
 
-                <div className="shrink-0 pt-1">
+                <div className="shrink-0 self-end sm:self-start pt-1">
                   {hasCap ? (
                     <button
                       type="button"
                       disabled={isSelf || isLoading}
                       onClick={() => setRevokingCap(cap.key)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                       data-testid={`revoke-cap-${cap.key}`}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -188,7 +188,7 @@ export function CapabilityManager({
                       type="button"
                       disabled={isSelf || isLoading}
                       onClick={() => handleGrant(cap.key)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-gold hover:bg-brand-gold-light text-brand-navy text-xs font-bold transition-colors shadow-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-gold hover:bg-brand-gold-hover text-brand-navy text-xs font-bold transition-colors shadow-xs cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                       data-testid={`grant-cap-${cap.key}`}
                     >
                       <Plus className="w-3.5 h-3.5" />

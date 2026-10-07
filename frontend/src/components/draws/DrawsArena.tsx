@@ -15,6 +15,7 @@ export function DrawsArena() {
   const { data: cmsData } = usePublicLandingCms();
   const drawContent = cmsData?.sections?.draw_content;
   const [activeTab, setActiveTab] = useState<'active' | 'concluded'>('active');
+  const [openTermsDrawId, setOpenTermsDrawId] = useState<string | null>(null);
 
   // Deep-link section target resolution (Protocol Sections 6, 16 & 17)
   useEffect(() => {
@@ -61,7 +62,7 @@ export function DrawsArena() {
     <div id="draws-arena" className="w-full space-y-8 py-6 scroll-mt-20">
       {/* Header Section */}
       <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+        <div className="inline-flex items-center gap-2 text-xs font-bold text-primary">
           <Sparkles className="h-3.5 w-3.5" />
           <span>{t('arenaTitle')}</span>
         </div>
@@ -90,7 +91,7 @@ export function DrawsArena() {
             <Clock className="h-4 w-4" />
             <span>{t('tabActive')}</span>
             {activeDraws.length > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary font-bold">
+              <span className="text-[10px] text-primary font-bold">
                 {activeDraws.length}
               </span>
             )}
@@ -108,7 +109,7 @@ export function DrawsArena() {
             <Trophy className="h-4 w-4 text-amber-500" />
             <span>{t('tabConcluded')}</span>
             {concludedDraws.length > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold">
+              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold">
                 {concludedDraws.length}
               </span>
             )}
@@ -121,7 +122,7 @@ export function DrawsArena() {
         {activeTab === 'active' ? (
           <div>
             {isLoadingActive ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
@@ -135,9 +136,17 @@ export function DrawsArena() {
                 <p className="text-sm font-medium text-muted-foreground">{t('emptyActive')}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                 {activeDraws.map((draw) => (
-                  <DrawCard key={draw.id} draw={draw} serverTimeUtc={serverTimeUtc} />
+                  <DrawCard
+                    key={draw.id}
+                    draw={draw}
+                    serverTimeUtc={serverTimeUtc}
+                    isTermsOpen={openTermsDrawId === draw.id}
+                    onToggleTerms={() =>
+                      setOpenTermsDrawId(openTermsDrawId === draw.id ? null : draw.id)
+                    }
+                  />
                 ))}
               </div>
             )}

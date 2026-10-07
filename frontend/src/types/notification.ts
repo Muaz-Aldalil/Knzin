@@ -7,7 +7,11 @@ export type NotificationCategory =
   | 'transactional'
   | 'course_announcements'
   | 'prize_draw_promotions'
-  | 'admin_broadcasts';
+  | 'admin_broadcasts'
+  | 'admin_sales'
+  | 'admin_ops';
+
+export type NotificationScope = 'all' | 'learner' | 'admin';
 
 export type NotificationActionType = 'navigate' | 'refresh_course';
 
@@ -53,8 +57,12 @@ export interface NotificationsResponse {
 
 export interface UnreadCountResponse {
   unread_count?: number;
+  learner_unread_count?: number;
+  admin_unread_count?: number;
   data?: {
     unread_count: number;
+    learner_unread_count?: number;
+    admin_unread_count?: number;
   };
 }
 

@@ -62,8 +62,8 @@ class OtpAuthService
         }
 
         // Expose dev_code when explicitly permitted by configuration or non-production environment
-        $exposeDevCode = (bool) config('knzin.auth.expose_dev_otp', false)
-            || !app()->environment('production');
+        $exposeDevCode = !app()->environment('production')
+            && ((bool) config('knzin.auth.expose_dev_otp', false) || app()->environment('testing', 'local'));
 
         return [
             'email' => $normalizedEmail,
@@ -100,7 +100,8 @@ class OtpAuthService
         }
 
         // Verify hash (or accept 123456 if expose_dev_otp is configured for preview/demo testing)
-        $isBypassAllowed = (bool) config('knzin.auth.expose_dev_otp', false) || !app()->environment('production');
+        $isBypassAllowed = !app()->environment('production')
+            && ((bool) config('knzin.auth.expose_dev_otp', false) || app()->environment('testing', 'local'));
         $isBypass = $isBypassAllowed && trim($code) === '123456';
 
         $providedHash = hash('sha256', trim($code));

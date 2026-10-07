@@ -9,9 +9,11 @@ use App\Models\CoursePart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
+use App\Notifications\CoursePurchasedAdminNotification;
 use App\Notifications\OrderConfirmationNotification;
 use App\Services\AffiliateAttributionService;
 use App\Services\AffiliateCommissionService;
+use App\Support\AdminCapabilities;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -177,6 +179,28 @@ class OrderService
 
                     if (!DB::table('notifications')->where('id', $notificationId)->exists()) {
                         $lockedOrder->user->notify(new OrderConfirmationNotification($lockedOrder));
+                    }
+                }
+
+                // Feature 010: Commercial sales notifications to authorized admins (manage_platform_settings OR settle_affiliate_payout)
+                $adminRecipients = User::query()
+                    ->where('status', 'active')
+                    ->whereHas('capabilities', function ($query) {
+                        $query->whereIn('capability', [
+                            AdminCapabilities::MANAGE_PLATFORM_SETTINGS,
+                            AdminCapabilities::SETTLE_AFFILIATE_PAYOUT,
+                        ]);
+                    })
+                    ->get();
+
+                foreach ($adminRecipients as $admin) {
+                    $adminNotifId = \Ramsey\Uuid\Uuid::uuid5(
+                        \Ramsey\Uuid\Uuid::NAMESPACE_OID,
+                        "admin_sale:{$lockedOrder->id}:{$admin->id}"
+                    )->toString();
+
+                    if (!DB::table('notifications')->where('id', $adminNotifId)->exists()) {
+                        $admin->notify(new CoursePurchasedAdminNotification($lockedOrder, $admin));
                     }
                 }
             });

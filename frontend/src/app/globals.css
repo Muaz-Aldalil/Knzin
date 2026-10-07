@@ -17,6 +17,15 @@
   --color-success: #10b981;
   --color-success-light: #ecfdf5;
 
+  /* Brand Palette (Gold & Navy) */
+  --color-brand-gold: #f5b301;
+  --color-brand-gold-hover: #dfa200;
+  --color-brand-gold-light: #fef9c3;
+  --color-brand-gold-dark: #b8860b;
+  --color-brand-navy: #0b1e3a;
+  --color-brand-navy-light: #162c49;
+  --color-brand-navy-dark: #070e1b;
+
   /* Semantic Theme Color Roles (Auto-adapt via CSS variables) */
   --color-app-bg: var(--bg-app);
   --color-surface: var(--surface-primary);

@@ -195,7 +195,7 @@ export default function MobileNavSheet({
                   </span>
                 </div>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/25 font-bold shrink-0 ms-2">
+              <span className="text-[10px] text-primary font-bold shrink-0 ms-2">
                 {isRtl ? '3 خطوات' : '3 Steps'}
               </span>
             </button>

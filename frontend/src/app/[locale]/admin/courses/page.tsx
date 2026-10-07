@@ -9,6 +9,7 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import { DataTable, Column } from '@/components/admin/DataTable';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 import { useAdminFeedback } from '@/components/admin/AdminFeedbackContext';
+import { apiClient } from '@/lib/api-client';
 import {
   BookOpen,
   Plus,
@@ -52,21 +53,14 @@ export default function AdminCoursesPage() {
     if (!courseToDelete) return;
     setIsDeleting(true);
     try {
-      const res = await fetch(`/api/v1/admin/courses/${courseToDelete.id}`, {
+      await apiClient<{ action_taken: string; message: string }>(`/admin/courses/${courseToDelete.id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
       });
-      if (!res.ok) {
-        throw new Error('Failed to delete/archive course');
-      }
       setCourseToDelete(null);
       refetch();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      showError(isAr ? 'حدث خطأ أثناء أرشفة أو حذف الدورة.' : 'An error occurred while deleting/archiving course.');
+      showError(err?.message || (isAr ? 'حدث خطأ أثناء أرشفة أو حذف الدورة.' : 'An error occurred while deleting/archiving course.'));
     } finally {
       setIsDeleting(false);
     }
@@ -74,20 +68,13 @@ export default function AdminCoursesPage() {
 
   const handleToggleStatus = async (courseId: string) => {
     try {
-      const res = await fetch(`/api/v1/admin/courses/${courseId}/toggle-status`, {
+      await apiClient(`/admin/courses/${courseId}/toggle-status`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
       });
-      if (!res.ok) {
-        throw new Error('Failed to toggle course status');
-      }
       refetch();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      showError(isAr ? 'فشل تغيير حالة الدورة.' : 'Failed to toggle course status.');
+      showError(err?.message || (isAr ? 'فشل تغيير حالة الدورة.' : 'Failed to toggle course status.'));
     }
   };
 
@@ -293,43 +280,45 @@ export default function AdminCoursesPage() {
         </div>
 
         {/* Course Stats Grid */}
-        <div className="grid grid-cols-2 gap-2.5 p-3 rounded-xl bg-surface-elevated/60 border border-border-subtle text-xs">
-          {/* Pricing */}
-          <div className="space-y-1">
-            <span className="text-[11px] text-content-muted block">
-              {isAr ? 'السعر' : 'Price'}
-            </span>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span
-                className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-extrabold font-mono"
-                dir="ltr"
-              >
-                <DollarSign className="w-3 h-3 text-emerald-400 shrink-0" />
-                <span>{(item.bundle_price_cents / 100).toFixed(2)}</span>
+        <div className="space-y-2 p-3 rounded-xl bg-surface-elevated/60 border border-border-subtle text-xs">
+          <div className="flex items-start justify-between gap-3">
+            {/* Pricing */}
+            <div className="space-y-1">
+              <span className="text-[11px] text-content-muted block">
+                {isAr ? 'السعر' : 'Price'}
               </span>
-              {item.display_price_label && (
-                <span className="text-[10px] font-medium text-content-muted whitespace-nowrap" dir={isAr ? 'rtl' : 'ltr'}>
-                  <bdi>({item.display_price_label})</bdi>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span
+                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-extrabold font-mono"
+                  dir="ltr"
+                >
+                  <DollarSign className="w-3 h-3 text-emerald-400 shrink-0" />
+                  <span>{(item.bundle_price_cents / 100).toFixed(2)}</span>
                 </span>
-              )}
+                {item.display_price_label && (
+                  <span className="text-[10px] font-medium text-content-muted whitespace-nowrap" dir={isAr ? 'rtl' : 'ltr'}>
+                    <bdi>({item.display_price_label})</bdi>
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Tickets */}
-          <div className="space-y-1">
-            <span className="text-[11px] text-content-muted block">
-              {isAr ? 'تذاكر السحب' : 'Raffle Tickets'}
-            </span>
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-semibold whitespace-nowrap">
-              <Ticket className="w-3.5 h-3.5 shrink-0" />
-              <span>
-                {item.bundle_promotional_tickets} {isAr ? 'تذكرة' : 'Tickets'}
+            {/* Tickets */}
+            <div className="space-y-1 text-end">
+              <span className="text-[11px] text-content-muted block">
+                {isAr ? 'تذاكر السحب' : 'Raffle Tickets'}
               </span>
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-semibold whitespace-nowrap">
+                <Ticket className="w-3.5 h-3.5 shrink-0" />
+                <span>
+                  {item.bundle_promotional_tickets} {isAr ? 'تذكرة' : 'Tickets'}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Modular Parts */}
-          <div className="col-span-2 flex items-center justify-between pt-2 border-t border-border-subtle">
+          <div className="flex items-center justify-between pt-2 border-t border-border-subtle">
             <div className="flex items-center gap-1.5 text-content-secondary font-medium">
               <Layers className="w-3.5 h-3.5 text-brand-gold shrink-0" />
               <span>
@@ -451,7 +440,7 @@ export default function AdminCoursesPage() {
             {[
               { id: 'all', labelAr: 'الكل', labelEn: 'All' },
               { id: 'active', labelAr: 'نشط', labelEn: 'Active' },
-              { id: 'paused', labelAr: 'متوقف', labelEn: 'Paused' },
+              { id: 'paused', labelAr: 'الأرشيف والمتوقفة', labelEn: 'Archived & Paused' },
             ].map((f) => (
               <button
                 key={f.id}

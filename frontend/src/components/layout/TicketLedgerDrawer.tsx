@@ -22,6 +22,7 @@ import {
   Loader2,
   AlertCircle,
   HelpCircle,
+  LogIn,
 } from 'lucide-react';
 import { useLearnerTickets, TicketItem, ActiveDrawMeta } from '@/hooks/useLearnerTickets';
 
@@ -66,6 +67,7 @@ export function TicketLedgerDrawer({ isOpen: controlledIsOpen, onClose }: Ticket
     isEmpty,
     isLoading,
     isError,
+    isUnauthenticated,
     getTimeRemainingMs,
     refetch,
   } = useLearnerTickets();
@@ -131,7 +133,7 @@ export function TicketLedgerDrawer({ isOpen: controlledIsOpen, onClose }: Ticket
             <span className="text-xs font-semibold text-content-secondary">
               {isRtl ? 'إجمالي التذاكر المصدرة' : 'Total Issued Tickets'}
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-accent text-accent-foreground shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-600 dark:text-amber-400">
               <Ticket className="w-3.5 h-3.5" />
               <span>{totalTickets} {isRtl ? 'تذكرة' : 'Tickets'}</span>
             </span>
@@ -179,7 +181,42 @@ export function TicketLedgerDrawer({ isOpen: controlledIsOpen, onClose }: Ticket
 
         {/* Drawer Body — Ticket List */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {isLoading ? (
+          {isUnauthenticated ? (
+            /* Unauthenticated Guest State */
+            <div className="p-8 rounded-2xl bg-surface-secondary/50 border border-dashed border-border-subtle text-center space-y-4 animate-in fade-in-50 duration-200">
+              <div className="w-14 h-14 rounded-2xl bg-accent/15 text-accent flex items-center justify-center mx-auto shadow-inner">
+                <Ticket className="w-7 h-7" />
+              </div>
+              <div className="space-y-1.5">
+                <h4 className="text-base font-extrabold text-content-primary">
+                  {isRtl ? 'سجّل دخولك للاطلاع على تذاكر السحب' : 'Sign In to View Your Raffle Tickets'}
+                </h4>
+                <p className="text-xs text-content-muted leading-relaxed max-w-xs mx-auto">
+                  {isRtl
+                    ? 'احصل على تذاكر سحب مجانية عند شراء أي جزء تدريبي مهني ($2) أو 15 تذكرة كاملة عند شراء الحقيبة الشاملة ($10). سجّل دخولك لعرض تذاكرك ومتابعة السحوبات.'
+                    : 'Earn complimentary promotional raffle tickets with every vocational course part ($2) or bundle ($10). Sign in to see your tickets and live draws.'}
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 pt-2">
+                <Link
+                  href="/auth/login?redirect=/tickets"
+                  onClick={handleClose}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-xs hover:bg-primary-hover transition-colors"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>{isRtl ? 'تسجيل الدخول' : 'Sign In'}</span>
+                </Link>
+                <Link
+                  href="/"
+                  onClick={handleClose}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-surface border border-border-subtle text-content-primary text-xs font-semibold hover:bg-surface-secondary transition-colors"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-accent" />
+                  <span>{isRtl ? 'تصفح الدورات المهنية' : 'Explore Courses'}</span>
+                </Link>
+              </div>
+            </div>
+          ) : isLoading ? (
             <div className="min-h-[200px] flex flex-col items-center justify-center text-slate-500 gap-2">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <span className="text-xs">{isRtl ? 'جاري جلب التذاكر...' : 'Loading tickets...'}</span>

@@ -30,6 +30,7 @@ export function TicketsPageView() {
     isEmpty,
     isLoading,
     isError,
+    isUnauthenticated,
     getTimeRemainingMs,
     refetch,
   } = useLearnerTickets();
@@ -63,7 +64,7 @@ export function TicketsPageView() {
   };
 
   // State 1: Unauthenticated
-  if (!hasToken) {
+  if (!hasToken || isUnauthenticated) {
     return (
       <div className="max-w-2xl mx-auto my-16 p-8 rounded-3xl bg-surface border border-border-subtle text-center shadow-sm">
         <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mx-auto mb-4">

@@ -12,6 +12,8 @@ import {
   RefreshCw,
   ExternalLink,
   Clock,
+  TrendingUp,
+  Shield,
 } from 'lucide-react';
 import { NotificationItem as NotificationItemType } from '@/types/notification';
 import { sanitizeRelativePath } from '@/lib/safe-url';
@@ -48,29 +50,41 @@ export function NotificationItem({
   // Category Icon & Color
   const getCategoryMeta = () => {
     switch (category) {
+      case 'admin_sales':
+        return {
+          icon: TrendingUp,
+          badgeColor: 'text-emerald-600 dark:text-emerald-400',
+          label: isRtl ? 'مبيعات الدورات' : 'Course Sale',
+        };
+      case 'admin_ops':
+        return {
+          icon: Shield,
+          badgeColor: 'text-indigo-600 dark:text-indigo-400',
+          label: isRtl ? 'عمليات المنصة' : 'Platform Ops',
+        };
       case 'course_announcements':
         return {
           icon: BookOpen,
-          badgeBg: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+          badgeColor: 'text-blue-500',
           label: isRtl ? 'دورات تدريبية' : 'Course',
         };
       case 'prize_draw_promotions':
         return {
           icon: Trophy,
-          badgeBg: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+          badgeColor: 'text-amber-500',
           label: isRtl ? 'سحب وجوائز' : 'Raffle & Prize',
         };
       case 'admin_broadcasts':
         return {
           icon: Megaphone,
-          badgeBg: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+          badgeColor: 'text-purple-500',
           label: isRtl ? 'إعلان عام' : 'Broadcast',
         };
       case 'transactional':
       default:
         return {
           icon: CheckCircle,
-          badgeBg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+          badgeColor: 'text-emerald-500',
           label: isRtl ? 'معاملة رسمية' : 'Transactional',
         };
     }
@@ -153,7 +167,7 @@ export function NotificationItem({
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-1.5">
           <span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border ${categoryMeta.badgeBg}`}
+            className={`inline-flex items-center gap-1 text-[11px] font-bold ${categoryMeta.badgeColor}`}
           >
             <Icon className="w-3 h-3" />
             <span>{categoryMeta.label}</span>

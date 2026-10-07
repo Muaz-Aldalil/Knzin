@@ -176,9 +176,9 @@ export default function AdminUsersPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={isAr ? 'بحث بالبريد أو المعرف...' : 'Search email or ID...'}
-                className="w-64 pl-9 pr-4 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold focus:outline-hidden"
+                className="w-64 ps-10 pe-4 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold focus:outline-hidden transition-colors"
               />
-              <Search className="w-4 h-4 text-content-muted absolute left-3 top-1/2 -translate-y-1/2 rtl:left-auto rtl:right-3" />
+              <Search className="w-4 h-4 text-content-muted absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             <button
               type="submit"

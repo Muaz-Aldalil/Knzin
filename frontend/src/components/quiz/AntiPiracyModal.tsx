@@ -91,7 +91,7 @@ export default function AntiPiracyModal({
               <span>إعادة الاختبار</span>
             </button>
 
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 text-xs font-bold">
+            <div className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 text-xs font-bold">
               <ShieldAlert className="w-3.5 h-3.5" />
               <span>{t('step', { current: step, total: 3 })}</span>
             </div>

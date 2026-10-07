@@ -15,9 +15,17 @@ interface DrawCardProps {
   draw: DrawItem;
   serverTimeUtc?: string;
   className?: string;
+  isTermsOpen?: boolean;
+  onToggleTerms?: () => void;
 }
 
-export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps) {
+export function DrawCard({
+  draw,
+  serverTimeUtc,
+  className = '',
+  isTermsOpen,
+  onToggleTerms,
+}: DrawCardProps) {
   const t = useTranslations('draws');
   const [isLocallyLocked, setIsLocallyLocked] = useState(draw.status === 'locked');
 
@@ -26,10 +34,10 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
   // Tier color styling
   const tierColorBadge =
     draw.tier === 'monthly'
-      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+      ? 'text-amber-400'
       : draw.tier === 'daily'
-      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-      : 'bg-primary/10 text-primary border-primary/20';
+      ? 'text-emerald-400'
+      : 'text-primary';
 
   const tierName =
     draw.tier === 'monthly'
@@ -40,7 +48,7 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
 
   return (
     <div
-      className={`group relative flex flex-col justify-between rounded-2xl bg-card border border-border shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden ${
+      className={`group relative flex flex-col rounded-2xl bg-card border border-border shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden ${
         draw.tier === 'monthly' ? 'ring-1 ring-amber-500/30' : ''
       } ${className}`}
     >
@@ -67,13 +75,13 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
           {/* Tier Badge & High-Trust Label */}
           <div className="absolute top-3 inset-x-3 flex items-center justify-between gap-2">
             <span
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border backdrop-blur-md shadow-xs ${tierColorBadge}`}
+              className={`inline-flex items-center gap-1 text-xs font-bold drop-shadow-sm ${tierColorBadge}`}
             >
               <Sparkles className="h-3 w-3" />
               {tierName}
             </span>
 
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-black/60 text-white backdrop-blur-md">
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-white/90 drop-shadow-sm">
               <ShieldCheck className="h-3 w-3 text-emerald-400" />
               {draw.badge_label}
             </span>
@@ -145,7 +153,7 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
       </div>
 
       {/* Footer & Action CTAs */}
-      <div className="p-4 sm:p-5 pt-0 space-y-3">
+      <div className="p-4 sm:p-5 pt-0 space-y-3 mt-auto">
         {/* Course Entry CTA */}
         <Link
           href="/#catalog"
@@ -156,7 +164,11 @@ export function DrawCard({ draw, serverTimeUtc, className = '' }: DrawCardProps)
         </Link>
 
         {/* Terms Accordion */}
-        <DrawTermsAccordion tier={draw.tier} />
+        <DrawTermsAccordion
+          tier={draw.tier}
+          isOpen={isTermsOpen}
+          onToggle={onToggleTerms}
+        />
       </div>
     </div>
   );

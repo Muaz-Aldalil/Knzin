@@ -502,6 +502,7 @@ export default function HeaderHUD() {
       <NotificationDrawer
         isOpen={isNotificationDrawerOpen}
         onClose={() => setIsNotificationDrawerOpen(false)}
+        isAdmin={isAdmin}
       />
     </header>
   );

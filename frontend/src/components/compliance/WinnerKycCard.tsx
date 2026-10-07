@@ -27,7 +27,7 @@ export function WinnerKycCard({ variant = 'standalone', className = '' }: Winner
       <div className="space-y-4">
         {/* Header with Badges */}
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>{t('badge')}</span>
           </div>

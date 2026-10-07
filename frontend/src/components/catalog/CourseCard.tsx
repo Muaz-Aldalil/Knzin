@@ -63,15 +63,18 @@ export default function CourseCard({ course, onQuickCheckout }: CourseCardProps)
             </span>
           </div>
 
-          {/* Title */}
-          <h2 className="text-base font-bold text-content-primary leading-snug group-hover:text-primary transition-colors">
-            <Link href={`/courses/${course.slug}`}>{title}</Link>
-          </h2>
-
-          {/* Description */}
-          <p className="mt-2 text-xs text-content-secondary line-clamp-2 leading-relaxed">
-            {description}
-          </p>
+          {/* Title & Description as Interactive Link */}
+          <Link
+            href={`/courses/${course.slug}`}
+            className="block group/link cursor-pointer focus:outline-hidden"
+          >
+            <h2 className="text-base font-bold text-content-primary leading-snug group-hover/link:text-primary transition-colors">
+              {title}
+            </h2>
+            <p className="mt-2 text-xs text-content-secondary line-clamp-2 leading-relaxed group-hover/link:text-content-primary transition-colors">
+              {description}
+            </p>
+          </Link>
         </div>
 
         {/* Pricing & Actions Section */}

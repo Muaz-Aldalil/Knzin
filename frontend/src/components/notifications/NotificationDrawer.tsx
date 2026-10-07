@@ -3,22 +3,45 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocale } from 'next-intl';
-import { X, CheckCheck, Settings, BellOff, Inbox, Loader2 } from 'lucide-react';
+import {
+  X,
+  CheckCheck,
+  Settings,
+  BellOff,
+  Inbox,
+  Loader2,
+  GraduationCap,
+  TrendingUp,
+} from 'lucide-react';
 import { NotificationItem } from './NotificationItem';
 import { NotificationPreferencesModal } from './NotificationPreferencesModal';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useAuth } from '@/hooks/useAuth';
+import { useAdminAccess } from '@/hooks/admin/useAdminAccess';
 
 interface NotificationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  isAdmin?: boolean;
 }
 
-export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps) {
+export function NotificationDrawer({
+  isOpen,
+  onClose,
+  isAdmin: isAdminProp,
+}: NotificationDrawerProps) {
   const locale = useLocale();
   const isRtl = locale === 'ar';
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
+  const [activeScope, setActiveScope] = useState<'learner' | 'admin'>('learner');
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const { token } = useAuth();
+  const { isAdmin: probeIsAdmin } = useAdminAccess(token);
+  const effectiveIsAdmin = isAdminProp !== undefined ? isAdminProp : probeIsAdmin;
+
+  const currentScope = effectiveIsAdmin ? activeScope : 'all';
 
   useEffect(() => {
     setMounted(true);
@@ -28,10 +51,18 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
     notifications,
     isLoading,
     unreadCount,
+    learnerUnreadCount,
+    adminUnreadCount,
     markAsRead,
     markAllAsRead,
     isMarkingAllAsRead,
-  } = useNotifications(1, 25, filter);
+  } = useNotifications(1, 25, filter, currentScope);
+
+  const activeScopeUnreadCount = effectiveIsAdmin
+    ? activeScope === 'admin'
+      ? adminUnreadCount
+      : learnerUnreadCount
+    : unreadCount;
 
   // Lock body scroll when drawer is open to prevent background scrolling
   useEffect(() => {
@@ -85,7 +116,7 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
               {isRtl ? 'مركز الإشعارات' : 'Notification Center'}
             </h3>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+              <span className="text-xs font-bold text-primary">
                 <bdi>{unreadCount}</bdi> {isRtl ? 'جديد' : 'new'}
               </span>
             )}
@@ -116,6 +147,48 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
           </div>
         </div>
 
+        {/* Dual-Persona Persona Selector (Rendered ONLY for Administrators - US2, FR-009) */}
+        {effectiveIsAdmin && (
+          <div className="px-4 sm:px-6 py-2.5 border-b border-border-subtle bg-surface-secondary/30">
+            <div className="grid grid-cols-2 p-1 bg-surface-secondary rounded-xl border border-border-subtle text-xs">
+              <button
+                type="button"
+                onClick={() => setActiveScope('learner')}
+                className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg font-bold transition-all cursor-pointer ${
+                  activeScope === 'learner'
+                    ? 'bg-surface text-content-primary shadow-xs'
+                    : 'text-content-muted hover:text-content-primary'
+                }`}
+              >
+                <GraduationCap className="w-4 h-4 text-primary" />
+                <span>{isRtl ? 'نشاطي كمتعلم' : 'My Activity'}</span>
+                {learnerUnreadCount > 0 && (
+                  <span className="text-[10px] font-bold text-primary">
+                    <bdi>{learnerUnreadCount}</bdi>
+                  </span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveScope('admin')}
+                className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg font-bold transition-all cursor-pointer ${
+                  activeScope === 'admin'
+                    ? 'bg-surface text-content-primary shadow-xs'
+                    : 'text-content-muted hover:text-content-primary'
+                }`}
+              >
+                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                <span>{isRtl ? 'الإدارة والمبيعات' : 'Admin & Sales'}</span>
+                {adminUnreadCount > 0 && (
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                    <bdi>{adminUnreadCount}</bdi>
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Filter Tabs & Mark All Read Action Bar */}
         <div className="px-4 sm:px-6 py-2.5 border-b border-border-subtle flex items-center justify-between gap-3 bg-surface">
           <div className="flex items-center gap-1 p-0.5 bg-surface-secondary rounded-lg border border-border-subtle text-xs">
@@ -143,10 +216,10 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
             </button>
           </div>
 
-          {unreadCount > 0 && (
+          {activeScopeUnreadCount > 0 && (
             <button
               type="button"
-              onClick={() => markAllAsRead()}
+              onClick={() => markAllAsRead(currentScope)}
               disabled={isMarkingAllAsRead}
               className="inline-flex items-center gap-1.5 text-xs font-medium text-content-muted hover:text-primary transition-colors cursor-pointer disabled:opacity-50"
             >
@@ -173,14 +246,38 @@ export function NotificationDrawer({ isOpen, onClose }: NotificationDrawerProps)
                 )}
               </div>
               <h4 className="text-sm font-semibold text-content-primary mb-1">
-                {filter === 'unread'
-                  ? (isRtl ? 'لا توجد إشعارات غير مقروءة' : 'No unread notifications')
-                  : (isRtl ? 'صندوق الإشعارات فارغ' : 'Your inbox is empty')}
+                {effectiveIsAdmin && activeScope === 'admin'
+                  ? filter === 'unread'
+                    ? isRtl
+                      ? 'لا توجد تنبيهات مبيعات غير مقروءة'
+                      : 'No unread sales alerts'
+                    : isRtl
+                      ? 'لا توجد تنبيهات إدارية حالياً'
+                      : 'No administrative alerts yet'
+                  : filter === 'unread'
+                    ? isRtl
+                      ? 'لا توجد إشعارات غير مقروءة'
+                      : 'No unread notifications'
+                    : isRtl
+                      ? 'صندوق الإشعارات فارغ'
+                      : 'Your inbox is empty'}
               </h4>
               <p className="text-xs max-w-xs leading-relaxed">
-                {filter === 'unread'
-                  ? (isRtl ? 'لقد اطلعت على جميع التحديثات والإشعارات بنجاح.' : "You're all caught up with your latest updates.")
-                  : (isRtl ? 'ستصلك هنا إشعارات دوراتك التعليمية وتذاكر السحب فور توفرها.' : 'Updates on your courses, draws, and tickets will appear here.')}
+                {effectiveIsAdmin && activeScope === 'admin'
+                  ? filter === 'unread'
+                    ? isRtl
+                      ? 'لقد اطلعت على كافة تنبيهات مبيعات الدورات بنجاح.'
+                      : "You're all caught up with your sales alerts."
+                    : isRtl
+                      ? 'ستصلك هنا إشعارات فورية بمبيعات الدورات وتحديثات المنصة الإدارية.'
+                      : 'You will receive real-time notifications for course purchases and administrative events here.'
+                  : filter === 'unread'
+                    ? isRtl
+                      ? 'لقد اطلعت على جميع التحديثات والإشعارات بنجاح.'
+                      : "You're all caught up with your latest updates."
+                    : isRtl
+                      ? 'ستصلك هنا إشعارات دوراتك التعليمية وتذاكر السحب فور توفرها.'
+                      : 'Updates on your courses, draws, and tickets will appear here.'}
               </p>
             </div>
           ) : (

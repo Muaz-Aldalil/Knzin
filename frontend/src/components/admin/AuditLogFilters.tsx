@@ -39,7 +39,7 @@ export function AuditLogFilterControls({ filters, onFilterChange }: AuditLogFilt
       onSubmit={handleApply}
       className="p-4 rounded-2xl bg-surface-card border border-border-subtle shadow-xs flex flex-wrap items-center gap-3 text-xs"
     >
-      <div className="flex items-center gap-1.5 font-bold text-content-primary">
+      <div className="flex items-center gap-1.5 font-bold text-content-primary shrink-0">
         <Filter className="w-4 h-4 text-brand-gold" />
         <span>{isAr ? 'تصفية السجل:' : 'Filter Trail:'}</span>
       </div>
@@ -49,7 +49,7 @@ export function AuditLogFilterControls({ filters, onFilterChange }: AuditLogFilt
         value={actor}
         onChange={(e) => setActor(e.target.value)}
         placeholder={isAr ? 'بريد المشرف...' : 'Admin email...'}
-        className="px-3 py-1.5 rounded-lg bg-surface-elevated border border-border-subtle text-content-primary focus:border-brand-gold focus:outline-hidden"
+        className="flex-1 min-w-[140px] sm:min-w-[180px] px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary focus:border-brand-gold focus:outline-hidden transition-colors"
       />
 
       <input
@@ -57,13 +57,13 @@ export function AuditLogFilterControls({ filters, onFilterChange }: AuditLogFilt
         value={action}
         onChange={(e) => setAction(e.target.value)}
         placeholder={isAr ? 'اسم العملية (مثل settings_updated)...' : 'Action name...'}
-        className="px-3 py-1.5 rounded-lg bg-surface-elevated border border-border-subtle text-content-primary focus:border-brand-gold focus:outline-hidden"
+        className="flex-1 min-w-[140px] sm:min-w-[180px] px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary focus:border-brand-gold focus:outline-hidden transition-colors"
       />
 
       <select
         value={outcome}
         onChange={(e) => setOutcome(e.target.value)}
-        className="px-3 py-1.5 rounded-lg bg-surface-elevated border border-border-subtle text-content-primary focus:border-brand-gold focus:outline-hidden"
+        className="min-w-[130px] px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary focus:border-brand-gold focus:outline-hidden transition-colors cursor-pointer"
       >
         <option value="">{isAr ? 'جميع النتائج' : 'All outcomes'}</option>
         <option value="success">{isAr ? 'نجاح (Success)' : 'Success'}</option>
@@ -72,16 +72,17 @@ export function AuditLogFilterControls({ filters, onFilterChange }: AuditLogFilt
 
       <button
         type="submit"
-        className="px-4 py-1.5 rounded-lg bg-brand-gold text-brand-navy font-bold hover:bg-brand-gold-light transition-colors"
+        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-brand-gold hover:bg-brand-gold-hover text-brand-navy font-bold shadow-xs hover:shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
       >
-        {isAr ? 'تطبيق' : 'Apply'}
+        <Search className="w-3.5 h-3.5 text-brand-navy" />
+        <span>{isAr ? 'تطبيق الفلتر' : 'Apply Filter'}</span>
       </button>
 
       {(actor || action || outcome) && (
         <button
           type="button"
           onClick={handleReset}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border-subtle text-content-secondary hover:text-content-primary"
+          className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-xl border border-border-subtle text-content-secondary hover:text-content-primary hover:bg-surface-elevated transition-colors cursor-pointer shrink-0"
         >
           <X className="w-3.5 h-3.5" />
           <span>{isAr ? 'إعادة ضبط' : 'Reset'}</span>

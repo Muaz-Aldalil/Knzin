@@ -17,13 +17,13 @@ export interface AdminApprovalRecord {
 }
 
 export interface IssueKycPayload {
-  subject_user_id: number;
+  subject_user_id: string | number;
   status: 'valid' | 'rejected';
   notes?: string;
 }
 
 export interface IssueDrawIntegrityPayload {
-  draw_id: number;
+  draw_id: string | number;
   status: 'valid' | 'rejected';
   notes?: string;
 }

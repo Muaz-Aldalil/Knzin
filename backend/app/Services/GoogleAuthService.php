@@ -22,6 +22,10 @@ class GoogleAuthService
      */
     public function isMockMode(): bool
     {
+        if (app()->environment('production')) {
+            return false;
+        }
+
         return (bool) config('services.google.mock', false);
     }
 
@@ -48,8 +52,10 @@ class GoogleAuthService
             $name = 'طالب كَنزين';
             if ($mockEmail) {
                 $existingUser = User::where('email', $email)->first();
-                if ($existingUser && !empty($existingUser->display_name)) {
+                if ($existingUser && !empty($existingUser->display_name) && $existingUser->display_name !== 'مشرف المنصة') {
                     $name = $existingUser->display_name;
+                } elseif (str_contains($email, 'admin')) {
+                    $name = 'معاذ الدليل';
                 } elseif (str_contains($email, 'affiliate_a')) {
                     $name = 'المسوّق أ';
                 } elseif (str_contains($email, 'customer_b')) {
@@ -102,13 +108,19 @@ class GoogleAuthService
                 'email_verified_at' => now(),
             ]);
         } else {
-            // Ensure verified timestamp and active status
-            $googleUser->update([
+            // Ensure verified timestamp, active status, and synced display name
+            $updateData = [
                 'status' => 'active',
                 'email_verified_at' => $googleUser->email_verified_at ?? now(),
                 'provider_id' => $providerId,
                 'avatar_url' => $avatarUrl ?? $googleUser->avatar_url,
-            ]);
+            ];
+
+            if (!empty($name) && ($googleUser->display_name === 'مشرف المنصة' || empty($googleUser->display_name) || $name !== 'طالب كَنزين')) {
+                $updateData['display_name'] = $name;
+            }
+
+            $googleUser->update($updateData);
         }
 
         // Execute one-way merge: re-attribute all unverified guest orders to this verified account

@@ -173,8 +173,8 @@ export default function AdminApprovalsPage() {
           </h1>
           <p className="text-sm text-content-secondary mt-1">
             {isAr
-              ? 'إصدار وتدقيق وسحب موافقات الهوية ونزاهة السحب اللازمة للإفراج عن جوائز الشركاء.'
-              : 'Issue, inspect, or revoke KYC and Draw Integrity approvals required for co-prize releases.'}
+              ? 'إصدار وتدقيق وسحب موافقات الهوية والتحقق ونزاهة السحوبات الترويجية.'
+              : 'Issue, inspect, or revoke identity verification and draw integrity approvals.'}
           </p>
         </div>
 
@@ -183,16 +183,16 @@ export default function AdminApprovalsPage() {
 
         {/* Filters and Table */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h2 className="text-lg font-bold text-content-primary">
               {isAr ? 'سجل القرارات الصادرة' : 'Issued Decisions History'}
             </h2>
-            <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-border-subtle text-xs">
+            <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-border-subtle text-xs overflow-x-auto scrollbar-none self-start sm:self-auto">
               {['all', 'kyc', 'draw_integrity'].map((type) => (
                 <button
                   key={type}
                   onClick={() => setFilterType(type)}
-                  className={`px-3 py-1.5 rounded-lg font-semibold transition-colors capitalize ${
+                  className={`px-3 py-1.5 rounded-lg font-semibold transition-colors capitalize whitespace-nowrap shrink-0 cursor-pointer ${
                     filterType === type
                       ? 'bg-brand-gold text-brand-navy shadow-xs'
                       : 'text-content-secondary hover:text-content-primary'
@@ -228,8 +228,8 @@ export default function AdminApprovalsPage() {
           title={isAr ? 'إلغاء وسحب قرار الموافقة' : 'Revoke Verification Approval'}
           description={
             isAr
-              ? `سيتم سحب الموافقة ${revokingApproval?.approval_id} فورياً. إذا كان هناك جائزة شريك معلقة على هذه الموافقة فلن يمكن صرفها حتى يصدر قرار بديل.`
-              : `Approval ${revokingApproval?.approval_id} will be immediately revoked. Any co-prize dependent on this approval will be blocked.`
+              ? `سيتم سحب الموافقة ${revokingApproval?.approval_id} فورياً ولن يُعتد بها كتوثيق صالح حتى يصدر قرار بديل.`
+              : `Approval ${revokingApproval?.approval_id} will be immediately revoked and marked invalid until superseded.`
           }
           placeholder={isAr ? 'اكتب سبب الإلغاء بدقة للتدقيق...' : 'Specify revocation justification...'}
           isLoading={isRevoking}

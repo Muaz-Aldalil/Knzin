@@ -8,30 +8,46 @@ import { ChevronDown, ShieldAlert, Sparkles, Clock, Calendar } from 'lucide-reac
 interface DrawTermsAccordionProps {
   tier: DrawTier;
   className?: string;
+  isOpen?: boolean;
+  onToggle?: () => void;
 }
 
-export function DrawTermsAccordion({ tier, className = '' }: DrawTermsAccordionProps) {
+export function DrawTermsAccordion({
+  tier,
+  className = '',
+  isOpen: controlledIsOpen,
+  onToggle,
+}: DrawTermsAccordionProps) {
   const t = useTranslations('draws');
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+
+  const isExpanded = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const handleToggle = () => {
+    if (onToggle) {
+      onToggle();
+    } else {
+      setInternalIsOpen(!internalIsOpen);
+    }
+  };
 
   return (
     <div className={`border-t border-border/60 pt-3 text-start ${className}`}>
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="w-full flex items-center justify-between py-1 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer select-none"
-        aria-expanded={isOpen}
+        aria-expanded={isExpanded}
       >
         <span className="flex items-center gap-1.5">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           {t('termsTitle')}
         </span>
         <ChevronDown
-          className={`h-4 w-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
         />
       </button>
 
-      {isOpen && (
+      {isExpanded && (
         <div className="mt-2.5 space-y-2 text-xs text-muted-foreground animate-in fade-in-50 duration-200">
           {/* Tier-Specific Rule */}
           <div className="flex items-start gap-2 p-2 rounded-lg bg-muted/40">

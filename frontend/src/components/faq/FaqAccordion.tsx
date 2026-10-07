@@ -122,7 +122,7 @@ export function FaqAccordion({ className = '', kycSlot }: FaqAccordionProps) {
     >
       {/* Section Header */}
       <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-primary">
           <HelpCircle className="w-3.5 h-3.5" />
           <span>{t('heading')}</span>
         </div>

@@ -183,6 +183,11 @@ class User extends Authenticatable
         return $this->hasMany(AdminCapability::class);
     }
 
+    public function capabilities(): HasMany
+    {
+        return $this->adminCapabilities();
+    }
+
     /**
      * Check if user possesses an active persistent administrative capability.
      */

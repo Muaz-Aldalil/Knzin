@@ -31,7 +31,7 @@ export function HeroGrandPrizeCountdown() {
         {/* Left Column: Copy, Valuation & Call to Action */}
         <div className="lg:col-span-7 space-y-5 text-start">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-amber-950 shadow-xs">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400">
               <Sparkles className="h-3.5 w-3.5 fill-current" />
               {t('heroMarqueeBadge')}
             </span>

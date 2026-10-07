@@ -36,7 +36,7 @@ export const TheHookSection: React.FC = () => {
 
         <div className="relative z-10 flex flex-col items-center text-center space-y-6">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-bold tracking-wide shadow-sm">
+          <div className="inline-flex items-center gap-2 text-primary text-xs font-bold tracking-wide">
             <Sparkles className="w-3.5 h-3.5" />
             <span>{t('badge')}</span>
           </div>
