@@ -30,17 +30,17 @@ services:
         value: file
       - key: DB_CONNECTION
         value: mysql
+      - key: DB_HOST
+        value: knzin-db-muazaldalil-f095.c.aivencloud.com
       - key: DB_PORT
-        value: "3306"
+        value: "15503"
+      - key: DB_DATABASE
+        value: defaultdb
+      - key: DB_USERNAME
+        value: avnadmin
       - key: GOOGLE_AUTH_MOCK
         value: "true"
-      # Prompted in Render UI during Blueprint setup:
-      - key: DB_HOST
-        sync: false
-      - key: DB_DATABASE
-        sync: false
-      - key: DB_USERNAME
-        sync: false
+      # Prompted in Render UI (Secrets & Deployment URLs):
       - key: DB_PASSWORD
         sync: false
       - key: MYSQL_SSL_CA_CONTENT
