@@ -1,0 +1,83 @@
+services:
+  # 1. Main Web API Service (Laravel 11 / PHP 8.3 & Apache)
+  - type: web
+    name: knzin-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    healthCheckPath: /up
+    envVars:
+      - key: APP_NAME
+        value: KNZiN
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_STORE
+        value: file
+      - key: GOOGLE_AUTH_MOCK
+        value: "true"
+
+  # 2. Background Queue Worker (Mints promotional draw tickets & processes async jobs)
+  - type: worker
+    name: knzin-worker
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    dockerCommand: php artisan queue:work --queue=default --sleep=3 --tries=3 --max-time=3600 --timeout=120
+    plan: starter
+    envVars:
+      - fromService:
+          type: web
+          name: knzin-backend
+          envVarKey: APP_KEY
+      - key: APP_NAME
+        value: KNZiN
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_STORE
+        value: file
+
+  # 3. Scheduled Cron Tasks (Order TTL expiry, abandoned carts, reconciliation)
+  - type: cron
+    name: knzin-scheduler
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    schedule: "* * * * *"
+    dockerCommand: php artisan schedule:run
+    plan: starter
+    envVars:
+      - fromService:
+          type: web
+          name: knzin-backend
+          envVarKey: APP_KEY
+      - key: APP_NAME
+        value: KNZiN
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: QUEUE_CONNECTION
+        value: database

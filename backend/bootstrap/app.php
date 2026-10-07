@@ -28,7 +28,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustProxies(at: '*');
+        $trustedProxies = env('TRUSTED_PROXIES');
+        $middleware->trustProxies(
+            at: $trustedProxies ? (str_contains($trustedProxies, ',') ? explode(',', $trustedProxies) : $trustedProxies) : [
+                '10.0.0.0/8',
+                '172.16.0.0/12',
+                '192.168.0.0/16',
+                '127.0.0.1',
+            ],
+            headers: Request::HEADER_X_FORWARDED_FOR |
+                Request::HEADER_X_FORWARDED_HOST |
+                Request::HEADER_X_FORWARDED_PORT |
+                Request::HEADER_X_FORWARDED_PROTO |
+                Request::HEADER_X_FORWARDED_AWS_ELB
+        );
         $middleware->redirectGuestsTo(fn () => null);
 
         $middleware->alias([

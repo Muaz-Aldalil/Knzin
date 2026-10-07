@@ -126,8 +126,24 @@ Ratified the comprehensive 31-section KNZiN Agent Constitution and Engineering O
      - Arabic (`ar`): `© ٢٠٢٦ <span style="color: #00bcd4">ديجتال</span> <span style="color: #e91e63">أيج</span> للحلول التقنية`
      - English (`en`): `© 2026 <span style="color: #00bcd4">Dig</span><span style="color: #e91e63">Age</span> for Tech Solutions`
 5. **Canonical External URL & Linking**:
-   * Official site: `https://digagesolutions.com/`
    * Interaction contract: Logo and company text are separate, independent `<a>` tags with `target="_blank"` and `rel="noopener noreferrer"`. The outer container is not a link.
+
+---
+
+## [DEC-009] Full-Stack Deployment Architecture & Production Hardening (Netlify + Render Blueprint)
+**Status:** IMPLEMENTED  
+**Date:** 2026-10-07  
+
+### Decision
+1. **Frontend Hosting (Netlify):** Next.js 15 (React 19) App Router is hosted on Netlify, using Node engine pin `>=20.9.0` in `package.json` and `netlify.toml` with `@netlify/plugin-nextjs`.
+2. **Backend API & Transport:** Laravel 11 / PHP 8.3 runs on Render inside a hardened Docker container. Frontend proxies `/api/v1/*` to the Render backend via Next.js `rewrites()` in `next.config.ts` and Netlify edge headers, guaranteeing same-origin behavior on mobile without CORS preflight penalties.
+3. **Worker & Scheduler Topology (Render Blueprint):** Declared declaratively via root `render.yaml`:
+   - `knzin-backend`: Web API container running Apache with OPcache and dynamic `$PORT` rewiring.
+   - `knzin-worker`: Long-lived background process running `php artisan queue:work --queue=default --sleep=3 --tries=3 --max-time=3600 --timeout=120` to process asynchronous ticket issuance (`GenerateTicketsJob`).
+   - `knzin-scheduler`: Managed cron job executing `php artisan schedule:run` every minute to handle order TTL expiration (48h), payments reconciliation, and notification dispatch.
+4. **Database & SSL Resilience:** External managed MySQL 8 database with SSL TLS certificate authority support (`MYSQL_SSL_CA_CONTENT` injected automatically to `storage/ca.pem` on container boot).
+5. **Proxy Security & Evidentiary Integrity:** `trustProxies` in `bootstrap/app.php` restricted to RFC1918 private networking (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to ensure legal shield consent IP (`terms_agreed_ip`) cannot be spoofed by malicious clients.
+
 
 
 

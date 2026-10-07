@@ -282,7 +282,7 @@ function LoginContent() {
             )}
 
             {/* Development Mode Quick Shortcuts (Local Development Only) */}
-            {(process.env.NODE_ENV !== 'production' || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))) && (
+            {process.env.NODE_ENV !== 'production' && (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) && (
               <div className="mt-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-start">
                 <div className="flex items-center gap-2 mb-2 text-xs font-bold text-amber-600 dark:text-amber-400">
                   <KeyRound className="w-4 h-4" />
