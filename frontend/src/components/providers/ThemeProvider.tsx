@@ -17,14 +17,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_STORAGE_KEY = 'knzin_theme';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('system');
+  const [theme, setThemeState] = useState<Theme>('light');
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // 1. Read stored preference
+    // 1. Read stored preference, defaulting to 'light'
     const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-    const initialTheme: Theme = stored && ['light', 'dark', 'system'].includes(stored) ? stored : 'system';
+    const initialTheme: Theme = stored && ['light', 'dark', 'system'].includes(stored) ? stored : 'light';
     setThemeState(initialTheme);
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
