@@ -1,21 +1,14 @@
-services:
-  # 1. Main Web API Service (Laravel 11 / PHP 8.3 & Apache)
-  - type: web
-    name: knzin-backend
-    runtime: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
-    plan: starter
-    healthCheckPath: /up
+envVarGroups:
+  - name: knzin-shared
     envVars:
+      - key: APP_KEY
+        generateValue: true
       - key: APP_NAME
         value: KNZiN
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: "false"
-      - key: APP_KEY
-        generateValue: true
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
@@ -26,6 +19,23 @@ services:
         value: file
       - key: CACHE_STORE
         value: file
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_PORT
+        value: "3306"
+
+services:
+  # 1. Main Web API Service (Laravel 11 / PHP 8.3 & Apache)
+  - type: web
+    name: knzin-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    healthCheckPath: /up
+    envVarGroups:
+      - knzin-shared
+    envVars:
       - key: GOOGLE_AUTH_MOCK
         value: "true"
 
@@ -37,25 +47,8 @@ services:
     dockerContext: ./backend
     dockerCommand: php artisan queue:work --queue=default --sleep=3 --tries=3 --max-time=3600 --timeout=120
     plan: starter
-    envVars:
-      - fromService:
-          type: web
-          name: knzin-backend
-          envVarKey: APP_KEY
-      - key: APP_NAME
-        value: KNZiN
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: "false"
-      - key: LOG_CHANNEL
-        value: stderr
-      - key: QUEUE_CONNECTION
-        value: database
-      - key: SESSION_DRIVER
-        value: file
-      - key: CACHE_STORE
-        value: file
+    envVarGroups:
+      - knzin-shared
 
   # 3. Scheduled Cron Tasks (Order TTL expiry, abandoned carts, reconciliation)
   - type: cron
@@ -66,18 +59,5 @@ services:
     schedule: "* * * * *"
     dockerCommand: php artisan schedule:run
     plan: starter
-    envVars:
-      - fromService:
-          type: web
-          name: knzin-backend
-          envVarKey: APP_KEY
-      - key: APP_NAME
-        value: KNZiN
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: "false"
-      - key: LOG_CHANNEL
-        value: stderr
-      - key: QUEUE_CONNECTION
-        value: database
+    envVarGroups:
+      - knzin-shared
