@@ -122,10 +122,16 @@ function LoginContent() {
     }
   };
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const isDemoLoginEnabled =
     process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGIN === 'true' ||
     process.env.NODE_ENV !== 'production' ||
-    (typeof window !== 'undefined' && (
+    (mounted && (
       window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1' ||
       window.location.hostname.endsWith('netlify.app')
@@ -134,7 +140,7 @@ function LoginContent() {
   const isGoogleAuthEnabled =
     process.env.NEXT_PUBLIC_ENABLE_GOOGLE_AUTH === 'true' ||
     process.env.NODE_ENV !== 'production' ||
-    (typeof window !== 'undefined' && window.location.hostname.endsWith('netlify.app'));
+    (mounted && window.location.hostname.endsWith('netlify.app'));
 
   const handleGoogleLogin = () => {
     if (!isGoogleAuthEnabled) {
