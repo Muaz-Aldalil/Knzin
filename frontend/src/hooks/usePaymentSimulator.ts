@@ -138,6 +138,8 @@ export function useSimulatorActions(transactionRef: string, orderNumber?: string
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['simulator-transaction', transactionRef] });
       queryClient.invalidateQueries({ queryKey: ['payment-status', orderNumber] });
+      queryClient.invalidateQueries({ queryKey: ['learner'] });
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
   });
 
@@ -213,6 +215,8 @@ export function useSimulatorActions(transactionRef: string, orderNumber?: string
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['simulator-transaction', transactionRef] });
       queryClient.invalidateQueries({ queryKey: ['payment-status', orderNumber] });
+      queryClient.invalidateQueries({ queryKey: ['learner'] });
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
   });
 
@@ -226,6 +230,8 @@ export function useSimulatorActions(transactionRef: string, orderNumber?: string
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['simulator-transaction', transactionRef] });
       queryClient.invalidateQueries({ queryKey: ['payment-status', orderNumber] });
+      queryClient.invalidateQueries({ queryKey: ['learner'] });
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
   });
 

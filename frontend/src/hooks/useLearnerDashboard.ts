@@ -52,7 +52,8 @@ export function useLearnerDashboard() {
     queryKey: ['learner', 'dashboard'],
     queryFn: () => apiClient<LearnerDashboardData>('/user/dashboard'),
     enabled: hasToken,
-    staleTime: 30 * 1000,
+    staleTime: 0,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
   });
 

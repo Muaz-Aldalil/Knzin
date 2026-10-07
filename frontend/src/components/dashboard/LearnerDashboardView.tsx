@@ -30,6 +30,11 @@ export function LearnerDashboardView() {
     refetch,
   } = useLearnerDashboard();
 
+  // Ensure fresh authoritative enrollments on every mount of the dashboard
+  React.useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItemData | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 

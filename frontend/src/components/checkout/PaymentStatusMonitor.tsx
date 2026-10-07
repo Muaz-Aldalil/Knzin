@@ -15,6 +15,7 @@ import {
   PlayCircle
 } from 'lucide-react';
 import { usePaymentStatus } from '@/hooks/usePaymentStatus';
+import { useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 
 interface PaymentStatusMonitorProps {
@@ -35,6 +36,7 @@ export default function PaymentStatusMonitor({
   const locale = useLocale();
   const router = useRouter();
   const isRtl = locale === 'ar';
+  const queryClient = useQueryClient();
 
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryError, setRetryError] = useState<string | null>(null);
@@ -57,6 +59,8 @@ export default function PaymentStatusMonitor({
       await apiClient(`/checkout/orders/${orderNumber}/simulate-success`, {
         method: 'POST',
       });
+      queryClient.invalidateQueries({ queryKey: ['learner'] });
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
       await refetch();
     } catch (err: any) {
       setSimulateError(err?.message || (isRtl ? 'فشلت محاكاة الدفع' : 'Payment simulation failed'));
@@ -74,6 +78,15 @@ export default function PaymentStatusMonitor({
     isTimedOut,
     refetch,
   } = usePaymentStatus(orderNumber);
+
+  // Invalidate learner dashboard and tickets cache immediately when payment completes
+  React.useEffect(() => {
+    if (isCompleted) {
+      queryClient.invalidateQueries({ queryKey: ['learner'] });
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['order'] });
+    }
+  }, [isCompleted, queryClient]);
 
   const handleRetryPayment = async (gatewayChoice: string) => {
     try {
@@ -143,7 +156,8 @@ export default function PaymentStatusMonitor({
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             type="button"
-            onClick={() => {
+            onClick={async () => {
+              await queryClient.invalidateQueries({ queryKey: ['learner'] });
               if (courseSlug) {
                 router.push(`/lessons/${courseSlug}` as any);
               } else {
@@ -159,7 +173,10 @@ export default function PaymentStatusMonitor({
 
           <button
             type="button"
-            onClick={() => router.push('/dashboard' as any)}
+            onClick={async () => {
+              await queryClient.invalidateQueries({ queryKey: ['learner'] });
+              router.push('/dashboard' as any);
+            }}
             className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-bold text-sm shadow-sm transition-all cursor-pointer"
           >
             <Ticket className="w-4 h-4 text-accent" />
