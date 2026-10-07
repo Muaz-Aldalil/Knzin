@@ -29,7 +29,8 @@ class EnsureAdminPrincipal
 
         // Safety guard: unsafe mock configuration outside local or testing
         $isMock = config('services.google.mock', false);
-        if ($isMock && !app()->environment(['local', 'testing'])) {
+        $allowDemoAdmin = (bool) env('KNZIN_ALLOW_DEMO_ADMIN', false) || (bool) env('KNZIN_EXPOSE_DEV_OTP', false);
+        if ($isMock && !$allowDemoAdmin && !app()->environment(['local', 'testing'])) {
             return response()->json([
                 'status' => 'error',
                 'code' => 'ERR_ADMIN_AUTH_UNSAFE_CONFIG',

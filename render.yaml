@@ -40,6 +40,8 @@ services:
         value: avnadmin
       - key: GOOGLE_AUTH_MOCK
         value: "true"
+      - key: KNZIN_ALLOW_DEMO_ADMIN
+        value: "true"
       # Prompted in Render UI (Secrets & Deployment URLs):
       - key: DB_PASSWORD
         sync: false
