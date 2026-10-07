@@ -1,16 +1,23 @@
 version: "1"
 
-envVarGroups:
-  - name: knzin-shared
+services:
+  # Main Backend Web API Service (Laravel 11 / PHP 8.3 & Apache + Embedded Worker & Scheduler)
+  - type: web
+    name: knzin-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /up
     envVars:
-      - key: APP_KEY
-        generateValue: true
       - key: APP_NAME
         value: KNZiN
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: "false"
+      - key: APP_KEY
+        generateValue: true
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
@@ -25,6 +32,8 @@ envVarGroups:
         value: mysql
       - key: DB_PORT
         value: "3306"
+      - key: GOOGLE_AUTH_MOCK
+        value: "true"
       # Prompted in Render UI during Blueprint setup:
       - key: DB_HOST
         sync: false
@@ -38,40 +47,3 @@ envVarGroups:
         sync: false
       - key: FRONTEND_URL
         sync: false
-
-services:
-  # 1. Main Web API Service (Laravel 11 / PHP 8.3 & Apache)
-  - type: web
-    name: knzin-backend
-    runtime: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
-    plan: starter
-    healthCheckPath: /up
-    envVars:
-      - fromGroup: knzin-shared
-      - key: GOOGLE_AUTH_MOCK
-        value: "true"
-
-  # 2. Background Queue Worker (Mints promotional draw tickets & processes async jobs)
-  - type: worker
-    name: knzin-worker
-    runtime: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
-    dockerCommand: php artisan queue:work --queue=default --sleep=3 --tries=3 --max-time=3600 --timeout=120
-    plan: starter
-    envVars:
-      - fromGroup: knzin-shared
-
-  # 3. Scheduled Cron Tasks (Order TTL expiry, abandoned carts, reconciliation)
-  - type: cron
-    name: knzin-scheduler
-    runtime: docker
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
-    schedule: "* * * * *"
-    dockerCommand: php artisan schedule:run
-    plan: starter
-    envVars:
-      - fromGroup: knzin-shared

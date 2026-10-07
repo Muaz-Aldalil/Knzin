@@ -8,7 +8,7 @@ if [ -n "$MYSQL_SSL_CA_CONTENT" ]; then
     export MYSQL_ATTR_SSL_CA=/var/www/html/storage/ca.pem
 fi
 
-# If running background worker or cron, skip web server setup and migrations
+# If explicitly running artisan from CLI, skip web server setup
 if [ "$1" = "php" ] && [ "$2" = "artisan" ]; then
     php artisan config:cache || true
     exec "$@"
@@ -38,5 +38,15 @@ until php artisan migrate --force --no-interaction; do
     sleep 3
 done
 
-echo "[entrypoint] Migrations completed. Starting Apache web server on port ${PORT}..."
+echo "[entrypoint] Migrations completed successfully."
+
+# Start background queue worker inside the container (Processes ticket minting for free)
+echo "[entrypoint] Starting embedded queue worker in background..."
+php artisan queue:work --queue=default --sleep=3 --tries=3 --timeout=120 &
+
+# Start lightweight cron loop inside the container (Runs scheduled tasks every minute for free)
+echo "[entrypoint] Starting embedded cron scheduler loop in background..."
+(while true; do php artisan schedule:run --no-interaction > /dev/null 2>&1; sleep 60; done) &
+
+echo "[entrypoint] Starting Apache web server on port ${PORT}..."
 exec "$@"
