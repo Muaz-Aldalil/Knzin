@@ -1,9 +1,9 @@
 FROM composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --ignore-platform-reqs
 COPY . .
-RUN composer dump-autoload --no-dev --optimize
+RUN composer dump-autoload --no-dev --optimize --no-scripts
 
 FROM php:8.3-apache
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -31,7 +31,8 @@ RUN sed -ri "s#/var/www/html#${APACHE_DOCUMENT_ROOT}#g" /etc/apache2/sites-avail
 WORKDIR /var/www/html
 
 COPY --from=vendor /app /var/www/html
-RUN chown -R www-data:www-data storage bootstrap/cache \
+RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

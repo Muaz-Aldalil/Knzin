@@ -3,7 +3,7 @@ set -e
 
 # Support SSL CA certificate injection via environment variable
 if [ -n "$MYSQL_SSL_CA_CONTENT" ]; then
-    echo "$MYSQL_SSL_CA_CONTENT" > /var/www/html/storage/ca.pem
+    printf "%b\n" "$MYSQL_SSL_CA_CONTENT" > /var/www/html/storage/ca.pem
     chmod 644 /var/www/html/storage/ca.pem
     export MYSQL_ATTR_SSL_CA=/var/www/html/storage/ca.pem
 fi
