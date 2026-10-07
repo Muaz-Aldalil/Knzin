@@ -74,6 +74,10 @@ function LoginContent() {
       setEmail(targetEmail);
       if (res.dev_code) {
         setDevCode(res.dev_code);
+        setCode(res.dev_code);
+      } else if (isDemoLoginEnabled) {
+        setDevCode('123456');
+        setCode('123456');
       }
       setStep('otp');
       setInfoMessage(
@@ -118,9 +122,19 @@ function LoginContent() {
     }
   };
 
+  const isDemoLoginEnabled =
+    process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGIN === 'true' ||
+    process.env.NODE_ENV !== 'production' ||
+    (typeof window !== 'undefined' && (
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname.endsWith('netlify.app')
+    ));
+
   const isGoogleAuthEnabled =
     process.env.NEXT_PUBLIC_ENABLE_GOOGLE_AUTH === 'true' ||
-    process.env.NODE_ENV !== 'production';
+    process.env.NODE_ENV !== 'production' ||
+    (typeof window !== 'undefined' && window.location.hostname.endsWith('netlify.app'));
 
   const handleGoogleLogin = () => {
     if (!isGoogleAuthEnabled) {
@@ -281,8 +295,8 @@ function LoginContent() {
               </>
             )}
 
-            {/* Development Mode Quick Shortcuts (Local Development Only) */}
-            {process.env.NODE_ENV !== 'production' && (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) && (
+            {/* Development Mode Quick Shortcuts (Local Development & Netlify Demo) */}
+            {isDemoLoginEnabled && (
               <div className="mt-8 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-start">
                 <div className="flex items-center gap-2 mb-2 text-xs font-bold text-amber-600 dark:text-amber-400">
                   <KeyRound className="w-4 h-4" />

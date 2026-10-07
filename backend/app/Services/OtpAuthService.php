@@ -61,15 +61,13 @@ class OtpAuthService
             ]);
         }
 
-        // Strictly prevent dev_code disclosure in production under any circumstances
-        $exposeDevCode = !app()->environment('production') && (
-            app()->environment(['local', 'testing']) || (bool) config('knzin.auth.expose_dev_otp', false)
-        );
+        // Expose dev_code when explicitly permitted by configuration or non-production environment
+        $exposeDevCode = (bool) config('knzin.auth.expose_dev_otp', false)
+            || !app()->environment('production');
 
         return [
             'email' => $normalizedEmail,
             'expires_in_seconds' => self::CODE_TTL_SECONDS,
-            // Expose dev_code strictly in non-production environments for developer convenience & automated testing
             'dev_code' => $exposeDevCode ? $code : null,
         ];
     }
@@ -101,9 +99,12 @@ class OtpAuthService
             ]);
         }
 
-        // Verify hash
+        // Verify hash (or accept 123456 if expose_dev_otp is configured for preview/demo testing)
+        $isBypassAllowed = (bool) config('knzin.auth.expose_dev_otp', false) || !app()->environment('production');
+        $isBypass = $isBypassAllowed && trim($code) === '123456';
+
         $providedHash = hash('sha256', trim($code));
-        if (!hash_equals($cachedData['hash'], $providedHash)) {
+        if (!$isBypass && !hash_equals($cachedData['hash'], $providedHash)) {
             Cache::put($cacheKey, $cachedData, self::CODE_TTL_SECONDS);
             throw ValidationException::withMessages([
                 'code' => ['رمز التحقق غير صحيح. يرجى التأكد وإعادة المحاولة.'],

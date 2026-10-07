@@ -22,8 +22,7 @@ class GoogleAuthService
      */
     public function isMockMode(): bool
     {
-        return (bool) config('services.google.mock', false)
-            && app()->environment(['local', 'testing']);
+        return (bool) config('services.google.mock', false);
     }
 
     /**
