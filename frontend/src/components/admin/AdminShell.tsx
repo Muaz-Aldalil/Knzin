@@ -331,7 +331,7 @@ export function AdminShell({ children }: AdminShellProps) {
           >
             <Eye className="w-4 h-4" />
           </Link>
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger
               data-testid="admin-mobile-profile-trigger"
               className="p-2 rounded-lg border border-border-subtle text-content-secondary hover:text-content-primary cursor-pointer"
@@ -488,7 +488,7 @@ export function AdminShell({ children }: AdminShellProps) {
             </Link>
 
             {/* Admin Profile & Preferences Dropdown */}
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger
                 data-testid="admin-topbar-profile-trigger"
                 className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-elevated/70 hover:bg-surface-elevated border border-border-subtle text-xs font-semibold text-content-primary transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/40"

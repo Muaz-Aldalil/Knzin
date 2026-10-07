@@ -318,7 +318,7 @@ export default function HeaderHUD() {
 
           {/* Primary Dropdown Menu (Theme, Language, How It Works, Account/Actions) */}
           <div className="hidden lg:flex items-center">
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-secondary border border-border-subtle text-xs font-semibold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-1 focus:ring-primary/40 cursor-pointer">
                 <UserIcon className="w-3.5 h-3.5 text-content-muted" />
                 <span className="max-w-[100px] truncate">

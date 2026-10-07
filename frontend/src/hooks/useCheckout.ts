@@ -24,6 +24,18 @@ export interface OrderItem {
   item_type: 'bundle' | 'part';
   price_cents: number;
   promotional_tickets_granted: number;
+  course?: {
+    id: string;
+    title_ar: string;
+    title_en: string;
+    slug: string;
+  } | null;
+  part?: {
+    id: string;
+    part_number: number;
+    title_ar: string;
+    title_en: string;
+  } | null;
 }
 
 export interface CreatedOrder {

@@ -60,7 +60,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
         {/* Real-Time Payment Status Monitor & Celebration UX (Feature 007) */}
         <PaymentStatusMonitor
           orderNumber={order.order_number}
-          courseSlug={order.items?.[0]?.course_id}
+          courseSlug={order.items?.[0]?.course?.slug || (order as any).course_slug || order.items?.[0]?.course_id}
         />
 
         {/* Core Order Data Grid */}

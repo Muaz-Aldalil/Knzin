@@ -38,6 +38,32 @@ export default function PaymentStatusMonitor({
 
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryError, setRetryError] = useState<string | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [simulateError, setSimulateError] = useState<string | null>(null);
+
+  const isDemoOrPreview =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGIN === 'true' ||
+    (typeof window !== 'undefined' && (
+      window.location.hostname.includes('netlify.app') ||
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1'
+    ));
+
+  const handleSimulatePayment = async () => {
+    try {
+      setIsSimulating(true);
+      setSimulateError(null);
+      await apiClient(`/checkout/orders/${orderNumber}/simulate-success`, {
+        method: 'POST',
+      });
+      await refetch();
+    } catch (err: any) {
+      setSimulateError(err?.message || (isRtl ? 'فشلت محاكاة الدفع' : 'Payment simulation failed'));
+    } finally {
+      setIsSimulating(false);
+    }
+  };
 
   const {
     data,
@@ -113,22 +139,31 @@ export default function PaymentStatusMonitor({
           </span>
         </div>
 
-        {/* Primary Action Button */}
-        <div>
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             type="button"
             onClick={() => {
               if (courseSlug) {
-                router.push(`/course-player/${courseSlug}` as any);
+                router.push(`/lessons/${courseSlug}` as any);
               } else {
-                router.push('/user/dashboard' as any);
+                router.push('/dashboard' as any);
               }
             }}
-            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-base shadow-lg shadow-emerald-600/25 transition-all transform hover:-translate-y-0.5 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-base shadow-lg shadow-emerald-600/25 transition-all transform hover:-translate-y-0.5 cursor-pointer"
           >
             <PlayCircle className="w-5 h-5" />
             <span>{t('startCourse')}</span>
             <ArrowRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard' as any)}
+            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-bold text-sm shadow-sm transition-all cursor-pointer"
+          >
+            <Ticket className="w-4 h-4 text-accent" />
+            <span>{isRtl ? 'لوحة تدريبي وتذاكري' : 'My Hub & Tickets'}</span>
           </button>
         </div>
       </div>
@@ -209,6 +244,45 @@ export default function PaymentStatusMonitor({
       {isTimedOut && (
         <div className="p-3 mt-3 rounded-xl bg-amber-100/70 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 text-xs text-start">
           {t('timeoutNotice')}
+        </div>
+      )}
+
+      {/* 1-Click Instant Mock Payment for Devs & Demo */}
+      {isDemoOrPreview && (
+        <div className="mt-4 p-4 rounded-xl bg-primary/10 border-2 border-primary/30 text-start space-y-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-primary shrink-0" />
+            <span className="text-xs font-bold text-slate-900 dark:text-white">
+              {isRtl ? 'بيئة تجريبية: محاكاة الدفع وتفعيل المحتوى' : 'Demo Mode: Instant Payment & Unlock'}
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-600 dark:text-slate-300">
+            {isRtl
+              ? 'تأكيد الدفع التجريبي فوراً لتفعيل اشتراك الدورة، فتح جميع الأجزاء المغلقة، وإصدار تذاكر السحب الترويجية في حسابك مباشرة دون انتظار البوابة.'
+              : 'Instantly simulate successful payment to unlock all course parts and mint promotional tickets immediately without waiting for external gateway.'}
+          </p>
+          {simulateError && (
+            <div className="p-2.5 rounded-lg bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 text-xs font-semibold">
+              {simulateError}
+            </div>
+          )}
+          <button
+            type="button"
+            disabled={isSimulating}
+            onClick={handleSimulatePayment}
+            className="w-full py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            {isSimulating ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4" />
+            )}
+            <span>
+              {isRtl
+                ? 'تأكيد الدفع التجريبي وتفعيل الدورة والتذاكر الآن ⚡'
+                : 'Confirm Mock Payment & Unlock Everything Now ⚡'}
+            </span>
+          </button>
         </div>
       )}
 

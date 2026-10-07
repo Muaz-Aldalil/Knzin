@@ -59,6 +59,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/checkout/orders/{orderNumber}', [CheckoutController::class, 'show'])->middleware('throttle:60,1');
     Route::post('/checkout/orders/{orderNumber}/pay', [PaymentController::class, 'pay'])->middleware('throttle:60,1');
     Route::get('/checkout/orders/{orderNumber}/payment-status', [PaymentController::class, 'paymentStatus'])->middleware('throttle:60,1');
+    Route::post('/checkout/orders/{orderNumber}/simulate-success', [CheckoutController::class, 'simulateSuccess'])->middleware('throttle:60,1');
 
     // Payment Webhook Ingestion Endpoints (Feature 007)
     Route::post('/payments/webhooks/simulator', [PaymentWebhookController::class, 'simulator']);

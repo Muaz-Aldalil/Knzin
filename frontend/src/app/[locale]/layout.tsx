@@ -65,7 +65,7 @@ export default async function LocaleLayout({
           }}
         />
       </head>
-      <body className={`${tajawal.className} min-h-screen bg-app-bg text-content-primary antialiased flex flex-col font-sans transition-colors duration-200 overflow-x-clip`}>
+      <body className={`${tajawal.className} min-h-screen bg-app-bg text-content-primary antialiased flex flex-col font-sans transition-colors duration-200`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <QueryProvider>

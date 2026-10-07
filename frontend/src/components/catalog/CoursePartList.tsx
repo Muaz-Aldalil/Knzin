@@ -35,6 +35,7 @@ interface CoursePartListProps {
   courseSlug?: string;
   parts: CoursePartData[];
   onSelectPart: (item: CheckoutItemData) => void;
+  isCourseEnrolled?: boolean;
 }
 
 export default function CoursePartList({
@@ -43,6 +44,7 @@ export default function CoursePartList({
   courseSlug,
   parts,
   onSelectPart,
+  isCourseEnrolled = false,
 }: CoursePartListProps) {
   const locale = useLocale();
   const isRtl = locale === 'ar';
@@ -75,6 +77,7 @@ export default function CoursePartList({
             const partTitle = isRtl ? part.title_ar : part.title_en;
             const syllabus = isRtl ? part.syllabus_ar : part.syllabus_en;
             const isFirstFree = part.is_free !== undefined ? part.is_free : (part.part_number === 1);
+            const isPartAccessible = isCourseEnrolled || isFirstFree;
             const lessonHref = `/lessons/${courseSlug || 'course'}?part=${part.part_number}`;
             const isLast = index === parts.length - 1;
 
@@ -91,7 +94,7 @@ export default function CoursePartList({
                     <div className="relative flex flex-col items-center shrink-0">
                       <span
                         className={`flex size-9 items-center justify-center rounded-xl text-xs font-black shadow-sm ${
-                          isFirstFree
+                          isPartAccessible
                             ? 'bg-success text-white shadow-success/20'
                             : 'bg-primary/10 text-primary border border-primary/20'
                         }`}
@@ -102,9 +105,9 @@ export default function CoursePartList({
 
                     <div className="space-y-1.5 flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        {isFirstFree ? (
+                        {isPartAccessible ? (
                           <Badge variant="success" size="sm" className="font-semibold text-[11px]">
-                            <span>{isRtl ? 'معاينة مجانية' : 'Free Preview'}</span>
+                            <span>{isCourseEnrolled ? (isRtl ? 'متاح للمشاهدة' : 'Unlocked') : (isRtl ? 'معاينة مجانية' : 'Free Preview')}</span>
                           </Badge>
                         ) : (
                           <Badge variant="outline" size="sm" icon={<Lock className="w-3 h-3 text-content-muted shrink-0" />} className="font-medium text-[11px]">
@@ -133,13 +136,13 @@ export default function CoursePartList({
 
                   {/* Right: Actions & Pricing */}
                   <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-border-subtle">
-                    {isFirstFree ? (
+                    {isPartAccessible ? (
                       <Link
                         href={lessonHref}
                         className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5"
                       >
                         <PlayCircle className="w-4 h-4" />
-                        <span>{isRtl ? 'مشاهدة الدرس مجاناً' : 'Watch Free'}</span>
+                        <span>{isRtl ? 'مشاهدة الدرس' : 'Watch Lesson'}</span>
                       </Link>
                     ) : (
                       <div className="flex items-center gap-3">

@@ -50,7 +50,7 @@ export function ReferralLinkCard({ referralInfo }: ReferralLinkCardProps) {
             {t('referralLinkCardTitle')}
           </h3>
           <p className="text-xs text-content-secondary">
-            {t('subtitle')}
+            {t('subtitle', { rate: '25%' })}
           </p>
         </div>
       </div>

@@ -41,6 +41,7 @@ export function useLessonPlayback(courseSlug: string, partNumber: number) {
   const [error, setError] = useState<ApiError | null>(null);
 
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fetchPlaybackAuthRef = useRef<(() => Promise<void>) | null>(null);
 
   const fetchPlaybackAuth = useCallback(async () => {
     if (!courseSlug || !partNumber) return;
@@ -67,15 +68,15 @@ export function useLessonPlayback(courseSlug: string, partNumber: number) {
         }
         const refreshTimeMs = (data.stream.validity_seconds - 60) * 1000;
         refreshTimeoutRef.current = setTimeout(() => {
-          fetchPlaybackAuth();
+          fetchPlaybackAuthRef.current?.();
         }, refreshTimeMs);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (err instanceof ApiError) {
         setError(err);
         if (err.code === 'ERR_PART_LOCKED') {
           setIsLocked(true);
-          const paywallPricing = err.data?.pricing || (err as any).pricing;
+          const paywallPricing = (err.data as Record<string, unknown> | undefined)?.pricing as PaywallPricing | undefined;
           if (paywallPricing) {
             setPricing(paywallPricing);
           }
@@ -87,6 +88,10 @@ export function useLessonPlayback(courseSlug: string, partNumber: number) {
       setIsLoading(false);
     }
   }, [courseSlug, partNumber]);
+
+  useEffect(() => {
+    fetchPlaybackAuthRef.current = fetchPlaybackAuth;
+  }, [fetchPlaybackAuth]);
 
   useEffect(() => {
     fetchPlaybackAuth();

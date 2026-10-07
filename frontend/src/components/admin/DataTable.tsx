@@ -21,6 +21,8 @@ interface DataTableProps<T> {
   lastPage?: number;
   onPageChange?: (page: number) => void;
   mobileRenderer?: (item: T) => React.ReactNode;
+  breakpoint?: 'sm' | 'md' | 'lg' | 'xl';
+  minWidth?: string;
 }
 
 export function DataTable<T>({
@@ -33,15 +35,35 @@ export function DataTable<T>({
   lastPage,
   onPageChange,
   mobileRenderer,
+  breakpoint = 'lg',
+  minWidth = 'min-w-[780px]',
 }: DataTableProps<T>) {
   const locale = useLocale();
   const isAr = locale === 'ar';
 
+  const mobileHiddenClass =
+    breakpoint === 'lg'
+      ? 'lg:hidden'
+      : breakpoint === 'sm'
+      ? 'sm:hidden'
+      : breakpoint === 'xl'
+      ? 'xl:hidden'
+      : 'md:hidden';
+
+  const desktopBlockClass =
+    breakpoint === 'lg'
+      ? 'hidden lg:block'
+      : breakpoint === 'sm'
+      ? 'hidden sm:block'
+      : breakpoint === 'xl'
+      ? 'hidden xl:block'
+      : 'hidden md:block';
+
   return (
     <div className="bg-surface-card border border-border-subtle rounded-2xl overflow-hidden shadow-xs">
-      {/* Mobile Responsive Cards View (< md) when mobileRenderer is supplied */}
+      {/* Mobile Responsive Cards View when mobileRenderer is supplied */}
       {mobileRenderer && (
-        <div className="md:hidden">
+        <div className={mobileHiddenClass}>
           {isLoading ? (
             <div className="px-6 py-12 text-center text-content-secondary">
               <div className="flex items-center justify-center gap-2">
@@ -65,9 +87,9 @@ export function DataTable<T>({
         </div>
       )}
 
-      {/* Desktop Table View (>= md when mobileRenderer is supplied, or always if not) */}
-      <div className={`overflow-x-auto ${mobileRenderer ? 'hidden md:block' : ''}`}>
-        <table className="w-full text-start text-sm">
+      {/* Desktop / Tablet Table View */}
+      <div className={`overflow-x-auto ${mobileRenderer ? desktopBlockClass : ''}`}>
+        <table className={`w-full text-start text-sm ${minWidth} border-collapse`}>
           <thead className="bg-surface-elevated/60 border-b border-border-subtle text-content-secondary font-semibold">
             <tr>
               {columns.map((col) => (

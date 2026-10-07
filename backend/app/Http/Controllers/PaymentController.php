@@ -58,7 +58,9 @@ class PaymentController extends ApiController
 
         return DB::transaction(function () use ($request, $orderNumber, $gateway, $locale) {
             /** @var Order|null $order */
-            $order = Order::with('user')->where('order_number', $orderNumber)->lockForUpdate()->first();
+            $order = Order::with('user')->where(function ($q) use ($orderNumber) {
+                $q->where('order_number', $orderNumber)->orWhere('id', $orderNumber);
+            })->lockForUpdate()->first();
 
             if (!$order) {
                 return response()->json([
@@ -164,7 +166,9 @@ class PaymentController extends ApiController
      */
     public function paymentStatus(Request $request, string $orderNumber): JsonResponse
     {
-        $order = Order::with('user')->where('order_number', $orderNumber)->first();
+        $order = Order::with('user')->where(function ($q) use ($orderNumber) {
+            $q->where('order_number', $orderNumber)->orWhere('id', $orderNumber);
+        })->first();
 
         if (!$order) {
             return response()->json([

@@ -195,6 +195,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user possesses any active administrative capabilities.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->adminCapabilities()->active()->exists();
+    }
+
+    /**
      * Grant a persistent administrative capability to this user.
      */
     public function grantCapability(

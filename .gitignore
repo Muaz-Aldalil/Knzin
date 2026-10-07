@@ -48,3 +48,7 @@ frontend/out/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Testing & Browser artifacts
+.playwright-mcp/
+

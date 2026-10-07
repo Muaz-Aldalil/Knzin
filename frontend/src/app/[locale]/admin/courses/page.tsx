@@ -93,23 +93,27 @@ export default function AdminCoursesPage() {
     {
       key: 'title',
       header: isAr ? 'الدورة التدريبية' : 'Course',
+      className: 'min-w-[220px] max-w-[340px]',
       render: (item) => (
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-content-primary text-sm">
+        <div className="space-y-1.5 py-0.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              href={`/${locale}/admin/courses/${item.id}`}
+              className="font-bold text-content-primary hover:text-brand-gold text-sm transition-colors leading-snug line-clamp-2"
+            >
               {isAr ? item.title_ar : item.title_en}
-            </span>
+            </Link>
             <Link
               href={`/${locale}/courses/${item.slug}`}
               target="_blank"
-              className="text-content-muted hover:text-brand-gold transition-colors"
+              className="p-1 rounded-md text-content-muted hover:text-brand-gold hover:bg-surface-elevated transition-colors shrink-0"
               title={isAr ? 'عرض في الموقع العام' : 'View in public catalog'}
             >
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
           </div>
-          <div className="flex items-center gap-2 text-xs text-content-muted">
-            <span className="font-mono bg-surface-elevated px-1.5 py-0.5 rounded border border-border-subtle">
+          <div className="flex items-center gap-1.5 text-xs text-content-muted flex-wrap">
+            <span className="font-mono text-[11px] bg-surface-elevated px-2 py-0.5 rounded-md border border-border-subtle inline-block max-w-[220px] truncate">
               {item.slug}
             </span>
           </div>
@@ -119,17 +123,27 @@ export default function AdminCoursesPage() {
     {
       key: 'pricing',
       header: isAr ? 'السعر والتذاكر' : 'Pricing & Tickets',
+      className: 'min-w-[170px] whitespace-nowrap',
       render: (item) => (
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-1 text-xs font-bold text-content-primary">
-            <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
-            <span>${(item.bundle_price_cents / 100).toFixed(2)}</span>
+        <div className="flex flex-col gap-1.5 whitespace-nowrap py-0.5">
+          {/* Price row */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span
+              className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-extrabold font-mono"
+              dir="ltr"
+            >
+              <DollarSign className="w-3 h-3 text-emerald-400 shrink-0" />
+              <span>{(item.bundle_price_cents / 100).toFixed(2)}</span>
+            </span>
             {item.display_price_label && (
-              <span className="text-[11px] font-normal text-content-muted">({item.display_price_label})</span>
+              <span className="text-[11px] font-medium text-content-muted whitespace-nowrap" dir={isAr ? 'rtl' : 'ltr'}>
+                <bdi>({item.display_price_label})</bdi>
+              </span>
             )}
           </div>
-          <div className="flex items-center gap-1 text-[11px] font-medium text-amber-400">
-            <Ticket className="w-3 h-3" />
+          {/* Tickets pill */}
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-semibold w-fit whitespace-nowrap">
+            <Ticket className="w-3 h-3 shrink-0" />
             <span>
               {item.bundle_promotional_tickets} {isAr ? 'تذكرة سحب' : 'Tickets'}
             </span>
@@ -140,23 +154,28 @@ export default function AdminCoursesPage() {
     {
       key: 'parts',
       header: isAr ? 'الأجزاء والدروس' : 'Parts & Lessons',
+      className: 'min-w-[140px] whitespace-nowrap',
       render: (item) => {
         const count = item.parts_count ?? item.parts?.length ?? 0;
         const freeCount = item.parts?.filter((p) => p.is_free).length ?? 0;
         return (
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-content-primary">
-              <Layers className="w-3.5 h-3.5 text-brand-gold" />
+          <div className="flex flex-col gap-1.5 whitespace-nowrap py-0.5">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-content-primary">
+              <Layers className="w-3.5 h-3.5 text-brand-gold shrink-0" />
               <span>
                 {count} {isAr ? 'أجزاء تدريبية' : 'Parts'}
               </span>
             </div>
-            {freeCount > 0 && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <PlayCircle className="w-2.5 h-2.5" />
+            {freeCount > 0 ? (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
+                <PlayCircle className="w-3 h-3 shrink-0" />
                 <span>
                   {freeCount} {isAr ? 'معاينة مجانية' : 'Free Preview'}
                 </span>
+              </span>
+            ) : (
+              <span className="text-[10px] text-content-muted font-medium">
+                {isAr ? 'مدفوع بالكامل' : 'All Paid'}
               </span>
             )}
           </div>
@@ -166,24 +185,25 @@ export default function AdminCoursesPage() {
     {
       key: 'status',
       header: isAr ? 'الحالة' : 'Status',
+      className: 'min-w-[125px] whitespace-nowrap',
       render: (item) => (
         <button
           onClick={() => handleToggleStatus(item.id)}
-          className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap w-fit cursor-pointer active:scale-95 ${
             item.is_active
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
-              : 'bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20'
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 shadow-2xs'
+              : 'bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 shadow-2xs'
           }`}
           title={isAr ? 'انقر لتغيير الحالة' : 'Click to toggle status'}
         >
           {item.is_active ? (
             <>
-              <CheckCircle className="w-3 h-3 text-emerald-400" />
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>{isAr ? 'نشط ومتاح' : 'Active'}</span>
             </>
           ) : (
             <>
-              <PauseCircle className="w-3 h-3 text-amber-400" />
+              <PauseCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>{isAr ? 'متوقف مؤقتاً' : 'Paused'}</span>
             </>
           )}
@@ -193,20 +213,22 @@ export default function AdminCoursesPage() {
     {
       key: 'actions',
       header: isAr ? 'الإجراءات' : 'Actions',
+      className: 'min-w-[145px] whitespace-nowrap text-end',
       render: (item) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 whitespace-nowrap justify-end">
           <Link
             href={`/${locale}/admin/courses/${item.id}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary hover:text-brand-gold transition-colors shadow-2xs"
             data-testid={`manage-course-${item.id}`}
           >
-            <Edit3 className="w-3.5 h-3.5 text-brand-gold" />
+            <Edit3 className="w-3.5 h-3.5 text-brand-gold shrink-0" />
             <span>{isAr ? 'إدارة المنهاج' : 'Manage'}</span>
           </Link>
           <button
             onClick={() => setCourseToDelete(item)}
-            className="p-1.5 rounded-xl bg-surface-elevated hover:bg-rose-500/10 border border-border-subtle text-content-muted hover:text-rose-400 transition-colors"
+            className="p-1.5 rounded-xl bg-surface-elevated hover:bg-rose-500/10 border border-border-subtle text-content-muted hover:text-rose-400 transition-colors cursor-pointer shadow-2xs"
             title={isAr ? 'أرشفة / حذف الدورة' : 'Archive / Delete Course'}
+            aria-label={isAr ? 'أرشفة / حذف الدورة' : 'Archive / Delete Course'}
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -271,25 +293,32 @@ export default function AdminCoursesPage() {
         {/* Course Stats Grid */}
         <div className="grid grid-cols-2 gap-2.5 p-3 rounded-xl bg-surface-elevated/60 border border-border-subtle text-xs">
           {/* Pricing */}
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             <span className="text-[11px] text-content-muted block">
               {isAr ? 'السعر' : 'Price'}
             </span>
-            <div className="flex items-center gap-1 font-bold text-content-primary">
-              <DollarSign className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>${(item.bundle_price_cents / 100).toFixed(2)}</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span
+                className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-extrabold font-mono"
+                dir="ltr"
+              >
+                <DollarSign className="w-3 h-3 text-emerald-400 shrink-0" />
+                <span>{(item.bundle_price_cents / 100).toFixed(2)}</span>
+              </span>
               {item.display_price_label && (
-                <span className="text-[10px] text-content-muted truncate">({item.display_price_label})</span>
+                <span className="text-[10px] font-medium text-content-muted whitespace-nowrap" dir={isAr ? 'rtl' : 'ltr'}>
+                  <bdi>({item.display_price_label})</bdi>
+                </span>
               )}
             </div>
           </div>
 
           {/* Tickets */}
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             <span className="text-[11px] text-content-muted block">
               {isAr ? 'تذاكر السحب' : 'Raffle Tickets'}
             </span>
-            <div className="flex items-center gap-1 font-bold text-amber-400">
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-semibold whitespace-nowrap">
               <Ticket className="w-3.5 h-3.5 shrink-0" />
               <span>
                 {item.bundle_promotional_tickets} {isAr ? 'تذكرة' : 'Tickets'}
@@ -322,7 +351,7 @@ export default function AdminCoursesPage() {
         <div className="flex items-center gap-2 pt-1">
           <Link
             href={`/${locale}/admin/courses/${item.id}`}
-            className="flex-1 inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary transition-colors"
+            className="flex-1 inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary hover:text-brand-gold transition-colors"
             data-testid={`manage-course-${item.id}`}
           >
             <Edit3 className="w-3.5 h-3.5 text-brand-gold" />
@@ -330,7 +359,7 @@ export default function AdminCoursesPage() {
           </Link>
           <button
             onClick={() => setCourseToDelete(item)}
-            className="p-2 rounded-xl bg-surface-elevated hover:bg-rose-500/10 border border-border-subtle text-content-muted hover:text-rose-400 transition-colors shrink-0"
+            className="p-2 rounded-xl bg-surface-elevated hover:bg-rose-500/10 border border-border-subtle text-content-muted hover:text-rose-400 transition-colors shrink-0 cursor-pointer"
             title={isAr ? 'أرشفة / حذف الدورة' : 'Archive / Delete Course'}
             aria-label={isAr ? 'أرشفة / حذف الدورة' : 'Archive / Delete Course'}
           >
@@ -448,6 +477,8 @@ export default function AdminCoursesPage() {
           isLoading={isLoading}
           emptyMessage={isAr ? 'لا توجد دورات تدريبية مطابقة.' : 'No courses found.'}
           mobileRenderer={renderCourseMobileCard}
+          breakpoint="lg"
+          minWidth="min-w-[840px]"
         />
 
         {/* Pagination if applicable */}

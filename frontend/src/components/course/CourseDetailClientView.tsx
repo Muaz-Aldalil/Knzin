@@ -8,9 +8,10 @@ import CheckoutBottomSheet, { CheckoutItemData } from '@/components/checkout/Che
 import { LearningOutcomes } from '@/components/course/LearningOutcomes';
 import { CourseProgressBar } from '@/components/course/CourseProgressBar';
 import { fetchCourseProgress } from '@/lib/progress';
-import { Loader2, AlertCircle, Ticket, ArrowRight, Check, ShieldCheck } from 'lucide-react';
+import { Loader2, AlertCircle, Ticket, ArrowRight, Check, ShieldCheck, PlayCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
+import { useLearnerDashboard } from '@/hooks/useLearnerDashboard';
 
 interface CourseDetailClientViewProps {
   slug: string;
@@ -35,6 +36,10 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
     isError,
     error,
   } = useCourseDetail(slug, initialCourse || undefined);
+
+  const { enrolledCourses } = useLearnerDashboard();
+  const currentEnrolled = enrolledCourses.find((c) => c.slug === slug || c.course_id === course?.id);
+  const isBundleEnrolled = currentEnrolled?.entitlement_type === 'bundle';
 
   React.useEffect(() => {
     let mounted = true;
@@ -193,46 +198,80 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
           )}
         </div>
 
-        {/* Full Bundle Purchase Card (1 col) - Preserving white background requirement */}
-        <div className="p-5 rounded-xl bg-white dark:bg-slate-900 border border-border-subtle text-content-primary space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-primary">
-              {(isAr ? courseDetail?.bundle_promo_badge_ar : courseDetail?.bundle_promo_badge_en) || t('bundleOffer')}
-            </span>
-            <span className="text-accent text-xs font-semibold flex items-center gap-1">
-              <Ticket className="w-3.5 h-3.5" />
-              <span>{course.bundle_promotional_tickets} {tCommon('ticket')}</span>
-            </span>
-          </div>
-
-          <div>
-            <div className="flex items-baseline gap-2">
-              <bdi className="text-2xl sm:text-3xl font-extrabold text-content-primary">
-                ${(course.bundle_price_cents / 100).toFixed(2)}
-              </bdi>
-              <bdi className="text-xs text-content-muted">
-                ({course.display_price_label})
-              </bdi>
+        {/* Full Bundle Purchase Card or Enrolled State Card */}
+        {isBundleEnrolled ? (
+          <div className="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border-2 border-emerald-500/40 text-content-primary space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                <Check className="w-4 h-4 text-emerald-600" />
+                <span>{isAr ? 'أنت مشترك في الحقيبة الكاملة' : 'Full Bundle Enrolled'}</span>
+              </span>
+              <span className="text-accent text-xs font-semibold flex items-center gap-1">
+                <Ticket className="w-3.5 h-3.5" />
+                <span>{course.bundle_promotional_tickets} {tCommon('ticket')}</span>
+              </span>
             </div>
-            <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-              {(isAr ? courseDetail?.bundle_promo_title_ar : courseDetail?.bundle_promo_title_en) || t('bundleSavings')}
+
+            <div>
+              <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
+                {isAr ? 'تم تفعيل جميع الأجزاء وتذاكر السحب' : 'All Parts & Tickets Unlocked'}
+              </h4>
+              <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                {isAr
+                  ? `أنت مؤهل للدخول لجميع الأجزاء الـ ${course.parts?.length || course.parts_count || 6} كاملة مع رصيد تذاكر السحب الترويجية النشطة.`
+                  : `You have full access to all ${course.parts?.length || course.parts_count || 6} parts and active sweepstakes tickets.`}
+              </p>
+            </div>
+
+            <Link
+              href={`/lessons/${course.slug}?part=1`}
+              className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
+            >
+              <PlayCircle className="w-4 h-4" />
+              <span>{isAr ? 'بدء المشاهدة والتدريب الآن' : 'Start Watching Now'}</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="p-5 rounded-xl bg-white dark:bg-slate-900 border border-border-subtle text-content-primary space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-primary">
+                {(isAr ? courseDetail?.bundle_promo_badge_ar : courseDetail?.bundle_promo_badge_en) || t('bundleOffer')}
+              </span>
+              <span className="text-accent text-xs font-semibold flex items-center gap-1">
+                <Ticket className="w-3.5 h-3.5" />
+                <span>{course.bundle_promotional_tickets} {tCommon('ticket')}</span>
+              </span>
+            </div>
+
+            <div>
+              <div className="flex items-baseline gap-2">
+                <bdi className="text-2xl sm:text-3xl font-extrabold text-content-primary">
+                  ${(course.bundle_price_cents / 100).toFixed(2)}
+                </bdi>
+                <bdi className="text-xs text-content-muted">
+                  ({course.display_price_label})
+                </bdi>
+              </div>
+              <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                {(isAr ? courseDetail?.bundle_promo_title_ar : courseDetail?.bundle_promo_title_en) || t('bundleSavings')}
+              </p>
+            </div>
+
+            <button
+              onClick={handleBundleCheckout}
+              className="w-full py-2.5 px-4 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <span>{t('buyBundle')}</span>
+            </button>
+
+            <p className="text-[11px] text-content-muted text-center leading-relaxed">
+              {(isAr ? courseDetail?.bundle_promo_desc_ar : courseDetail?.bundle_promo_desc_en) ||
+                (locale === 'ar'
+                  ? `يشمل جميع الأجزاء الـ ${course.parts?.length || course.parts_count || 6} كاملة + ${course.bundle_promotional_tickets} تذكرة سحب ترويجية مجانية على الجوائز الكبرى.`
+                  : `Includes all ${course.parts?.length || course.parts_count || 6} parts + ${course.bundle_promotional_tickets} free promotional raffle tickets.`)}
             </p>
           </div>
-
-          <button
-            onClick={handleBundleCheckout}
-            className="w-full py-2.5 px-4 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer"
-          >
-            <span>{t('buyBundle')}</span>
-          </button>
-
-          <p className="text-[11px] text-content-muted text-center leading-relaxed">
-            {(isAr ? courseDetail?.bundle_promo_desc_ar : courseDetail?.bundle_promo_desc_en) ||
-              (locale === 'ar'
-                ? `يشمل جميع الأجزاء الـ ${course.parts?.length || course.parts_count || 6} كاملة + ${course.bundle_promotional_tickets} تذكرة سحب ترويجية مجانية على الجوائز الكبرى.`
-                : `Includes all ${course.parts?.length || course.parts_count || 6} parts + ${course.bundle_promotional_tickets} free promotional raffle tickets.`)}
-          </p>
-        </div>
+        )}
       </div>
 
       {/* What You'll Learn: Vocational Outcomes Panel */}
@@ -258,16 +297,19 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
           courseSlug={course.slug}
           parts={course.parts || []}
           onSelectPart={handlePartCheckout}
+          isCourseEnrolled={isBundleEnrolled}
         />
       </div>
 
       {/* Sticky Bottom Progress & Buy Bar */}
       <CourseProgressBar
         courseTitle={title}
+        courseSlug={course.slug}
         percentComplete={studentProgress}
         bundlePriceUsd={course.bundle_price_cents / 100}
         promotionalTickets={course.bundle_promotional_tickets}
         onBuyBundle={handleBundleCheckout}
+        isEnrolled={isBundleEnrolled}
       />
 
       {/* Checkout Bottom Sheet */}
