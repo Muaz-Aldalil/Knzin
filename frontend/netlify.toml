@@ -8,6 +8,13 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Reverse proxy API requests to live Render backend
+[[redirects]]
+  from = "/api/v1/*"
+  to = "https://knzin-backend.onrender.com/api/v1/:splat"
+  status = 200
+  force = true
+
 # Global security headers for Netlify Edge
 [[headers]]
   for = "/*"
