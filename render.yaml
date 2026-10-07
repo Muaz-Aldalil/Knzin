@@ -23,6 +23,19 @@ envVarGroups:
         value: mysql
       - key: DB_PORT
         value: "3306"
+      # Prompted in Render UI during Blueprint setup:
+      - key: DB_HOST
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: MYSQL_SSL_CA_CONTENT
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
 
 services:
   # 1. Main Web API Service (Laravel 11 / PHP 8.3 & Apache)
