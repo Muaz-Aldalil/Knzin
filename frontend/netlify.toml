@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "20.9.0"
+  NEXT_PUBLIC_API_URL = "https://knzin-backend.onrender.com/api/v1"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
