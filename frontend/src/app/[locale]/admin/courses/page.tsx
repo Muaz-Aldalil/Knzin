@@ -8,6 +8,7 @@ import { AdminCourse } from '@/types/admin';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { DataTable, Column } from '@/components/admin/DataTable';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { useAdminFeedback } from '@/components/admin/AdminFeedbackContext';
 import {
   BookOpen,
   Plus,
@@ -26,6 +27,7 @@ import {
 export default function AdminCoursesPage() {
   const locale = useLocale();
   const isAr = locale === 'ar';
+  const { showError } = useAdminFeedback();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -64,7 +66,7 @@ export default function AdminCoursesPage() {
       refetch();
     } catch (err) {
       console.error(err);
-      alert(isAr ? 'حدث خطأ أثناء أرشفة أو حذف الدورة.' : 'An error occurred while deleting/archiving course.');
+      showError(isAr ? 'حدث خطأ أثناء أرشفة أو حذف الدورة.' : 'An error occurred while deleting/archiving course.');
     } finally {
       setIsDeleting(false);
     }
@@ -85,7 +87,7 @@ export default function AdminCoursesPage() {
       refetch();
     } catch (err) {
       console.error(err);
-      alert(isAr ? 'فشل تغيير حالة الدورة.' : 'Failed to toggle course status.');
+      showError(isAr ? 'فشل تغيير حالة الدورة.' : 'Failed to toggle course status.');
     }
   };
 

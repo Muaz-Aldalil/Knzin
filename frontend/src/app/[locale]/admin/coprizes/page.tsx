@@ -8,12 +8,14 @@ import { DataTable, Column } from '@/components/admin/DataTable';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { MoneyText } from '@/components/admin/MoneyText';
 import { ReasonDialog } from '@/components/admin/ReasonDialog';
+import { useAdminFeedback } from '@/components/admin/AdminFeedbackContext';
 import { formatDate } from '@/lib/admin/format';
 import { Trophy, CheckCircle2, AlertCircle, XCircle, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export default function AdminCoPrizesPage() {
   const locale = useLocale();
   const isAr = locale === 'ar';
+  const { showSuccess, showError } = useAdminFeedback();
 
   const [revokingItem, setRevokingItem] = useState<CoPrizeItem | null>(null);
 
@@ -30,8 +32,9 @@ export default function AdminCoPrizesPage() {
   const handleRelease = async (serial: string) => {
     try {
       await releaseCoPrize(serial);
+      showSuccess(isAr ? 'تم صرف الحصة الشريكة بنجاح.' : 'Co-prize released successfully.');
     } catch (err: any) {
-      alert(err?.message || (isAr ? 'فشل صرف الجائزة.' : 'Failed to release co-prize.'));
+      showError(err?.message || (isAr ? 'فشل صرف الجائزة.' : 'Failed to release co-prize.'));
     }
   };
 
@@ -42,9 +45,10 @@ export default function AdminCoPrizesPage() {
         serial: revokingItem.ticket_serial,
         justification,
       });
+      showSuccess(isAr ? 'تم إلغاء الحصة الشريكة بنجاح.' : 'Co-prize revoked successfully.');
       setRevokingItem(null);
     } catch (err: any) {
-      alert(err?.message || (isAr ? 'فشل إلغاء الجائزة.' : 'Failed to revoke co-prize.'));
+      showError(err?.message || (isAr ? 'فشل إلغاء الجائزة.' : 'Failed to revoke co-prize.'));
     }
   };
 

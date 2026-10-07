@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import { UserItem } from '@/hooks/admin/useAdminUsers';
 import { AdminCapability } from '@/types/admin';
 import { ReasonDialog } from './ReasonDialog';
+import { useAdminFeedback } from './AdminFeedbackContext';
 import { Shield, ShieldCheck, ShieldAlert, X, Plus, Trash2, Loader2 } from 'lucide-react';
 
 const ALL_CAPABILITIES: { key: AdminCapability; labelAr: string; labelEn: string; descAr: string; descEn: string }[] = [
@@ -69,6 +70,7 @@ export function CapabilityManager({
 }: CapabilityManagerProps) {
   const locale = useLocale();
   const isAr = locale === 'ar';
+  const { showSuccess, showError } = useAdminFeedback();
 
   const [revokingCap, setRevokingCap] = useState<string | null>(null);
   const [grantingCap, setGrantingCap] = useState<string | null>(null);
@@ -80,8 +82,12 @@ export function CapabilityManager({
     try {
       setIsLoading(true);
       await onGrant(capKey);
+      showSuccess(
+        isAr ? 'تم منح الصلاحية بنجاح.' : 'Capability granted successfully.',
+        isAr ? 'تم تحديث الصلاحيات' : 'Capabilities Updated'
+      );
     } catch (err: any) {
-      alert(err?.message || (isAr ? 'فشل منح الصلاحية.' : 'Failed to grant capability.'));
+      showError(err?.message || (isAr ? 'فشل منح الصلاحية.' : 'Failed to grant capability.'));
     } finally {
       setIsLoading(false);
     }
@@ -93,8 +99,12 @@ export function CapabilityManager({
       setIsLoading(true);
       await onRevoke(revokingCap, reason);
       setRevokingCap(null);
+      showSuccess(
+        isAr ? 'تم سحب الصلاحية بنجاح وتوثيق السبب في السجل.' : 'Capability revoked successfully and reason logged.',
+        isAr ? 'تم سحب الصلاحية' : 'Capability Revoked'
+      );
     } catch (err: any) {
-      alert(err?.message || (isAr ? 'فشل سحب الصلاحية.' : 'Failed to revoke capability.'));
+      showError(err?.message || (isAr ? 'فشل سحب الصلاحية.' : 'Failed to revoke capability.'));
     } finally {
       setIsLoading(false);
     }

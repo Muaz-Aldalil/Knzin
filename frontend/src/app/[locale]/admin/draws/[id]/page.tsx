@@ -10,6 +10,7 @@ import { DrawLifecyclePanel } from '@/components/admin/DrawLifecyclePanel';
 import { PrizeEditor } from '@/components/admin/PrizeEditor';
 import { WinnerMetadataForm } from '@/components/admin/WinnerMetadataForm';
 import { DrawForm } from '@/components/admin/DrawForm';
+import { useAdminFeedback } from '@/components/admin/AdminFeedbackContext';
 import { Loader2, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 
 export default function AdminDrawDetailPage() {
@@ -17,6 +18,7 @@ export default function AdminDrawDetailPage() {
   const id = params?.id as string;
   const locale = useLocale();
   const isAr = locale === 'ar';
+  const { showSuccess } = useAdminFeedback();
   const ArrowIcon = isAr ? ArrowRight : ArrowLeft;
 
   const {
@@ -105,7 +107,7 @@ export default function AdminDrawDetailPage() {
             initialDraw={draw}
             onSubmit={async (payload) => {
               await updateDraw(payload);
-              alert(isAr ? 'تم حفظ التعديلات بنجاح.' : 'Changes saved successfully.');
+              showSuccess(isAr ? 'تم حفظ التعديلات بنجاح.' : 'Changes saved successfully.');
             }}
             isLoading={isUpdating}
           />

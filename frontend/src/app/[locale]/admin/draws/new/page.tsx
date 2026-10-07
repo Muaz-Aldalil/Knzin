@@ -6,6 +6,7 @@ import { useLocale } from 'next-intl';
 import { useAdminDraws, CreateDrawPayload } from '@/hooks/admin/useAdminDraws';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { DrawForm } from '@/components/admin/DrawForm';
+import { useAdminFeedback } from '@/components/admin/AdminFeedbackContext';
 import { Sparkles, ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -13,6 +14,7 @@ export default function NewDrawPage() {
   const locale = useLocale();
   const router = useRouter();
   const isAr = locale === 'ar';
+  const { showError } = useAdminFeedback();
   const ArrowIcon = isAr ? ArrowRight : ArrowLeft;
 
   const { createDraw, isCreating } = useAdminDraws();
@@ -22,7 +24,7 @@ export default function NewDrawPage() {
       const created = await createDraw(payload as CreateDrawPayload);
       router.push(`/${locale}/admin/draws/${created.id}`);
     } catch (err: any) {
-      alert(err?.message || (isAr ? 'فشل إنشاء السحب.' : 'Failed to create draw.'));
+      showError(err?.message || (isAr ? 'فشل إنشاء السحب.' : 'Failed to create draw.'));
     }
   };
 

@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import { DrawRecord } from '@/types/admin';
 import { StatusBadge } from './StatusBadge';
 import { ConfirmDialog } from './ConfirmDialog';
+import { useAdminFeedback } from './AdminFeedbackContext';
 import { formatDate } from '@/lib/admin/format';
 import { ShieldCheck, Lock, Eye, Copy, Check, Sparkles, Loader2, AlertTriangle } from 'lucide-react';
 
@@ -17,6 +18,7 @@ interface DrawLifecyclePanelProps {
 export function DrawLifecyclePanel({ draw, onPublish, onComplete }: DrawLifecyclePanelProps) {
   const locale = useLocale();
   const isAr = locale === 'ar';
+  const { showSuccess, showError } = useAdminFeedback();
 
   const [copiedHash, setCopiedHash] = useState(false);
   const [copiedSeed, setCopiedSeed] = useState(false);
@@ -44,8 +46,9 @@ export function DrawLifecyclePanel({ draw, onPublish, onComplete }: DrawLifecycl
       setIsLoading(true);
       await onPublish();
       setIsPublishOpen(false);
+      showSuccess(isAr ? 'تم نشر السحب للجمهور بنجاح.' : 'Draw published successfully.');
     } catch (err: any) {
-      alert(err?.message || (isAr ? 'فشل نشر السحب.' : 'Failed to publish draw.'));
+      showError(err?.message || (isAr ? 'فشل نشر السحب.' : 'Failed to publish draw.'));
     } finally {
       setIsLoading(false);
     }
@@ -56,8 +59,9 @@ export function DrawLifecyclePanel({ draw, onPublish, onComplete }: DrawLifecycl
       setIsLoading(true);
       await onComplete();
       setIsCompleteOpen(false);
+      showSuccess(isAr ? 'تم إتمام واختتام السحب بنجاح.' : 'Draw completed successfully.');
     } catch (err: any) {
-      alert(err?.message || (isAr ? 'فشل إتمام السحب.' : 'Failed to complete draw.'));
+      showError(err?.message || (isAr ? 'فشل إتمام السحب.' : 'Failed to complete draw.'));
     } finally {
       setIsLoading(false);
     }

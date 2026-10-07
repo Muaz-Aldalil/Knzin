@@ -11,6 +11,7 @@ import { HowItWorksModal } from '@/components/layout/HowItWorksModal';
 import { AdminSessionTimeoutModal } from './AdminSessionTimeoutModal';
 import { DraftRestoreBanner } from './DraftRestoreBanner';
 import { saveCurrentPageDraft } from '@/lib/admin/draft-preservation';
+import { AdminFeedbackProvider } from './AdminFeedbackContext';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -41,6 +42,7 @@ interface AdminShellProps {
 }
 
 export function AdminShell({ children }: AdminShellProps) {
+
   const {
     user,
     capabilities,
@@ -242,7 +244,8 @@ export function AdminShell({ children }: AdminShellProps) {
   );
 
   return (
-    <div className="min-h-screen bg-app-bg text-content-primary flex flex-col md:flex-row scroll-pt-16 md:scroll-pt-20" dir={isAr ? 'rtl' : 'ltr'}>
+    <AdminFeedbackProvider>
+      <div className="min-h-screen bg-app-bg text-content-primary flex flex-col md:flex-row scroll-pt-16 md:scroll-pt-20" dir={isAr ? 'rtl' : 'ltr'}>
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 lg:w-72 bg-surface border-e border-border-subtle shrink-0 sticky top-0 h-screen z-20">
         <div className="p-6 border-b border-border-subtle flex items-center justify-between">
@@ -541,5 +544,6 @@ export function AdminShell({ children }: AdminShellProps) {
         isExtending={isExtending}
       />
     </div>
+    </AdminFeedbackProvider>
   );
 }

@@ -8,6 +8,7 @@ import { useAdminCourseDetail } from '@/hooks/admin/useAdminCourses';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { AdminCoursePart, OutcomeItem } from '@/types/admin';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { useAdminFeedback } from '@/components/admin/AdminFeedbackContext';
 import {
   BookOpen,
   ArrowRight,
@@ -40,6 +41,7 @@ export default function CourseDetailPage() {
   const params = useParams();
   const isAr = locale === 'ar';
   const id = params?.id as string;
+  const { showSuccess, showError, showWarning } = useAdminFeedback();
 
   const {
     course,
@@ -164,10 +166,10 @@ export default function CourseDetailPage() {
         bundle_promotional_tickets: parseInt(promotionalTickets, 10) || 15,
         display_price_label: displayPriceLabel.trim() || undefined,
       });
-      alert(isAr ? 'تم حفظ المعلومات الأساسية والتسعير بنجاح.' : 'General info & pricing saved successfully.');
+      showSuccess(isAr ? 'تم حفظ المعلومات الأساسية والتسعير بنجاح.' : 'General info & pricing saved successfully.');
     } catch (err: any) {
       console.error(err);
-      alert(err?.message || (isAr ? 'فشل حفظ التعديلات.' : 'Failed to save changes.'));
+      showError(err?.message || (isAr ? 'فشل حفظ التعديلات.' : 'Failed to save changes.'));
     }
   };
 
@@ -180,10 +182,10 @@ export default function CourseDetailPage() {
         curriculum_summary_ar: curriculumSummaryAr.trim() || undefined,
         curriculum_summary_en: curriculumSummaryEn.trim() || undefined,
       });
-      alert(isAr ? 'تم حفظ الوصف ومخطط المنهاج بنجاح.' : 'Description & curriculum summary saved successfully.');
+      showSuccess(isAr ? 'تم حفظ الوصف ومخطط المنهاج بنجاح.' : 'Description & curriculum summary saved successfully.');
     } catch (err: any) {
       console.error(err);
-      alert(err?.message || (isAr ? 'فشل حفظ التعديلات.' : 'Failed to save changes.'));
+      showError(err?.message || (isAr ? 'فشل حفظ التعديلات.' : 'Failed to save changes.'));
     }
   };
 
@@ -193,10 +195,10 @@ export default function CourseDetailPage() {
       await updateCourse({
         outcomes: valid,
       });
-      alert(isAr ? 'تم حفظ مخرجات المنهاج ("ما ستتقنه") بنجاح.' : 'Learning outcomes saved successfully.');
+      showSuccess(isAr ? 'تم حفظ مخرجات المنهاج ("ما ستتقنه") بنجاح.' : 'Learning outcomes saved successfully.');
     } catch (err: any) {
       console.error(err);
-      alert(err?.message || (isAr ? 'فشل حفظ المخرجات.' : 'Failed to save outcomes.'));
+      showError(err?.message || (isAr ? 'فشل حفظ المخرجات.' : 'Failed to save outcomes.'));
     }
   };
 
@@ -263,7 +265,7 @@ export default function CourseDetailPage() {
   const handleSavePart = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!partTitleAr.trim()) {
-      alert(isAr ? 'يرجى إدخال عنوان الجزء بالعربية.' : 'Please enter part title in Arabic.');
+      showWarning(isAr ? 'يرجى إدخال عنوان الجزء بالعربية.' : 'Please enter part title in Arabic.');
       return;
     }
 
@@ -285,16 +287,16 @@ export default function CourseDetailPage() {
     try {
       if (editingPart) {
         await updatePart({ partId: editingPart.id, data: payload });
-        alert(isAr ? 'تم تحديث الجزء التدريبي بنجاح.' : 'Training part updated successfully.');
+        showSuccess(isAr ? 'تم تحديث الجزء التدريبي بنجاح.' : 'Training part updated successfully.');
       } else {
         await createPart(payload);
-        alert(isAr ? 'تم إضافة الجزء التدريبي بنجاح.' : 'Training part added successfully.');
+        showSuccess(isAr ? 'تم إضافة الجزء التدريبي بنجاح.' : 'Training part added successfully.');
       }
       setIsPartModalOpen(false);
       refetch();
     } catch (err: any) {
       console.error(err);
-      alert(err?.message || (isAr ? 'فشل حفظ الجزء.' : 'Failed to save part.'));
+      showError(err?.message || (isAr ? 'فشل حفظ الجزء.' : 'Failed to save part.'));
     }
   };
 
@@ -314,7 +316,7 @@ export default function CourseDetailPage() {
       await reorderParts(orderedIds);
     } catch (err) {
       console.error(err);
-      alert(isAr ? 'فشل إعادة ترتيب الأجزاء.' : 'Failed to reorder parts.');
+      showError(isAr ? 'فشل إعادة ترتيب الأجزاء.' : 'Failed to reorder parts.');
     }
   };
 
@@ -322,23 +324,23 @@ export default function CourseDetailPage() {
     if (!partToDelete) return;
     try {
       const res = await deletePart(partToDelete.id);
-      alert(res.message || (isAr ? 'تمت معالجة حذف / أرشفة الجزء بأمان.' : 'Part safely deleted/archived.'));
+      showSuccess(res.message || (isAr ? 'تمت معالجة حذف / أرشفة الجزء بأمان.' : 'Part safely deleted/archived.'));
       setPartToDelete(null);
       refetch();
     } catch (err: any) {
       console.error(err);
-      alert(err?.message || (isAr ? 'فشل حذف الجزء.' : 'Failed to delete part.'));
+      showError(err?.message || (isAr ? 'فشل حذف الجزء.' : 'Failed to delete part.'));
     }
   };
 
   const handleDeleteCourse = async () => {
     try {
       const res = await deleteCourse();
-      alert(res.message || (isAr ? 'تمت أرشفة أو حذف الدورة بنجاح.' : 'Course safely deleted/archived.'));
+      showSuccess(res.message || (isAr ? 'تمت أرشفة أو حذف الدورة بنجاح.' : 'Course safely deleted/archived.'));
       router.push(`/${locale}/admin/courses`);
     } catch (err: any) {
       console.error(err);
-      alert(err?.message || (isAr ? 'فشل حذف الدورة.' : 'Failed to delete course.'));
+      showError(err?.message || (isAr ? 'فشل حذف الدورة.' : 'Failed to delete course.'));
     }
   };
 

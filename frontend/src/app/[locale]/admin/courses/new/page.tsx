@@ -7,6 +7,7 @@ import { useLocale } from 'next-intl';
 import { useAdminCourses } from '@/hooks/admin/useAdminCourses';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { OutcomeItem } from '@/types/admin';
+import { useAdminFeedback } from '@/components/admin/AdminFeedbackContext';
 import {
   BookOpen,
   ArrowRight,
@@ -24,6 +25,7 @@ export default function CreateCoursePage() {
   const locale = useLocale();
   const router = useRouter();
   const isAr = locale === 'ar';
+  const { showError, showWarning } = useAdminFeedback();
 
   const { createCourse, isCreating } = useAdminCourses();
 
@@ -92,7 +94,7 @@ export default function CreateCoursePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!titleAr.trim() || !titleEn.trim()) {
-      alert(isAr ? 'يرجى إدخال عنوان الدورة باللغتين العربية والإنجليزية.' : 'Please enter course title in Arabic and English.');
+      showWarning(isAr ? 'يرجى إدخال عنوان الدورة باللغتين العربية والإنجليزية.' : 'Please enter course title in Arabic and English.');
       return;
     }
 
@@ -120,7 +122,7 @@ export default function CreateCoursePage() {
       router.push(`/${locale}/admin/courses/${created.id}`);
     } catch (err: any) {
       console.error(err);
-      alert(
+      showError(
         err?.message ||
           (isAr
             ? 'حدث خطأ أثناء حفظ الدورة. يرجى التحقق من الحقول والمحاولة مجدداً.'

@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import { PrizeRecord } from '@/types/admin';
 import { CreatePrizePayload } from '@/hooks/admin/useAdminDraws';
 import { MoneyText } from './MoneyText';
+import { useAdminFeedback } from './AdminFeedbackContext';
 import { Gift, Plus, Trash2, Loader2, Sparkles } from 'lucide-react';
 
 interface PrizeEditorProps {
@@ -17,6 +18,7 @@ interface PrizeEditorProps {
 export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: PrizeEditorProps) {
   const locale = useLocale();
   const isAr = locale === 'ar';
+  const { showSuccess, showError } = useAdminFeedback();
 
   const [isOpen, setIsOpen] = useState(false);
   const [titleAr, setTitleAr] = useState('');
@@ -47,8 +49,9 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
       setIqdLabel('');
       setImageUrl('');
       setIsOpen(false);
+      showSuccess(isAr ? 'تمت إضافة الجائزة بنجاح.' : 'Prize added successfully.');
     } catch (err: any) {
-      alert(err?.message || (isAr ? 'فشلت إضافة الجائزة.' : 'Failed to add prize.'));
+      showError(err?.message || (isAr ? 'فشلت إضافة الجائزة.' : 'Failed to add prize.'));
     } finally {
       setIsLoading(false);
     }
