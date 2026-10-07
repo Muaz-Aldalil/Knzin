@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Models\User;
 use App\Notifications\CourseContentUpdatedNotification;
 use App\Notifications\NewCourseNotification;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -64,6 +65,8 @@ class AdminCourseService
                 outcome: 'success',
                 reasonCode: 'COURSE_CREATED'
             );
+
+            $this->clearCatalogCache();
 
             if ($course->is_active) {
                 DB::afterCommit(function () use ($course) {
@@ -137,6 +140,8 @@ class AdminCourseService
                 reasonCode: 'COURSE_UPDATED'
             );
 
+            $this->clearCatalogCache();
+
             if ($hasLearnerChanges) {
                 $this->notifyEntitledLearners($fresh);
             }
@@ -165,6 +170,8 @@ class AdminCourseService
                 outcome: 'success',
                 reasonCode: $course->is_active ? 'COURSE_ACTIVATED' : 'COURSE_PAUSED'
             );
+
+            $this->clearCatalogCache();
 
             if ($course->is_active) {
                 DB::afterCommit(function () use ($course) {
@@ -204,6 +211,8 @@ class AdminCourseService
                     reasonCode: 'COURSE_ARCHIVED_ACTIVE_STUDENTS'
                 );
 
+                $this->clearCatalogCache();
+
                 return [
                     'action_taken' => 'archived',
                     'message' => 'Course deactivated and archived to preserve active learner entitlements and purchase history.',
@@ -225,6 +234,8 @@ class AdminCourseService
                 outcome: 'success',
                 reasonCode: 'COURSE_HARD_DELETED'
             );
+
+            $this->clearCatalogCache();
 
             return [
                 'action_taken' => 'deleted',
@@ -278,6 +289,7 @@ class AdminCourseService
                 reasonCode: 'COURSE_PART_CREATED'
             );
 
+            $this->clearCatalogCache();
             $this->notifyEntitledLearners($course);
 
             return $part;
@@ -353,6 +365,8 @@ class AdminCourseService
                 outcome: 'success',
                 reasonCode: 'COURSE_PART_UPDATED'
             );
+
+            $this->clearCatalogCache();
 
             if ($hasLearnerChanges) {
                 $parentCourse = Course::find($part->course_id);
@@ -431,6 +445,8 @@ class AdminCourseService
                 $this->notifyEntitledLearners($parentCourse);
             }
 
+            $this->clearCatalogCache();
+
             return [
                 'action_taken' => 'deleted',
                 'message' => 'Part removed successfully.',
@@ -477,12 +493,22 @@ class AdminCourseService
                 reasonCode: 'PARTS_REORDERED'
             );
 
+            $this->clearCatalogCache();
+
             if (!empty($afterState)) {
                 $this->notifyEntitledLearners($course);
             }
 
             return CoursePart::where('course_id', $course->id)->orderBy('part_number', 'asc')->get()->toArray();
         });
+    }
+
+    /**
+     * Clear public catalog cache so learners see updates immediately.
+     */
+    protected function clearCatalogCache(): void
+    {
+        Cache::forget('catalog_courses_index');
     }
 
     /**
