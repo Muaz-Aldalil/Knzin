@@ -21,6 +21,7 @@ import {
   Gift,
   Shield,
   Globe,
+  Sparkles,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -40,6 +41,8 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { useLearnerTickets } from '@/hooks/useLearnerTickets';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAccess } from '@/hooks/admin/useAdminAccess';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
+import { sanitizeCtaUrl } from '@/lib/safe-url';
 import { USER_MENU_ITEMS, UserMenuItemId } from '@/lib/user-menu';
 import { getApiBaseUrl } from '@/lib/api-client';
 
@@ -107,6 +110,17 @@ export default function HeaderHUD() {
   const { unreadCount } = useNotifications();
   const [isMac, setIsMac] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const { data: cmsData } = useSiteWideCms();
+  const siteShell = cmsData?.sections?.site_shell;
+
+  const headerBadge = isRtl
+    ? siteShell?.header_announcement_badge_ar
+    : siteShell?.header_announcement_badge_en;
+  const headerCtaLabel = isRtl
+    ? siteShell?.header_cta_label_ar
+    : siteShell?.header_cta_label_en;
+  const headerCtaUrl = siteShell?.header_cta_url;
 
   useEffect(() => {
     if (typeof navigator !== 'undefined') {
@@ -188,6 +202,13 @@ export default function HeaderHUD() {
               </span>
             </div>
           </Link>
+
+          {headerBadge && (
+            <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 shrink-0 animate-in fade-in">
+              <Sparkles className="w-3 h-3 text-primary shrink-0" />
+              <span>{headerBadge}</span>
+            </span>
+          )}
 
           {/* Full Desktop Navigation (>= 1024px) */}
           <nav className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-content-secondary">
@@ -304,6 +325,16 @@ export default function HeaderHUD() {
             <Wallet className="w-3.5 h-3.5 text-content-muted" />
             <span>0 {tCommon('currencyIqd')}</span>
           </div>
+
+          {/* Dynamic CMS Header CTA Button */}
+          {headerCtaLabel && (
+            <a
+              href={sanitizeCtaUrl(headerCtaUrl, '#catalog')}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+            >
+              <span>{headerCtaLabel}</span>
+            </a>
+          )}
 
           {/* Sign In quick button when unauthenticated (Guest) */}
           {!user && (

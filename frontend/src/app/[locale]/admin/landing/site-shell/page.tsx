@@ -71,7 +71,7 @@ export default function AdminSiteShellCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات الواجهة العامة...' : 'Loading site shell configuration...'}
           </p>
@@ -90,6 +90,7 @@ export default function AdminSiteShellCmsPage() {
             : 'Central control for the global header, live activity ticker, WhatsApp support button, and How It Works guide.'
         }
         icon={Globe}
+        targetRoute="/"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -101,7 +102,7 @@ export default function AdminSiteShellCmsPage() {
           <div className="flex items-center justify-between border-b border-border-subtle pb-4">
             <div>
               <h2 className="text-base font-bold text-content-primary flex items-center gap-2">
-                <ScrollText className="w-5 h-5 text-brand-gold" />
+                <ScrollText className="w-5 h-5 text-primary" />
                 <span>{isAr ? 'شريط النشاط والإعلانات المباشر (Activity Ticker)' : 'Live Activity Ticker'}</span>
               </h2>
               <p className="text-xs text-content-secondary mt-0.5">
@@ -113,7 +114,7 @@ export default function AdminSiteShellCmsPage() {
                 type="checkbox"
                 checked={formData.ticker_enabled}
                 onChange={(e) => handleChange('ticker_enabled', e.target.checked)}
-                className="w-4 h-4 rounded text-brand-gold focus:ring-brand-gold"
+                className="w-4 h-4 rounded text-primary focus:ring-primary"
               />
               <span>{isAr ? 'تفعيل الشريط' : 'Enable Ticker'}</span>
             </label>
@@ -127,7 +128,7 @@ export default function AdminSiteShellCmsPage() {
               <button
                 type="button"
                 onClick={handleAddTickerItem}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-secondary hover:bg-surface-elevated text-xs font-semibold text-brand-gold border border-border-subtle transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-secondary hover:bg-surface-elevated text-xs font-semibold text-primary border border-border-subtle transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{isAr ? 'إضافة إعلان' : 'Add Item'}</span>
@@ -222,7 +223,7 @@ export default function AdminSiteShellCmsPage() {
                 type="checkbox"
                 checked={formData.whatsapp_enabled}
                 onChange={(e) => handleChange('whatsapp_enabled', e.target.checked)}
-                className="w-4 h-4 rounded text-brand-gold focus:ring-brand-gold"
+                className="w-4 h-4 rounded text-primary focus:ring-primary"
               />
               <span>{isAr ? 'تفعيل الزر' : 'Enable Button'}</span>
             </label>

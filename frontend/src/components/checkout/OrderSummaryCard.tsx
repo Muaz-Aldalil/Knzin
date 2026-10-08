@@ -97,6 +97,12 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
               <span>{order.promotional_tickets_granted} {tCommon('ticket')}</span>
             </div>
           </div>
+
+          {((isAr ? cartCms?.order_ticket_reassurance_ar : cartCms?.order_ticket_reassurance_en) || '') && (
+            <div className="sm:col-span-2 text-[11px] text-amber-600 dark:text-amber-400 font-medium pt-0.5">
+              {isAr ? cartCms?.order_ticket_reassurance_ar : cartCms?.order_ticket_reassurance_en}
+            </div>
+          )}
         </div>
 
         {/* 48-Hour TTL Expiration Notice */}

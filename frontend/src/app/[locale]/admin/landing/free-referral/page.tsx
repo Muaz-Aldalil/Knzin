@@ -36,7 +36,7 @@ export default function AdminFreeReferralCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات بطاقة الإحالة المجانية...' : 'Loading free referral card...'}
           </p>
@@ -55,6 +55,7 @@ export default function AdminFreeReferralCmsPage() {
             : 'Configure promotional copy for free sweepstakes ticket incentives on referring friends.'
         }
         icon={Gift}
+        targetRoute="/#referral-card"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -75,7 +76,7 @@ export default function AdminFreeReferralCmsPage() {
               type="checkbox"
               checked={formData.is_visible}
               onChange={(e) => handleChange('is_visible', e.target.checked)}
-              className="w-5 h-5 rounded text-brand-gold focus:ring-brand-gold cursor-pointer"
+              className="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer"
             />
           </div>
 
@@ -93,7 +94,7 @@ export default function AdminFreeReferralCmsPage() {
                   type="text"
                   value={formData.card_title_ar || ''}
                   onChange={(e) => handleChange('card_title_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -105,7 +106,7 @@ export default function AdminFreeReferralCmsPage() {
                   type="text"
                   value={formData.card_title_en || ''}
                   onChange={(e) => handleChange('card_title_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -126,7 +127,7 @@ export default function AdminFreeReferralCmsPage() {
                   rows={3}
                   value={formData.card_text_ar || ''}
                   onChange={(e) => handleChange('card_text_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -138,7 +139,7 @@ export default function AdminFreeReferralCmsPage() {
                   rows={3}
                   value={formData.card_text_en || ''}
                   onChange={(e) => handleChange('card_text_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>
@@ -159,7 +160,7 @@ export default function AdminFreeReferralCmsPage() {
                   type="text"
                   value={formData.badge_text_ar || ''}
                   onChange={(e) => handleChange('badge_text_ar', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -171,7 +172,7 @@ export default function AdminFreeReferralCmsPage() {
                   type="text"
                   value={formData.badge_text_en || ''}
                   onChange={(e) => handleChange('badge_text_en', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>

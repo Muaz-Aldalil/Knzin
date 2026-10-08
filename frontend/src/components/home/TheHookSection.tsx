@@ -69,10 +69,10 @@ export const TheHookSection: React.FC = () => {
           <div className="pt-2">
             <a
               href="#catalog"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface-secondary text-content-primary border border-border-subtle hover:border-primary/40 text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow group"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-semibold transition-all duration-200 shadow-md shadow-primary/25 hover:shadow-lg group"
             >
               <span>{t('cta')}</span>
-              <ArrowDown className="w-3.5 h-3.5 text-primary group-hover:translate-y-0.5 transition-transform" />
+              <ArrowDown className="w-3.5 h-3.5 text-white group-hover:translate-y-0.5 transition-transform" />
             </a>
           </div>
         </div>

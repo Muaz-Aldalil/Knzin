@@ -16,6 +16,7 @@ interface LearningOutcomesProps {
   titleAr?: string;
   outcomes?: OutcomeItem[];
   className?: string;
+  headerTitle?: string;
 }
 
 const defaultOutcomesBySlug: Record<string, OutcomeItem[]> = {
@@ -211,6 +212,7 @@ export function LearningOutcomes({
   slug,
   outcomes: customOutcomes,
   className,
+  headerTitle,
 }: LearningOutcomesProps) {
   const locale = useLocale();
   const outcomes = customOutcomes || defaultOutcomesBySlug[slug] || defaultOutcomesBySlug['auto-detailing'];
@@ -219,7 +221,7 @@ export function LearningOutcomes({
     <section className={cn('space-y-5 pt-4 pb-2', className)}>
       <div>
         <h2 className="text-lg sm:text-xl font-bold text-content-primary tracking-tight">
-          {locale === 'ar' ? 'ماذا ستتعلم في هذا المنهج المهني؟' : 'What You Will Master in this Curriculum'}
+          {headerTitle || (locale === 'ar' ? 'ماذا ستتعلم في هذا المنهج المهني؟' : 'What You Will Master in this Curriculum')}
         </h2>
         <p className="text-xs sm:text-sm text-content-secondary mt-1">
           {locale === 'ar'

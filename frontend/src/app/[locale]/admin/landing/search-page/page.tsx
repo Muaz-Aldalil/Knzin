@@ -93,7 +93,7 @@ export default function AdminSearchPageCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات صفحة البحث...' : 'Loading search page configuration...'}
           </p>
@@ -112,6 +112,7 @@ export default function AdminSearchPageCmsPage() {
             : 'Configure search hub header, suggested query chips, search guidelines, and zero-results empty states.'
         }
         icon={Search}
+        targetRoute="/search"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -137,7 +138,7 @@ export default function AdminSearchPageCmsPage() {
               checked={formData.is_visible}
               onChange={(e) => handleChange('is_visible', e.target.checked)}
             />
-            <div className="w-11 h-6 bg-surface-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-gold"></div>
+            <div className="w-11 h-6 bg-surface-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
           </label>
         </div>
 
@@ -155,7 +156,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.hero_headline_ar}
                 onChange={(e) => handleChange('hero_headline_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -166,7 +167,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.hero_headline_en}
                 onChange={(e) => handleChange('hero_headline_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -177,7 +178,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.hero_subtitle_ar}
                 onChange={(e) => handleChange('hero_subtitle_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -188,7 +189,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.hero_subtitle_en}
                 onChange={(e) => handleChange('hero_subtitle_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -199,7 +200,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.search_placeholder_ar}
                 onChange={(e) => handleChange('search_placeholder_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -210,7 +211,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.search_placeholder_en}
                 onChange={(e) => handleChange('search_placeholder_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
           </div>
@@ -248,20 +249,20 @@ export default function AdminSearchPageCmsPage() {
               placeholder={isAr ? 'كلمة مفتاحية جديدة (عربي)' : 'New query (Arabic)'}
               value={newQueryAr}
               onChange={(e) => setNewQueryAr(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+              className="px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
             />
             <input
               type="text"
               placeholder={isAr ? 'كلمة مفتاحية جديدة (إنجليزي)' : 'New query (English)'}
               value={newQueryEn}
               onChange={(e) => setNewQueryEn(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+              className="px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
             />
           </div>
           <button
             type="button"
             onClick={handleAddQuery}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 text-xs font-semibold transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary-hover/20 text-xs font-semibold transition-colors"
           >
             <Plus className="w-4 h-4" />
             {isAr ? 'إضافة كلمة مقترحة' : 'Add Suggested Query'}
@@ -282,7 +283,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.search_tips_title_ar}
                 onChange={(e) => handleChange('search_tips_title_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -293,7 +294,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.search_tips_title_en}
                 onChange={(e) => handleChange('search_tips_title_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
           </div>
@@ -325,20 +326,20 @@ export default function AdminSearchPageCmsPage() {
               placeholder={isAr ? 'نصيحة بحث إضافية (عربي)' : 'New search tip (Arabic)'}
               value={newTipAr}
               onChange={(e) => setNewTipAr(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+              className="px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
             />
             <input
               type="text"
               placeholder={isAr ? 'نصيحة بحث إضافية (إنجليزي)' : 'New search tip (English)'}
               value={newTipEn}
               onChange={(e) => setNewTipEn(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+              className="px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
             />
           </div>
           <button
             type="button"
             onClick={handleAddTip}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 text-xs font-semibold transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary-hover/20 text-xs font-semibold transition-colors"
           >
             <Plus className="w-4 h-4" />
             {isAr ? 'إضافة نصيحة بحث' : 'Add Search Tip'}
@@ -359,7 +360,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.empty_title_ar}
                 onChange={(e) => handleChange('empty_title_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -370,7 +371,7 @@ export default function AdminSearchPageCmsPage() {
                 type="text"
                 value={formData.empty_title_en}
                 onChange={(e) => handleChange('empty_title_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -381,7 +382,7 @@ export default function AdminSearchPageCmsPage() {
                 rows={2}
                 value={formData.empty_desc_ar}
                 onChange={(e) => handleChange('empty_desc_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -392,7 +393,7 @@ export default function AdminSearchPageCmsPage() {
                 rows={2}
                 value={formData.empty_desc_en}
                 onChange={(e) => handleChange('empty_desc_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
           </div>

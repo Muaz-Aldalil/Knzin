@@ -56,7 +56,13 @@ export default function CheckoutBottomSheet({
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [quizError, setQuizError] = useState<string | null>(null);
 
-  const [selectedGateway, setSelectedGateway] = useState<PaymentGatewayType>('zaincash');
+  const isSimulatorAllowed =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.NEXT_PUBLIC_ENABLE_PAYMENT_SIMULATOR === 'true';
+
+  const [selectedGateway, setSelectedGateway] = useState<PaymentGatewayType>(() => {
+    return isSimulatorAllowed ? 'simulator' : 'zaincash';
+  });
   const [isInitiatingPayment, setIsInitiatingPayment] = useState(false);
   const [checkoutIdempotencyKey, setCheckoutIdempotencyKey] = useState<string>(() => {
     return typeof crypto !== 'undefined' && crypto.randomUUID
@@ -119,9 +125,73 @@ export default function CheckoutBottomSheet({
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('knzin_pending_checkout', JSON.stringify(item));
       }
-    } catch {}
+    } catch { }
     onClose();
     router.push(`/auth/login?redirect=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '/')}` as any);
+  };
+
+  const executeCheckout = async (answersToUse: QuizAnswers) => {
+    setLegalError(null);
+    setEmailError(null);
+    setQuizError(null);
+
+    const cleanEmail = (isLoggedIn && user?.email ? user.email : email).trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+      setEmailError(isRtl ? 'يرجى إدخال بريد إلكتروني صالح' : 'Please enter a valid email address');
+      return;
+    }
+
+    try {
+      const order = await createOrder({
+        email: cleanEmail,
+        course_id: item.courseId,
+        item_type: item.itemType,
+        course_part_id: item.partId || null,
+        quiz_answers: answersToUse,
+        idempotency_key: checkoutIdempotencyKey,
+      });
+
+      // Save email for session continuity
+      localStorage.setItem('knzin_guest_email', cleanEmail);
+
+      // Immediately initiate gateway checkout session (Feature 007 - US5)
+      try {
+        setIsInitiatingPayment(true);
+        const payResult = await apiClient<{
+          success: boolean;
+          data: {
+            checkout_url: string;
+            gateway_transaction_id: string;
+          };
+        }>(`/checkout/orders/${order.order_number}/pay`, {
+          method: 'POST',
+          body: JSON.stringify({
+            gateway: selectedGateway,
+            locale,
+          }),
+        });
+
+        // For live external gateways in production (e.g. ZainCash, AsiaHawala), redirect to provider portal
+        if (selectedGateway !== 'simulator' && payResult?.data?.checkout_url && !payResult.data.checkout_url.startsWith('/')) {
+          onClose();
+          window.location.href = payResult.data.checkout_url;
+          return;
+        }
+      } catch (payErr) {
+        console.error('Failed to initiate payment gateway, navigating to summary:', payErr);
+      } finally {
+        setIsInitiatingPayment(false);
+      }
+
+      // Close bottom sheet, scroll to top, and navigate to order summary
+      onClose();
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+      router.push(`/order-summary/${order.order_number}` as any);
+    } catch {
+      // Error handled by useCheckout hook
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -150,53 +220,7 @@ export default function CheckoutBottomSheet({
       return;
     }
 
-    try {
-      const order = await createOrder({
-        email: cleanEmail,
-        course_id: item.courseId,
-        item_type: item.itemType,
-        course_part_id: item.partId || null,
-        quiz_answers: quizAnswers,
-        idempotency_key: checkoutIdempotencyKey,
-      });
-
-      // Save email for session continuity
-      localStorage.setItem('knzin_guest_email', cleanEmail);
-
-      // Immediately initiate gateway checkout session (Feature 007 - US5)
-      try {
-        setIsInitiatingPayment(true);
-        const payResult = await apiClient<{
-          success: boolean;
-          data: {
-            checkout_url: string;
-            gateway_transaction_id: string;
-          };
-        }>(`/checkout/orders/${order.order_number}/pay`, {
-          method: 'POST',
-          body: JSON.stringify({
-            gateway: selectedGateway,
-            locale,
-          }),
-        });
-
-        if (payResult?.data?.checkout_url) {
-          onClose();
-          window.location.href = payResult.data.checkout_url;
-          return;
-        }
-      } catch (payErr) {
-        console.error('Failed to initiate payment gateway, navigating to summary:', payErr);
-      } finally {
-        setIsInitiatingPayment(false);
-      }
-
-      // Fallback: Navigate to order confirmation
-      onClose();
-      router.push(`/order-summary/${order.order_number}` as any);
-    } catch {
-      // Error handled by hook
-    }
+    await executeCheckout(quizAnswers);
   };
 
   return createPortal(
@@ -225,7 +249,7 @@ export default function CheckoutBottomSheet({
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-4 space-y-5">
+          <form noValidate onSubmit={handleSubmit} className="mt-4 space-y-5">
             {/* Item Summary Card */}
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
               <div className="text-xs text-slate-500 font-semibold mb-1">
@@ -262,18 +286,27 @@ export default function CheckoutBottomSheet({
             {cartCms && cartCms.is_visible !== false && (
               <div className="p-3.5 rounded-xl bg-brand-gold/10 border border-brand-gold/25 flex items-start gap-2.5">
                 <Ticket className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
-                <div className="text-xs space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-brand-gold/20 text-brand-gold">
-                      {isAr ? cartCms.trust_badge_ar : cartCms.trust_badge_en}
-                    </span>
+                <div className="text-xs space-y-0.5 text-start">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {((isAr ? cartCms.trust_badge_ar : cartCms.trust_badge_en) || '') && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-gold/20 text-brand-gold">
+                        {isAr ? cartCms.trust_badge_ar : cartCms.trust_badge_en}
+                      </span>
+                    )}
                     <span className="font-bold text-content-primary">
-                      {isAr ? cartCms.trust_headline_ar : cartCms.trust_headline_en}
+                      {(isAr ? cartCms.trust_headline_ar : cartCms.trust_headline_en) || (isRtl ? 'ضمان كَنزين المعتمد' : 'KNZiN Verified Guarantee')}
                     </span>
                   </div>
-                  <p className="text-content-secondary leading-relaxed text-[11px] pt-0.5">
-                    {isAr ? cartCms.ticket_gift_notice_ar : cartCms.ticket_gift_notice_en}
-                  </p>
+                  {((isAr ? cartCms.trust_description_ar : cartCms.trust_description_en) || '') && (
+                    <p className="text-content-secondary leading-relaxed text-[11px] pt-0.5">
+                      {isAr ? cartCms.trust_description_ar : cartCms.trust_description_en}
+                    </p>
+                  )}
+                  {((isAr ? cartCms.ticket_gift_notice_ar : cartCms.ticket_gift_notice_en) || '') && (
+                    <p className="text-brand-gold dark:text-amber-400 font-medium leading-relaxed text-[11px] pt-0.5">
+                      {isAr ? cartCms.ticket_gift_notice_ar : cartCms.ticket_gift_notice_en}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -338,11 +371,10 @@ export default function CheckoutBottomSheet({
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={t('emailPlaceholder')}
                     required
-                    className={`w-full py-2.5 ps-9 pe-3.5 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
-                      emailError
+                    className={`w-full py-2.5 ps-9 pe-3.5 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${emailError
                         ? 'border-red-500 focus:ring-red-400/40'
                         : 'border-slate-200 dark:border-slate-700 focus:ring-primary/40'
-                    }`}
+                      }`}
                   />
                 </div>
                 {emailError && (
@@ -437,7 +469,7 @@ export default function CheckoutBottomSheet({
                   <span>
                     {isInitiatingPayment
                       ? (isRtl ? 'جاري توجيهك لبوابة الدفع...' : 'Redirecting to payment...')
-                      : t('processingButton')
+                      : (isRtl ? 'جاري معالجة الطلب...' : 'Processing Order...')
                     }
                   </span>
                 </>
@@ -458,9 +490,16 @@ export default function CheckoutBottomSheet({
       <AntiPiracyQuizModal
         isOpen={isQuizModalOpen}
         onClose={() => setIsQuizModalOpen(false)}
-        onComplete={(answers) => {
+        onComplete={async (answers) => {
           setQuizAnswers(answers);
           setQuizError(null);
+          setIsQuizModalOpen(false);
+          setLegalAgreed(true);
+
+          const cleanEmail = (isLoggedIn && user?.email ? user.email : email).trim().toLowerCase();
+          if (cleanEmail && cleanEmail.includes('@') && cleanEmail.includes('.')) {
+            await executeCheckout(answers);
+          }
         }}
       />
     </>,

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
@@ -14,6 +14,7 @@ interface JumpBackInHeroProps {
 export function JumpBackInHero({ item }: JumpBackInHeroProps) {
   const locale = useLocale();
   const isRtl = locale === 'ar';
+  const [imageError, setImageError] = useState(false);
 
   const courseTitle = isRtl ? item.course_title_ar : item.course_title_en;
   const partTitle = isRtl ? item.part_title_ar : item.part_title_en;
@@ -29,12 +30,14 @@ export function JumpBackInHero({ item }: JumpBackInHeroProps) {
       <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
         {/* Visual Cover Banner */}
         <div className="lg:col-span-5 relative aspect-video lg:aspect-auto lg:h-full min-h-[220px] bg-slate-900 overflow-hidden">
-          {item.cover_image_url && (
+          {item.cover_image_url && !imageError && (
             <Image
               src={item.cover_image_url}
               alt={courseTitle}
               fill
               priority
+              unoptimized
+              onError={() => setImageError(true)}
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 40vw"
             />

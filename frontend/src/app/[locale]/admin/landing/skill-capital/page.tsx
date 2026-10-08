@@ -36,7 +36,7 @@ export default function AdminSkillCapitalCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات القسم...' : 'Loading section content...'}
           </p>
@@ -55,6 +55,7 @@ export default function AdminSkillCapitalCmsPage() {
             : 'Configure founder quote, mission narrative, and author credentials shown on the public landing page.'
         }
         icon={BookOpen}
+        targetRoute="/#skills"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -75,7 +76,7 @@ export default function AdminSkillCapitalCmsPage() {
               type="checkbox"
               checked={formData.is_visible}
               onChange={(e) => handleChange('is_visible', e.target.checked)}
-              className="w-5 h-5 rounded text-brand-gold focus:ring-brand-gold cursor-pointer"
+              className="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer"
             />
           </div>
 
@@ -93,7 +94,7 @@ export default function AdminSkillCapitalCmsPage() {
                   type="text"
                   value={formData.title_ar || ''}
                   onChange={(e) => handleChange('title_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -105,7 +106,7 @@ export default function AdminSkillCapitalCmsPage() {
                   type="text"
                   value={formData.title_en || ''}
                   onChange={(e) => handleChange('title_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -126,7 +127,7 @@ export default function AdminSkillCapitalCmsPage() {
                   rows={4}
                   value={formData.quote_ar || ''}
                   onChange={(e) => handleChange('quote_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -138,7 +139,7 @@ export default function AdminSkillCapitalCmsPage() {
                   rows={4}
                   value={formData.quote_en || ''}
                   onChange={(e) => handleChange('quote_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>
@@ -159,7 +160,7 @@ export default function AdminSkillCapitalCmsPage() {
                   type="text"
                   value={formData.author_name_ar || ''}
                   onChange={(e) => handleChange('author_name_ar', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -171,7 +172,7 @@ export default function AdminSkillCapitalCmsPage() {
                   type="text"
                   value={formData.author_name_en || ''}
                   onChange={(e) => handleChange('author_name_en', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -183,7 +184,7 @@ export default function AdminSkillCapitalCmsPage() {
                   type="text"
                   value={formData.author_title_ar || ''}
                   onChange={(e) => handleChange('author_title_ar', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -195,7 +196,7 @@ export default function AdminSkillCapitalCmsPage() {
                   type="text"
                   value={formData.author_title_en || ''}
                   onChange={(e) => handleChange('author_title_en', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>

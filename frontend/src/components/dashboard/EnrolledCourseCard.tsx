@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
@@ -15,6 +15,7 @@ interface EnrolledCourseCardProps {
 export function EnrolledCourseCard({ course, onUpgradeClick }: EnrolledCourseCardProps) {
   const locale = useLocale();
   const isRtl = locale === 'ar';
+  const [imageError, setImageError] = useState(false);
 
   const title = isRtl ? course.title_ar : course.title_en;
   const isBundle = course.entitlement_type === 'bundle';
@@ -24,11 +25,13 @@ export function EnrolledCourseCard({ course, onUpgradeClick }: EnrolledCourseCar
     <div className="flex flex-col rounded-2xl bg-surface border border-border-subtle hover:border-border transition-all duration-200 overflow-hidden shadow-2xs group">
       {/* Course Cover Image Banner */}
       <div className="relative aspect-video w-full bg-slate-900 overflow-hidden">
-        {course.cover_image_url ? (
+        {course.cover_image_url && !imageError ? (
           <Image
             src={course.cover_image_url}
             alt={title}
             fill
+            unoptimized
+            onError={() => setImageError(true)}
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />

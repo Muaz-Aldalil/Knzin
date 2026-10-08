@@ -39,7 +39,7 @@ export default function AdminCheckoutCartCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات الدفع والسلة...' : 'Loading checkout & cart presentation...'}
           </p>
@@ -58,6 +58,7 @@ export default function AdminCheckoutCartCmsPage() {
             : 'Configure security badges, free ticket gift reassurance notices, and post-order celebration copy.'
         }
         icon={ShoppingCart}
+        targetRoute="/#catalog"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -83,7 +84,7 @@ export default function AdminCheckoutCartCmsPage() {
               checked={formData.is_visible}
               onChange={(e) => handleChange('is_visible', e.target.checked)}
             />
-            <div className="w-11 h-6 bg-surface-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-gold"></div>
+            <div className="w-11 h-6 bg-surface-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border-subtle after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
           </label>
         </div>
 
@@ -101,7 +102,7 @@ export default function AdminCheckoutCartCmsPage() {
                 type="text"
                 value={formData.trust_badge_ar}
                 onChange={(e) => handleChange('trust_badge_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -112,7 +113,7 @@ export default function AdminCheckoutCartCmsPage() {
                 type="text"
                 value={formData.trust_badge_en}
                 onChange={(e) => handleChange('trust_badge_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -123,7 +124,7 @@ export default function AdminCheckoutCartCmsPage() {
                 type="text"
                 value={formData.trust_headline_ar}
                 onChange={(e) => handleChange('trust_headline_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -134,7 +135,7 @@ export default function AdminCheckoutCartCmsPage() {
                 type="text"
                 value={formData.trust_headline_en}
                 onChange={(e) => handleChange('trust_headline_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
           </div>
@@ -147,7 +148,7 @@ export default function AdminCheckoutCartCmsPage() {
                 rows={2}
                 value={formData.trust_description_ar}
                 onChange={(e) => handleChange('trust_description_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -158,7 +159,7 @@ export default function AdminCheckoutCartCmsPage() {
                 rows={2}
                 value={formData.trust_description_en}
                 onChange={(e) => handleChange('trust_description_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
           </div>
@@ -178,7 +179,7 @@ export default function AdminCheckoutCartCmsPage() {
                 rows={3}
                 value={formData.ticket_gift_notice_ar}
                 onChange={(e) => handleChange('ticket_gift_notice_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -189,7 +190,7 @@ export default function AdminCheckoutCartCmsPage() {
                 rows={3}
                 value={formData.ticket_gift_notice_en}
                 onChange={(e) => handleChange('ticket_gift_notice_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
           </div>
@@ -209,7 +210,7 @@ export default function AdminCheckoutCartCmsPage() {
                 type="text"
                 value={formData.order_celebration_title_ar}
                 onChange={(e) => handleChange('order_celebration_title_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -220,7 +221,7 @@ export default function AdminCheckoutCartCmsPage() {
                 type="text"
                 value={formData.order_celebration_title_en}
                 onChange={(e) => handleChange('order_celebration_title_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -231,7 +232,7 @@ export default function AdminCheckoutCartCmsPage() {
                 rows={2}
                 value={formData.order_celebration_desc_ar}
                 onChange={(e) => handleChange('order_celebration_desc_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -242,7 +243,7 @@ export default function AdminCheckoutCartCmsPage() {
                 rows={2}
                 value={formData.order_celebration_desc_en}
                 onChange={(e) => handleChange('order_celebration_desc_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -253,7 +254,7 @@ export default function AdminCheckoutCartCmsPage() {
                 type="text"
                 value={formData.order_ticket_reassurance_ar}
                 onChange={(e) => handleChange('order_ticket_reassurance_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -264,7 +265,7 @@ export default function AdminCheckoutCartCmsPage() {
                 type="text"
                 value={formData.order_ticket_reassurance_en}
                 onChange={(e) => handleChange('order_ticket_reassurance_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
           </div>

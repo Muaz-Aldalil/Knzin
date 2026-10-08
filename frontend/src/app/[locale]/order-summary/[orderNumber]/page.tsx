@@ -37,6 +37,13 @@ export default function OrderSummaryPage() {
 
   const locale = useLocale();
 
+  // Scroll to top on mount for optimal UX
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [orderNumber]);
+
   // State 1: Loading (muaz-skill mandatory state)
   if (isLoading) {
     return (

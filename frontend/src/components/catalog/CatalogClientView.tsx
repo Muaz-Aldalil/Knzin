@@ -92,15 +92,32 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
           {heroSubheading}
         </p>
 
-        {heroCms?.primary_cta_label_ar && (
-          <div className="pt-2 flex items-center justify-center gap-3">
+        <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+          {heroCms?.primary_cta_label_ar && (
             <a
               href={sanitizeCtaUrl(heroCms.primary_cta_url, '#catalog')}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-gold hover:bg-brand-gold-hover text-brand-navy font-bold text-sm shadow-md transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md shadow-primary/25 transition-all"
             >
               <span>{isAr ? heroCms.primary_cta_label_ar : heroCms.primary_cta_label_en}</span>
               <Arrow className="w-4 h-4" />
             </a>
+          )}
+
+          {heroCms?.secondary_cta_label_ar && (
+            <a
+              href={sanitizeCtaUrl(heroCms.secondary_cta_url, '#vision')}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-surface hover:bg-surface-elevated border border-border-subtle hover:border-primary/40 text-content-primary font-bold text-sm shadow-2xs transition-all"
+            >
+              <span>{isAr ? heroCms.secondary_cta_label_ar : heroCms.secondary_cta_label_en}</span>
+            </a>
+          )}
+        </div>
+
+        {(isAr ? heroCms?.price_display_override_ar : heroCms?.price_display_override_en) && (
+          <div className="pt-1">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-surface-secondary border border-border-subtle text-content-secondary">
+              {isAr ? heroCms.price_display_override_ar : heroCms.price_display_override_en}
+            </span>
           </div>
         )}
       </div>
@@ -124,7 +141,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
 
             <a
               href={sanitizeCtaUrl(bannerCms.cta_url, '#catalog')}
-              className="shrink-0 px-5 py-3 rounded-xl bg-brand-gold hover:bg-brand-gold-hover text-brand-navy font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2"
+              className="shrink-0 px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm shadow-md shadow-primary/25 transition-all flex items-center gap-2"
             >
               <span>{isAr ? bannerCms.cta_label_ar : bannerCms.cta_label_en}</span>
               <Arrow className="w-4 h-4" />
@@ -236,10 +253,14 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
                 </p>
               </div>
 
-              <div className="p-3 text-center">
-                <span className="text-xs font-bold text-primary">
-                  {isAr ? 'شارك رابطك الشخصي الآن' : 'Share Your Referral Link Now'}
-                </span>
+              <div className="pt-2">
+                <Link
+                  href={`/${locale}/affiliate#referral`}
+                  className="inline-flex items-center justify-between w-full py-2.5 px-4 rounded-xl bg-primary/10 hover:bg-primary/15 border border-primary/20 text-xs font-bold text-primary transition-colors"
+                >
+                  <span>{isAr ? 'شارك رابطك الشخصي الآن' : 'Share Your Referral Link Now'}</span>
+                  <Arrow className="w-4 h-4 text-primary" />
+                </Link>
               </div>
             </div>
           )}

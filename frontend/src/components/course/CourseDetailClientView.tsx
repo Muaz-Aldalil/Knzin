@@ -278,6 +278,7 @@ export default function CourseDetailClientView({ slug, initialCourse }: CourseDe
       <LearningOutcomes
         slug={slug}
         titleAr={course.title_ar}
+        headerTitle={(isAr ? courseDetail?.learning_outcomes_header_ar : courseDetail?.learning_outcomes_header_en) || undefined}
         outcomes={
           course.outcomes && course.outcomes.length > 0
             ? course.outcomes.map((o: any) => ({

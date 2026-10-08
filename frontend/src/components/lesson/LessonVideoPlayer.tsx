@@ -121,6 +121,18 @@ export function LessonVideoPlayer({
               </p>
             </div>
 
+            {/* Dynamic CMS Paywall Perks */}
+            {((isAr ? lessonCms?.paywall_perks_ar : lessonCms?.paywall_perks_en) || []).length > 0 && (
+              <div className="py-1 flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-300">
+                {((isAr ? lessonCms?.paywall_perks_ar : lessonCms?.paywall_perks_en) || []).map((perk, idx) => (
+                  <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                    <span>{perk}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+
             {/* Action CTAs */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button

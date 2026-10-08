@@ -39,7 +39,7 @@ export default function AdminRaffleArenaCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات ساحة السحوبات...' : 'Loading raffle arena configuration...'}
           </p>
@@ -58,6 +58,7 @@ export default function AdminRaffleArenaCmsPage() {
             : 'Configure legal transparency hero, Part vs Bundle commercial perks, and sweepstakes FAQs.'
         }
         icon={Trophy}
+        targetRoute="/raffle"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}

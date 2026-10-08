@@ -36,7 +36,7 @@ export default function AdminLegalComplianceCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات النصوص القانونية...' : 'Loading legal compliance settings...'}
           </p>
@@ -55,6 +55,7 @@ export default function AdminLegalComplianceCmsPage() {
             : 'Configure educational purchase disclosure, Iraqi Consumer Protection Law No. (1) of 2010 citation, and KYC verification notice.'
         }
         icon={ShieldCheck}
+        targetRoute="/#legal"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -75,7 +76,7 @@ export default function AdminLegalComplianceCmsPage() {
                   rows={4}
                   value={formData.legal_statement_ar || ''}
                   onChange={(e) => handleChange('legal_statement_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -87,7 +88,7 @@ export default function AdminLegalComplianceCmsPage() {
                   rows={4}
                   value={formData.legal_statement_en || ''}
                   onChange={(e) => handleChange('legal_statement_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>
@@ -108,7 +109,7 @@ export default function AdminLegalComplianceCmsPage() {
                   type="text"
                   value={formData.consumer_protection_law_ar || ''}
                   onChange={(e) => handleChange('consumer_protection_law_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -120,7 +121,7 @@ export default function AdminLegalComplianceCmsPage() {
                   type="text"
                   value={formData.consumer_protection_law_en || ''}
                   onChange={(e) => handleChange('consumer_protection_law_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -141,7 +142,7 @@ export default function AdminLegalComplianceCmsPage() {
                   rows={3}
                   value={formData.kyc_notice_ar || ''}
                   onChange={(e) => handleChange('kyc_notice_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -153,7 +154,7 @@ export default function AdminLegalComplianceCmsPage() {
                   rows={3}
                   value={formData.kyc_notice_en || ''}
                   onChange={(e) => handleChange('kyc_notice_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>

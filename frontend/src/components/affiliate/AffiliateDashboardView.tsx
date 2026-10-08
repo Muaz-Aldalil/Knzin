@@ -69,6 +69,9 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
         ? `سجّل الدخول للحصول على رابط الإحالة الخاص بك، ومتابعة عمولات المبيعات (${activeRatePercent}%)، ومكافأة الفوز بالجائزة الكبرى (40%).`
         : `Sign in to access your unique referral link, track ${activeRatePercent}% sales commissions, and claim 40% co-prize rewards.`);
 
+    const onboardingPoints =
+      (isAr ? affPortal?.onboarding_points_ar : affPortal?.onboarding_points_en) || [];
+
     return (
       <div className="max-w-2xl mx-auto my-16 p-8 rounded-3xl bg-surface border border-border-subtle text-center shadow-xs">
         <div className="flex items-center justify-center mx-auto mb-4 text-primary">
@@ -80,6 +83,17 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
         <p className="mt-2 text-sm text-content-secondary max-w-md mx-auto">
           {onboardingDesc}
         </p>
+
+        {onboardingPoints.length > 0 && (
+          <ul className="mt-4 mb-2 space-y-2 text-start max-w-md mx-auto text-xs text-content-secondary">
+            {onboardingPoints.map((point, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/auth/login?redirect=/affiliate"

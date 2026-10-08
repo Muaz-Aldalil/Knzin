@@ -28,6 +28,8 @@ import {
 interface CmsHubSection {
   id: string;
   path: string;
+  targetRoute?: string;
+  targetLabel?: string;
   titleAr: string;
   titleEn: string;
   descAr: string;
@@ -41,6 +43,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'site_shell',
     path: '/admin/landing/site-shell',
+    targetRoute: '/',
+    targetLabel: 'Global / All Pages',
     titleAr: 'الهيكل العام للمنصة (Global Shell)',
     titleEn: 'Global Site Shell & Navigation',
     descAr: 'التحكم في شريط الإعلانات العاجلة (Ticker)، زر وتفاصيل واتساب، نافذة كيف يعمل، وتذييل الصفحات.',
@@ -52,6 +56,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'hero',
     path: '/admin/landing/hero',
+    targetRoute: '/#hero',
+    targetLabel: 'Landing (Hero)',
     titleAr: 'البانر الرئيسي (Hero Section)',
     titleEn: 'Hero Section',
     descAr: 'تعديل العنوان الرئيسي، الشعار، نصوص وأزرار الدعوة للإجراء، والعداد التنازلي.',
@@ -62,6 +68,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'skill_capital',
     path: '/admin/landing/skill-capital',
+    targetRoute: '/#skills',
+    targetLabel: 'Landing (Narrative)',
     titleAr: 'المهارة هي رأس المال الحقيقي',
     titleEn: 'Skill & Capital Narrative',
     descAr: 'تعديل مقولة المؤسس، الاقتباس الملهم، واسم ومسمى الكاتب في واجهة المنصة.',
@@ -72,6 +80,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'courses_display',
     path: '/admin/landing/courses-display',
+    targetRoute: '/#catalog',
+    targetLabel: 'Landing (Courses)',
     titleAr: 'عرض المناهج والدورات التدريبية',
     titleEn: 'Courses Display & Curricula',
     descAr: 'التحكم في عنوان وشارات قسم الدورات والبانر الترويجي للباقات الكاملة.',
@@ -82,6 +92,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'promotional_banner',
     path: '/admin/landing/promotional-banner',
+    targetRoute: '/#promotional-banner',
+    targetLabel: 'Landing (Banner)',
     titleAr: 'البانر الترويجي للجائزة الكبرى',
     titleEn: 'Promotional Banner',
     descAr: 'تعديل عنوان الجائزة الكبرى (السيارة)، الشارات، وروابط التوجيه المباشر.',
@@ -92,6 +104,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'promotional_referral',
     path: '/admin/landing/promotional-referral',
+    targetRoute: '/#referral',
+    targetLabel: 'Landing (Referral)',
     titleAr: 'برنامج الإحالة والشراكة الترويجي',
     titleEn: 'Promotional Referral Section',
     descAr: 'عرض نسب العمولة (25%) ومشاركة الجائزة (40%) ونصوص التسجيل في برنامج الشركاء.',
@@ -102,6 +116,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'free_referral',
     path: '/admin/landing/free-referral',
+    targetRoute: '/#referral-card',
+    targetLabel: 'Landing (Free Card)',
     titleAr: 'بطاقة التذكرة الترويجية المجانية',
     titleEn: 'Free Referral Reward Card',
     descAr: 'تعديل رسالة الحصول على تذكرة مجانية عند دعوة 3 أصدقاء ونصوص المكافأة.',
@@ -112,6 +128,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'legal_compliance',
     path: '/admin/landing/legal-compliance',
+    targetRoute: '/#legal',
+    targetLabel: 'Landing (Legal)',
     titleAr: 'النصوص القانونية والامتثال العراقي',
     titleEn: 'Legal & Iraqi Compliance Statements',
     descAr: 'إدارة إشعارات قانون حماية المستهلك العراقي رقم (1) لسنة 2010 وشروط التحقق من الهوية.',
@@ -122,6 +140,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'referral_faq',
     path: '/admin/landing/referral-faq',
+    targetRoute: '/#faq',
+    targetLabel: 'Landing (FAQ)',
     titleAr: 'الأسئلة الشائعة حول المنصة والجوائز',
     titleEn: 'Promotional Referral FAQ',
     descAr: 'إضافة، تعديل، وحذف بنود الأسئلة الشائعة وتنسيق إجاباتها باللغتين العربية والإنجليزية.',
@@ -132,6 +152,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'ticket_ladder',
     path: '/admin/landing/ticket-ladder',
+    targetRoute: '/#ladder',
+    targetLabel: 'Landing (Ladder)',
     titleAr: 'سلم التذاكر الترويجية',
     titleEn: 'Promotional Ticket Ladder',
     descAr: 'تعديل جدول توزيع التذاكر المجانية مع أجزاء الدورات والباقات الكاملة.',
@@ -143,6 +165,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'raffle_arena',
     path: '/admin/landing/raffle-arena',
+    targetRoute: '/raffle',
+    targetLabel: '/raffle',
     titleAr: 'صالة السحوبات والجوائز (Raffle Arena)',
     titleEn: 'Raffle & Draws Arena Presentation',
     descAr: 'التحكم في واجهة السحوبات الكبرى، مميزات التذاكر الفردية والباقات، وأسئلة السحب الشائعة.',
@@ -154,6 +178,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'course_detail',
     path: '/admin/landing/course-detail',
+    targetRoute: '/courses/craft-auto-body-repair-pro',
+    targetLabel: '/courses/[slug]',
     titleAr: 'صفحة تفاصيل الدورة (Course Detail)',
     titleEn: 'Course Detail Presentation',
     descAr: 'تعديل شارات الضمان الذهبي، ترويج الباقات الكاملة، وعناوين مخرجات التعلم المكتسبة.',
@@ -164,6 +190,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'lesson_player',
     path: '/admin/landing/lesson-player',
+    targetRoute: '/courses/craft-auto-body-repair-pro/learn',
+    targetLabel: '/courses/[slug]/learn',
     titleAr: 'مشغل الدروس والحجب (Lesson Player)',
     titleEn: 'Lesson Player & Paywall Presentation',
     descAr: 'التحكم في شاشة حجب الدروس المدفوعة (Paywall)، نصوص الترقية، وبانر إتمام الدورة.',
@@ -174,6 +202,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'learner_dashboard',
     path: '/admin/landing/learner-dashboard',
+    targetRoute: '/dashboard',
+    targetLabel: '/dashboard',
     titleAr: 'لوحة المتدرب (Learner Dashboard)',
     titleEn: 'Learner Dashboard Presentation',
     descAr: 'التحكم في رسالة الترحيب والتحفيز، وحالة الحساب الفارغ للمتدرب الذي لم يشترك بعد.',
@@ -185,6 +215,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'checkout_cart',
     path: '/admin/landing/checkout-cart',
+    targetRoute: '/#catalog',
+    targetLabel: 'Cart & /order-summary',
     titleAr: 'السلة والدفع (Checkout & Cart)',
     titleEn: 'Checkout & Cart Presentation',
     descAr: 'التحكم في شارة الأمان والضمان، رسالة إهداء التذاكر المجانية، ورسائل تأكيد نجاح الطلب.',
@@ -196,6 +228,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'affiliate_portal',
     path: '/admin/landing/affiliate-portal',
+    targetRoute: '/affiliate',
+    targetLabel: '/affiliate',
     titleAr: 'بوابة الشركاء والمسوقين (Affiliate Portal)',
     titleEn: 'Affiliate Portal Presentation',
     descAr: 'التحكم في نصوص الترحيب بالمسوقين، إشعار حظر الترويج المضلل، وقواعد الجائزة المشتركة (Co-Prize).',
@@ -207,6 +241,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'search_page',
     path: '/admin/landing/search-page',
+    targetRoute: '/search',
+    targetLabel: '/search',
     titleAr: 'صفحة البحث الذكي (Search Hub)',
     titleEn: 'Smart Search Hub Presentation',
     descAr: 'التحكم في عنوان البحث التوجيهي، وسوم الكلمات المقترحة، نصائح البحث، وحالة البحث دون نتائج.',
@@ -218,6 +254,8 @@ const ALL_CMS_SECTIONS: CmsHubSection[] = [
   {
     id: 'system_notices',
     path: '/admin/landing/system-notices',
+    targetRoute: '/404-preview',
+    targetLabel: '404 & 500 Pages',
     titleAr: 'إشعارات النظام وأخطاء التوجيه (System Notices)',
     titleEn: 'System Notices & Error Presentation',
     descAr: 'التحكم في رسائل وأزرار صفحات الخطأ 404 (الصفحة غير موجودة) وحدود معالجة الأخطاء غير المتوقعة 500.',
@@ -256,7 +294,7 @@ export default function AdminLandingCmsHubPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-                <Globe className="w-7 h-7 text-brand-gold" />
+                <Globe className="w-7 h-7 text-primary" />
                 <span>
                   {isAr
                     ? 'إدارة محتوى المنصة الشامل (Site-Wide CMS Hub)'
@@ -269,7 +307,7 @@ export default function AdminLandingCmsHubPage() {
                   : 'Centralized presentation control across all application surfaces, from global shell and landing page to checkout and affiliate portal.'}
               </p>
             </div>
-            <div className="flex items-center gap-2 text-brand-gold text-xs font-semibold self-start sm:self-auto">
+            <div className="flex items-center gap-2 text-primary text-xs font-semibold self-start sm:self-auto">
               <Sliders className="w-4 h-4" />
               <span>
                 {ALL_CMS_SECTIONS.length} {isAr ? 'أقسام مُدارة' : 'Managed Surfaces'}
@@ -286,8 +324,8 @@ export default function AdminLandingCmsHubPage() {
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedCategory === cat.id
-                    ? 'bg-brand-gold text-black shadow'
-                    : 'bg-surface border border-border-subtle text-content-secondary hover:text-content-primary hover:border-brand-gold/30'
+                    ? 'bg-primary text-black shadow'
+                    : 'bg-surface border border-border-subtle text-content-secondary hover:text-content-primary hover:border-primary/30'
                 }`}
               >
                 {isAr ? cat.labelAr : cat.labelEn}
@@ -306,19 +344,26 @@ export default function AdminLandingCmsHubPage() {
               <Link
                 key={sec.id}
                 href={`/${locale}${sec.path}`}
-                className="group p-5 rounded-2xl bg-surface border border-border-subtle hover:border-brand-gold/40 hover:shadow-lg transition-all flex flex-col justify-between"
+                className="group p-5 rounded-2xl bg-surface border border-border-subtle hover:border-primary/40 hover:shadow-lg transition-all flex flex-col justify-between"
               >
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center text-brand-gold group-hover:scale-105 transition-transform">
-                    <Icon className="w-5 h-5" />
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    {sec.targetRoute && (
+                      <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-surface-secondary border border-border-subtle text-content-secondary group-hover:border-primary/30 transition-colors">
+                        {sec.targetLabel || sec.targetRoute}
+                      </span>
+                    )}
                   </div>
-                  <h3 className="font-bold text-content-primary text-base group-hover:text-brand-gold transition-colors">
+                  <h3 className="font-bold text-content-primary text-base group-hover:text-primary transition-colors">
                     {title}
                   </h3>
                   <p className="text-xs text-content-secondary leading-relaxed">{desc}</p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-border-subtle/60 flex items-center justify-between text-xs font-semibold text-brand-gold">
+                <div className="mt-4 pt-3 border-t border-border-subtle/60 flex items-center justify-between text-xs font-semibold text-primary">
                   <span>{isAr ? 'تعديل القسم' : 'Edit Section'}</span>
                   <Arrow className="w-4 h-4 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                 </div>

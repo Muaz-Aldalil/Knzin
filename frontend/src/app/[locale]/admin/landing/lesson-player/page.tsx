@@ -39,7 +39,7 @@ export default function AdminLessonPlayerCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات مشغل الدروس...' : 'Loading lesson player configuration...'}
           </p>
@@ -58,6 +58,7 @@ export default function AdminLessonPlayerCmsPage() {
             : 'Configure paywall pay-to-unlock overlay copy, perks list, and completion celebration banner.'
         }
         icon={PlayCircle}
+        targetRoute="/courses/craft-auto-body-repair-pro/learn"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -75,7 +76,7 @@ export default function AdminLessonPlayerCmsPage() {
                 type="checkbox"
                 checked={formData.is_visible}
                 onChange={(e) => handleChange('is_visible', e.target.checked)}
-                className="w-4 h-4 rounded text-brand-gold focus:ring-brand-gold"
+                className="w-4 h-4 rounded text-primary focus:ring-primary"
               />
               <span>{isAr ? 'تفعيل العرض' : 'Visible'}</span>
             </label>

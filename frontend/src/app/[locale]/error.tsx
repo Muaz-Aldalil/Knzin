@@ -52,8 +52,8 @@ export default function ErrorBoundary({
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
       <div className="max-w-md w-full p-8 bg-card border border-border/70 rounded-2xl shadow-xl space-y-6">
-        <div className="text-destructive flex items-center justify-center mx-auto">
-          <AlertTriangle className="w-14 h-14" />
+        <div className="w-16 h-16 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mx-auto shadow-inner">
+          <AlertTriangle className="w-8 h-8" />
         </div>
 
         <div className="space-y-2">

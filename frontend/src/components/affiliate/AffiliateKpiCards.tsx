@@ -29,7 +29,9 @@ export function AffiliateKpiCards({
             <span className="text-xs font-semibold text-content-secondary uppercase tracking-wider">
               {t('unpaidAvailable')}
             </span>
-            <Wallet className="w-6 h-6 text-emerald-500" />
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
+            </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-content-primary tracking-tight">
             {kpis.unpaid_available_formatted}
@@ -65,7 +67,9 @@ export function AffiliateKpiCards({
             <span className="text-xs font-semibold text-content-secondary uppercase tracking-wider">
               {t('unpaidPending')}
             </span>
-            <Clock className="w-6 h-6 text-amber-500" />
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+              <Clock className="w-5 h-5" />
+            </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-content-primary tracking-tight">
             {kpis.unpaid_pending_formatted}
@@ -83,7 +87,9 @@ export function AffiliateKpiCards({
             <span className="text-xs font-semibold text-content-secondary uppercase tracking-wider">
               {t('totalEarned')}
             </span>
-            <TrendingUp className="w-6 h-6 text-primary" />
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+              <TrendingUp className="w-5 h-5" />
+            </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-content-primary tracking-tight">
             {kpis.total_earned_formatted}
@@ -101,7 +107,9 @@ export function AffiliateKpiCards({
             <span className="text-xs font-semibold text-content-secondary uppercase tracking-wider">
               {t('coPrizeTickets')}
             </span>
-            <Ticket className="w-6 h-6 text-accent-gold" />
+            <div className="w-10 h-10 rounded-2xl bg-accent-gold/10 text-accent-gold flex items-center justify-center">
+              <Ticket className="w-5 h-5" />
+            </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-content-primary tracking-tight">
             {kpis.active_co_prize_tickets_count}

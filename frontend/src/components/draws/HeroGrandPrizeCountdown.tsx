@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Link } from '@/i18n/routing';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useGrandPrizeDraw } from '@/hooks/useDraws';
+import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
 import { CountdownClock } from './CountdownClock';
 import { PulsatingLockBadge } from './PulsatingLockBadge';
 import { SeedCommitmentBadge } from './SeedCommitmentBadge';
@@ -12,6 +13,11 @@ import { Sparkles, ArrowRight, ShieldCheck, Gift } from 'lucide-react';
 
 export function HeroGrandPrizeCountdown() {
   const t = useTranslations('draws');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
+  const { data: cmsData } = useSiteWideCms();
+  const raffleCms = cmsData?.sections?.raffle_arena;
+  const bannerCms = cmsData?.sections?.promotional_banner;
   const { grandDraw, serverTimeUtc, isLoading } = useGrandPrizeDraw();
   const [isLocallyLocked, setIsLocallyLocked] = useState(false);
 
@@ -33,7 +39,7 @@ export function HeroGrandPrizeCountdown() {
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400">
               <Sparkles className="h-3.5 w-3.5 fill-current" />
-              {t('heroMarqueeBadge')}
+              {(isAr ? raffleCms?.hero_badge_ar : raffleCms?.hero_badge_en) || t('heroMarqueeBadge')}
             </span>
 
             <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
@@ -47,7 +53,7 @@ export function HeroGrandPrizeCountdown() {
               {grandDraw.prize?.title}
             </h2>
             <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl">
-              {t('heroMarqueeSubtitle')}
+              {(isAr ? (raffleCms?.hero_description_ar || bannerCms?.subheadline_ar) : (raffleCms?.hero_description_en || bannerCms?.subheadline_en)) || t('heroMarqueeSubtitle')}
             </p>
           </div>
 
@@ -70,10 +76,10 @@ export function HeroGrandPrizeCountdown() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               href="/#catalog"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-md hover:bg-primary/90 hover:scale-[1.02] transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-bold shadow-md hover:bg-primary/90 hover:scale-[1.02] transition-all duration-200"
             >
-              <Gift className="h-4 w-4" />
-              <span>{t('browseCoursesToEnter')}</span>
+              <Gift className="h-4 w-4 text-white" />
+              <span className="text-white">{t('browseCoursesToEnter')}</span>
             </Link>
 
             <Link

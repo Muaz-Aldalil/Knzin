@@ -32,8 +32,8 @@ export default function LocalizedNotFound() {
 
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6 space-y-6">
-      <div className="text-primary flex items-center justify-center">
-        <FileQuestion className="w-16 h-16" />
+      <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">
+        <FileQuestion className="w-10 h-10" />
       </div>
 
       <div className="space-y-2 max-w-md">

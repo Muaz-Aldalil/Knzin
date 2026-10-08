@@ -36,7 +36,7 @@ export default function AdminHeroCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات البانر...' : 'Loading hero configuration...'}
           </p>
@@ -55,6 +55,7 @@ export default function AdminHeroCmsPage() {
             : 'Configure headlines, badges, call-to-actions, and timer settings for the visitor hero section.'
         }
         icon={Sparkles}
+        targetRoute="/#hero"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -75,7 +76,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.badge_ar || ''}
                   onChange={(e) => handleChange('badge_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -87,7 +88,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.badge_en || ''}
                   onChange={(e) => handleChange('badge_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -108,7 +109,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.heading_ar || ''}
                   onChange={(e) => handleChange('heading_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none font-bold"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none font-bold"
                   dir="rtl"
                 />
               </div>
@@ -120,7 +121,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.heading_en || ''}
                   onChange={(e) => handleChange('heading_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none font-bold"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none font-bold"
                   dir="ltr"
                 />
               </div>
@@ -141,7 +142,7 @@ export default function AdminHeroCmsPage() {
                   rows={3}
                   value={formData.subheading_ar || ''}
                   onChange={(e) => handleChange('subheading_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -153,7 +154,7 @@ export default function AdminHeroCmsPage() {
                   rows={3}
                   value={formData.subheading_en || ''}
                   onChange={(e) => handleChange('subheading_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>
@@ -174,7 +175,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.primary_cta_label_ar || ''}
                   onChange={(e) => handleChange('primary_cta_label_ar', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -186,7 +187,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.primary_cta_label_en || ''}
                   onChange={(e) => handleChange('primary_cta_label_en', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -198,7 +199,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.primary_cta_url || ''}
                   onChange={(e) => handleChange('primary_cta_url', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -213,7 +214,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.secondary_cta_label_ar || ''}
                   onChange={(e) => handleChange('secondary_cta_label_ar', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -225,7 +226,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.secondary_cta_label_en || ''}
                   onChange={(e) => handleChange('secondary_cta_label_en', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -237,7 +238,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.secondary_cta_url || ''}
                   onChange={(e) => handleChange('secondary_cta_url', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -255,7 +256,7 @@ export default function AdminHeroCmsPage() {
                 id="timer_active"
                 checked={formData.timer_active}
                 onChange={(e) => handleChange('timer_active', e.target.checked)}
-                className="w-4 h-4 rounded text-brand-gold focus:ring-brand-gold cursor-pointer"
+                className="w-4 h-4 rounded text-primary focus:ring-primary cursor-pointer"
               />
               <label htmlFor="timer_active" className="text-sm font-medium text-content-primary cursor-pointer">
                 {isAr ? 'تفعيل ظهور بطاقة العداد التنازلي للسحب القادم' : 'Enable Next Draw Countdown Card'}
@@ -271,7 +272,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.timer_title_ar || ''}
                   onChange={(e) => handleChange('timer_title_ar', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -283,7 +284,7 @@ export default function AdminHeroCmsPage() {
                   type="text"
                   value={formData.timer_title_en || ''}
                   onChange={(e) => handleChange('timer_title_en', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>

@@ -64,8 +64,8 @@ export function LearnerDashboardView() {
 
     return (
       <div className="max-w-2xl mx-auto my-16 p-8 rounded-3xl bg-surface border border-border-subtle text-center shadow-sm">
-        <div className="flex items-center justify-center mx-auto mb-4 text-primary">
-          <BookOpen className="w-12 h-12" />
+        <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+          <BookOpen className="w-7 h-7" />
         </div>
         <h2 className="text-xl font-bold text-content-primary">
           {unauthTitle}
@@ -162,8 +162,8 @@ export function LearnerDashboardView() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Metric 1: Enrolled Courses */}
         <div className="p-5 rounded-2xl bg-surface border border-border-subtle shadow-2xs flex items-center gap-4">
-          <div className="flex items-center justify-center shrink-0 text-primary">
-            <BookOpen className="w-7 h-7" />
+          <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            <BookOpen className="w-6 h-6" />
           </div>
           <div>
             <span className="text-2xl font-black text-content-primary block leading-none">
@@ -177,8 +177,8 @@ export function LearnerDashboardView() {
 
         {/* Metric 2: Completed Courses */}
         <div className="p-5 rounded-2xl bg-surface border border-border-subtle shadow-2xs flex items-center gap-4">
-          <div className="flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
-            <CheckCircle className="w-7 h-7" />
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <CheckCircle className="w-6 h-6" />
           </div>
           <div>
             <span className="text-2xl font-black text-content-primary block leading-none">
@@ -192,8 +192,8 @@ export function LearnerDashboardView() {
 
         {/* Metric 3: Total Tickets */}
         <div className="p-5 rounded-2xl bg-surface border border-border-subtle shadow-2xs flex items-center gap-4">
-          <div className="flex items-center justify-center shrink-0 text-accent">
-            <Ticket className="w-7 h-7" />
+          <div className="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center shrink-0">
+            <Ticket className="w-6 h-6" />
           </div>
           <div>
             <span className="text-2xl font-black text-content-primary block leading-none">
@@ -227,8 +227,8 @@ export function LearnerDashboardView() {
         {isEmpty ? (
           /* Empty State */
           <div className="p-10 rounded-3xl bg-surface border border-dashed border-border-subtle text-center space-y-4">
-            <div className="flex items-center justify-center mx-auto text-primary">
-              <Sparkles className="w-12 h-12" />
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
+              <Sparkles className="w-7 h-7" />
             </div>
             <div className="max-w-md mx-auto">
               <h3 className="text-base font-bold text-content-primary">

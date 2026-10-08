@@ -39,7 +39,7 @@ export default function AdminSystemNoticesCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات إشعارات النظام...' : 'Loading system notices configuration...'}
           </p>
@@ -58,6 +58,7 @@ export default function AdminSystemNoticesCmsPage() {
             : 'Configure copy, recovery buttons, and guidance for 404 Not Found and application error boundaries.'
         }
         icon={AlertTriangle}
+        targetRoute="/404-preview"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -78,7 +79,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.not_found_title_ar}
                 onChange={(e) => handleChange('not_found_title_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -89,7 +90,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.not_found_title_en}
                 onChange={(e) => handleChange('not_found_title_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -100,7 +101,7 @@ export default function AdminSystemNoticesCmsPage() {
                 rows={2}
                 value={formData.not_found_desc_ar}
                 onChange={(e) => handleChange('not_found_desc_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -111,7 +112,7 @@ export default function AdminSystemNoticesCmsPage() {
                 rows={2}
                 value={formData.not_found_desc_en}
                 onChange={(e) => handleChange('not_found_desc_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -122,7 +123,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.not_found_home_btn_ar}
                 onChange={(e) => handleChange('not_found_home_btn_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -133,7 +134,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.not_found_home_btn_en}
                 onChange={(e) => handleChange('not_found_home_btn_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -144,7 +145,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.not_found_search_btn_ar}
                 onChange={(e) => handleChange('not_found_search_btn_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -155,7 +156,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.not_found_search_btn_en}
                 onChange={(e) => handleChange('not_found_search_btn_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
           </div>
@@ -175,7 +176,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.error_title_ar}
                 onChange={(e) => handleChange('error_title_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -186,7 +187,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.error_title_en}
                 onChange={(e) => handleChange('error_title_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -197,7 +198,7 @@ export default function AdminSystemNoticesCmsPage() {
                 rows={2}
                 value={formData.error_desc_ar}
                 onChange={(e) => handleChange('error_desc_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -208,7 +209,7 @@ export default function AdminSystemNoticesCmsPage() {
                 rows={2}
                 value={formData.error_desc_en}
                 onChange={(e) => handleChange('error_desc_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
             <div>
@@ -219,7 +220,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.error_retry_btn_ar}
                 onChange={(e) => handleChange('error_retry_btn_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -230,7 +231,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.error_retry_btn_en}
                 onChange={(e) => handleChange('error_retry_btn_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -241,7 +242,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.error_home_btn_ar}
                 onChange={(e) => handleChange('error_home_btn_ar', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -252,7 +253,7 @@ export default function AdminSystemNoticesCmsPage() {
                 type="text"
                 value={formData.error_home_btn_en}
                 onChange={(e) => handleChange('error_home_btn_en', e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-brand-gold"
+                className="w-full px-3 py-2 rounded-xl bg-surface-hover border border-border-subtle text-content-primary text-sm focus:outline-none focus:border-primary"
               />
             </div>
           </div>

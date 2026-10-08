@@ -76,7 +76,7 @@ export default function AdminReferralFaqCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات الأسئلة الشائعة...' : 'Loading FAQ items...'}
           </p>
@@ -95,6 +95,7 @@ export default function AdminReferralFaqCmsPage() {
             : 'Add, update, reorder, or remove bilingual accordion FAQ items.'
         }
         icon={ScrollText}
+        targetRoute="/#faq"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -115,7 +116,7 @@ export default function AdminReferralFaqCmsPage() {
               type="checkbox"
               checked={formData.is_visible}
               onChange={(e) => handleChange('is_visible', e.target.checked)}
-              className="w-5 h-5 rounded text-brand-gold focus:ring-brand-gold cursor-pointer"
+              className="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer"
             />
           </div>
 
@@ -133,7 +134,7 @@ export default function AdminReferralFaqCmsPage() {
                   type="text"
                   value={formData.title_ar || ''}
                   onChange={(e) => handleChange('title_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -145,7 +146,7 @@ export default function AdminReferralFaqCmsPage() {
                   type="text"
                   value={formData.title_en || ''}
                   onChange={(e) => handleChange('title_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -161,7 +162,7 @@ export default function AdminReferralFaqCmsPage() {
               <button
                 type="button"
                 onClick={handleAddItem}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-brand-gold/15 text-brand-gold border border-brand-gold/30 hover:bg-brand-gold/25 font-bold text-xs transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-primary/15 text-primary border border-primary/30 hover:bg-primary-hover/25 font-bold text-xs transition-colors cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>{isAr ? 'إضافة سؤال جديد' : 'Add New Question'}</span>
@@ -175,7 +176,7 @@ export default function AdminReferralFaqCmsPage() {
               >
                 <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
                   <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-lg bg-surface-elevated border border-border-subtle text-xs font-bold text-brand-gold flex items-center justify-center">
+                    <span className="w-6 h-6 rounded-lg bg-surface-elevated border border-border-subtle text-xs font-bold text-primary flex items-center justify-center">
                       {idx + 1}
                     </span>
                     <span className="text-xs font-semibold text-content-secondary">
@@ -231,7 +232,7 @@ export default function AdminReferralFaqCmsPage() {
                       type="text"
                       value={item.question_ar || ''}
                       onChange={(e) => handleItemChange(idx, 'question_ar', e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                       dir="rtl"
                     />
                   </div>
@@ -243,7 +244,7 @@ export default function AdminReferralFaqCmsPage() {
                       type="text"
                       value={item.question_en || ''}
                       onChange={(e) => handleItemChange(idx, 'question_en', e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                      className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                       dir="ltr"
                     />
                   </div>
@@ -259,7 +260,7 @@ export default function AdminReferralFaqCmsPage() {
                       rows={3}
                       value={item.answer_ar || ''}
                       onChange={(e) => handleItemChange(idx, 'answer_ar', e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                      className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                       dir="rtl"
                     />
                   </div>
@@ -271,7 +272,7 @@ export default function AdminReferralFaqCmsPage() {
                       rows={3}
                       value={item.answer_en || ''}
                       onChange={(e) => handleItemChange(idx, 'answer_en', e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                      className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                       dir="ltr"
                     />
                   </div>

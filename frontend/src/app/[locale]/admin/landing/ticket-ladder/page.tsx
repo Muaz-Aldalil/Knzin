@@ -36,7 +36,7 @@ export default function AdminTicketLadderCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات سلم التذاكر...' : 'Loading ticket ladder settings...'}
           </p>
@@ -55,6 +55,7 @@ export default function AdminTicketLadderCmsPage() {
             : 'Configure public presentation of sweepstakes tickets awarded per course part or complete bundle.'
         }
         icon={BadgeDollarSign}
+        targetRoute="/#ladder"
         isSaving={isUpdating}
         isSaved={isSuccess}
         errorMessage={error?.message}
@@ -75,7 +76,7 @@ export default function AdminTicketLadderCmsPage() {
               type="checkbox"
               checked={formData.is_visible}
               onChange={(e) => handleChange('is_visible', e.target.checked)}
-              className="w-5 h-5 rounded text-brand-gold focus:ring-brand-gold cursor-pointer"
+              className="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer"
             />
           </div>
 
@@ -93,7 +94,7 @@ export default function AdminTicketLadderCmsPage() {
                   type="text"
                   value={formData.title_ar || ''}
                   onChange={(e) => handleChange('title_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -105,7 +106,7 @@ export default function AdminTicketLadderCmsPage() {
                   type="text"
                   value={formData.title_en || ''}
                   onChange={(e) => handleChange('title_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -126,7 +127,7 @@ export default function AdminTicketLadderCmsPage() {
                   type="text"
                   value={formData.part_rate_text_ar || ''}
                   onChange={(e) => handleChange('part_rate_text_ar', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -138,7 +139,7 @@ export default function AdminTicketLadderCmsPage() {
                   type="text"
                   value={formData.part_rate_text_en || ''}
                   onChange={(e) => handleChange('part_rate_text_en', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -150,7 +151,7 @@ export default function AdminTicketLadderCmsPage() {
                   type="text"
                   value={formData.bundle_rate_text_ar || ''}
                   onChange={(e) => handleChange('bundle_rate_text_ar', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -162,7 +163,7 @@ export default function AdminTicketLadderCmsPage() {
                   type="text"
                   value={formData.bundle_rate_text_en || ''}
                   onChange={(e) => handleChange('bundle_rate_text_en', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -183,7 +184,7 @@ export default function AdminTicketLadderCmsPage() {
                   rows={3}
                   value={formData.disclaimer_ar || ''}
                   onChange={(e) => handleChange('disclaimer_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -195,7 +196,7 @@ export default function AdminTicketLadderCmsPage() {
                   rows={3}
                   value={formData.disclaimer_en || ''}
                   onChange={(e) => handleChange('disclaimer_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>
