@@ -212,10 +212,32 @@ export function useAdminCourseDetail(id: string) {
     },
   });
 
-  const deletePartMutation = useMutation<{ action_taken: string; message: string }, ApiError, string>({
+  const deletePartMutation = useMutation<
+    { action_taken: string; message: string },
+    ApiError,
+    string | { partId: string; force?: boolean }
+  >({
+    mutationFn: (args) => {
+      const partId = typeof args === 'string' ? args : args.partId;
+      const force = typeof args === 'string' ? false : !!args.force;
+      return apiClient<{ action_taken: string; message: string }>(
+        `/admin/courses/${id}/parts/${partId}${force ? '?force=1' : ''}`,
+        {
+          method: 'DELETE',
+        }
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'course', id] });
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['course', id] });
+    },
+  });
+
+  const restorePartMutation = useMutation<AdminCoursePart, ApiError, string>({
     mutationFn: (partId) =>
-      apiClient<{ action_taken: string; message: string }>(`/admin/courses/${id}/parts/${partId}`, {
-        method: 'DELETE',
+      apiClient<AdminCoursePart>(`/admin/courses/${id}/parts/${partId}/restore`, {
+        method: 'POST',
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'course', id] });
@@ -255,6 +277,8 @@ export function useAdminCourseDetail(id: string) {
     isUpdatingPart: updatePartMutation.isPending,
     deletePart: deletePartMutation.mutateAsync,
     isDeletingPart: deletePartMutation.isPending,
+    restorePart: restorePartMutation.mutateAsync,
+    isRestoringPart: restorePartMutation.isPending,
     reorderParts: reorderPartsMutation.mutateAsync,
     isReorderingParts: reorderPartsMutation.isPending,
   };

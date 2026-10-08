@@ -245,7 +245,11 @@ Route::prefix('v1')->group(function () {
             Route::post('/courses/{id}/parts', [\App\Http\Controllers\Admin\AdminCourseController::class, 'storePart']);
             Route::patch('/courses/{id}/parts/{partId}', [\App\Http\Controllers\Admin\AdminCourseController::class, 'updatePart']);
             Route::delete('/courses/{id}/parts/{partId}', [\App\Http\Controllers\Admin\AdminCourseController::class, 'destroyPart']);
+            Route::post('/courses/{id}/parts/{partId}/restore', [\App\Http\Controllers\Admin\AdminCourseController::class, 'restorePart']);
             Route::post('/courses/{id}/parts/reorder', [\App\Http\Controllers\Admin\AdminCourseController::class, 'reorderParts']);
+
+            // Media & Asset Uploads
+            Route::post('/media/upload-image', [\App\Http\Controllers\Admin\AdminMediaController::class, 'uploadImage']);
         });
 
         // Users & Capabilities, and Centralized Audit Logs (manage_admin_capabilities)

@@ -198,14 +198,33 @@ class AdminCourseController extends ApiController
     {
         $part = CoursePart::where('course_id', $id)->where('id', $partId)->firstOrFail();
         $auditContext = AdminFormRequest::fromRequest($request, AdminCapabilities::MANAGE_PLATFORM_SETTINGS);
+        $force = filter_var($request->input('force', false), FILTER_VALIDATE_BOOLEAN);
 
         $result = $this->adminCourseService->deletePart(
+            part: $part,
+            actor: $request->user(),
+            auditContext: $auditContext,
+            force: $force
+        );
+
+        return $this->successResponse($result);
+    }
+
+    /**
+     * Restore an archived course part back to active.
+     */
+    public function restorePart(Request $request, string $id, string $partId): JsonResponse
+    {
+        $part = CoursePart::where('course_id', $id)->where('id', $partId)->firstOrFail();
+        $auditContext = AdminFormRequest::fromRequest($request, AdminCapabilities::MANAGE_PLATFORM_SETTINGS);
+
+        $restored = $this->adminCourseService->restorePart(
             part: $part,
             actor: $request->user(),
             auditContext: $auditContext
         );
 
-        return $this->successResponse($result);
+        return $this->successResponse(new CoursePartResource($restored));
     }
 
     /**

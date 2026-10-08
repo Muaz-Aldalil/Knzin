@@ -382,25 +382,21 @@ class AdminCourseService
     /**
      * Safely delete or deactivate course part to protect existing student progress.
      */
-    public function deletePart(CoursePart $part, User $actor, AdminAuditContext $auditContext): array
+    public function deletePart(CoursePart $part, User $actor, AdminAuditContext $auditContext, bool $force = false): array
     {
-        return DB::transaction(function () use ($part, $actor, $auditContext) {
-            $hasEntitlements = CourseEntitlement::where('course_part_id', $part->id)
-                ->orWhere(function ($q) use ($part) {
-                    $q->where('course_id', $part->course_id)->whereNull('course_part_id');
-                })
-                ->exists();
+        return DB::transaction(function () use ($part, $actor, $auditContext, $force) {
+            $hasSpecificOrders = OrderItem::where('course_part_id', $part->id)->exists();
             $hasProgress = LessonProgress::where('course_part_id', $part->id)->exists();
-            $hasOrders = OrderItem::where('course_part_id', $part->id)
-                ->orWhere(function ($q) use ($part) {
-                    $q->where('course_id', $part->course_id)->whereNull('course_part_id');
-                })
+            $hasSpecificEntitlements = CourseEntitlement::where('course_part_id', $part->id)->exists();
+            $hasBundleEntitlements = CourseEntitlement::where('course_id', $part->course_id)
+                ->whereNull('course_part_id')
+                ->where('status', 'active')
                 ->exists();
 
             $courseId = $part->course_id;
 
-            if ($hasEntitlements || $hasProgress || $hasOrders) {
-                // Safeguard: deactivating protects student records
+            // If active learner progress or purchase exists, and part is currently active and not forced, archive it
+            if (!$force && $part->is_active && ($hasSpecificOrders || $hasProgress || $hasSpecificEntitlements || $hasBundleEntitlements)) {
                 $part->update(['is_active' => false]);
 
                 $this->auditWriter->record(
@@ -418,6 +414,8 @@ class AdminCourseService
                 if ($parentCourse) {
                     $this->notifyEntitledLearners($parentCourse);
                 }
+
+                $this->clearCatalogCache();
 
                 return [
                     'action_taken' => 'archived',
@@ -440,17 +438,37 @@ class AdminCourseService
                 reasonCode: 'PART_HARD_DELETED'
             );
 
-            $parentCourse = Course::find($courseId);
-            if ($parentCourse) {
-                $this->notifyEntitledLearners($parentCourse);
-            }
-
             $this->clearCatalogCache();
 
             return [
                 'action_taken' => 'deleted',
-                'message' => 'Part removed successfully.',
+                'message' => 'Training part deleted permanently.',
             ];
+        });
+    }
+
+    /**
+     * Restore an archived training part back to active status.
+     */
+    public function restorePart(CoursePart $part, User $actor, AdminAuditContext $auditContext): CoursePart
+    {
+        return DB::transaction(function () use ($part, $actor, $auditContext) {
+            $part->update(['is_active' => true]);
+
+            $this->auditWriter->record(
+                context: $auditContext,
+                action: 'restore_course_part',
+                targetType: 'course_part',
+                targetId: (string) $part->id,
+                beforeState: ['is_active' => false],
+                afterState: ['is_active' => true],
+                outcome: 'success',
+                reasonCode: 'PART_RESTORED'
+            );
+
+            $this->clearCatalogCache();
+
+            return $part->fresh();
         });
     }
 

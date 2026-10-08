@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
@@ -19,13 +19,18 @@ import {
   Ticket,
   Sparkles,
   Loader2,
+  ImageIcon,
+  Upload,
+  X,
 } from 'lucide-react';
+import { normalizeImageUrl } from '@/lib/image';
+import { uploadAdminImage } from '@/lib/api/media';
 
 export default function CreateCoursePage() {
   const locale = useLocale();
   const router = useRouter();
   const isAr = locale === 'ar';
-  const { showError, showWarning } = useAdminFeedback();
+  const { showError, showWarning, showSuccess } = useAdminFeedback();
 
   const { createCourse, isCreating } = useAdminCourses();
 
@@ -34,6 +39,44 @@ export default function CreateCoursePage() {
   const [titleEn, setTitleEn] = useState('');
   const [slug, setSlug] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [previewError, setPreviewError] = useState(false);
+
+  // Local image upload state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const handleImageFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showWarning(isAr ? 'يرجى اختيار ملف صورة صالح (PNG, JPG, WebP).' : 'Please select a valid image file (PNG, JPG, WebP).');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      showWarning(isAr ? 'حجم الصورة كبير جداً. الحد الأقصى هو 10 ميغابايت.' : 'Image file is too large. Max size is 10MB.');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const data = await uploadAdminImage(file, 'courses');
+      if (data?.url) {
+        setCoverImageUrl(data.url);
+        setPreviewError(false);
+        showSuccess(isAr ? 'تم رفع صورة الغلاف بنجاح.' : 'Cover image uploaded successfully.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      showError(err?.message || (isAr ? 'فشل رفع الصورة.' : 'Failed to upload image.'));
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   // Pricing & subscription
   const [priceDollars, setPriceDollars] = useState('10.00');
@@ -147,7 +190,7 @@ export default function CreateCoursePage() {
             </Link>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-content-primary flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-brand-gold" />
+                <BookOpen className="w-6 h-6 text-primary" />
                 <span>{isAr ? 'إضافة دورة تدريبية جديدة' : 'Create New Course'}</span>
               </h1>
               <p className="text-xs sm:text-sm text-content-secondary mt-0.5">
@@ -177,7 +220,7 @@ export default function CreateCoursePage() {
                   value={titleAr}
                   onChange={(e) => setTitleAr(e.target.value)}
                   placeholder="مثال: دورة العناية وتلميع السيارات المتقدمة"
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                 />
               </div>
 
@@ -191,7 +234,7 @@ export default function CreateCoursePage() {
                   value={titleEn}
                   onChange={(e) => setTitleEn(e.target.value)}
                   placeholder="e.g. Advanced Auto Detailing Course"
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                 />
               </div>
             </div>
@@ -206,7 +249,7 @@ export default function CreateCoursePage() {
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   placeholder="e.g. auto-detailing"
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                 />
                 <span className="text-[11px] text-content-muted mt-1 block">
                   {isAr ? 'يتم توليده تلقائياً من العنوان إذا ترك فارغاً.' : 'Auto-generated from title if left empty.'}
@@ -214,16 +257,104 @@ export default function CreateCoursePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-content-secondary mb-1">
-                  {isAr ? 'رابط صورة الغلاف (Cover Image URL)' : 'Cover Image URL'}
-                </label>
-                <input
-                  type="url"
-                  value={coverImageUrl}
-                  onChange={(e) => setCoverImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
-                />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-content-secondary">
+                    {isAr ? 'صورة الغلاف (Cover Image)' : 'Cover Image'}
+                  </label>
+                  <span className="text-[11px] text-content-muted">
+                    {isAr ? 'رفع من الجهاز أو إدخال رابط' : 'Upload from device or URL'}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="url"
+                      value={coverImageUrl}
+                      onChange={(e) => {
+                        const normalized = normalizeImageUrl(e.target.value);
+                        setCoverImageUrl(normalized);
+                        setPreviewError(false);
+                      }}
+                      placeholder={isAr ? 'أدخل رابط الصورة https://... أو ارفع من جهازك' : 'https://... or upload from device'}
+                      className="w-full px-3.5 py-2.5 pe-8 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-primary transition-colors"
+                    />
+                    {coverImageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCoverImageUrl('');
+                          setPreviewError(false);
+                        }}
+                        className="absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-content-muted hover:text-content-primary hover:bg-surface transition-colors cursor-pointer"
+                        title={isAr ? 'مسح الرابط' : 'Clear'}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageFileSelect}
+                    accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                    className="hidden"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingImage}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary hover:text-primary transition-colors cursor-pointer shrink-0 shadow-2xs disabled:opacity-50"
+                    title={isAr ? 'رفع صورة من جهازك المحلي' : 'Upload image from local device'}
+                  >
+                    {isUploadingImage ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                        <span>{isAr ? 'جاري الرفع...' : 'Uploading...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 text-primary" />
+                        <span>{isAr ? 'رفع من الجهاز' : 'Upload Image'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {coverImageUrl && (
+                  <div className="mt-2.5 flex items-center gap-3 p-2.5 bg-surface-elevated/60 border border-border-subtle rounded-xl">
+                    <div className="relative w-16 h-10 rounded-lg overflow-hidden bg-slate-900 border border-border-subtle shrink-0 flex items-center justify-center">
+                      {!previewError ? (
+                        <img
+                          src={coverImageUrl}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                          onError={() => setPreviewError(true)}
+                        />
+                      ) : (
+                        <ImageIcon className="w-5 h-5 text-content-muted" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-xs font-semibold text-content-primary block truncate">
+                        {previewError
+                          ? (isAr ? 'تعذر تحميل الصورة من الرابط' : 'Failed to preview image')
+                          : (isAr ? 'معاينة الغلاف' : 'Cover image preview')}
+                      </span>
+                      <span className="text-[10px] text-content-muted font-mono block truncate" dir="ltr">
+                        {coverImageUrl}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <span className="text-[11px] text-content-muted mt-1.5 block">
+                  {isAr
+                    ? 'يمكنك رفع صورة مباشرة من جهازك (PNG, JPG, WebP) أو إدخال رابط صورة خارجي.'
+                    : 'You can upload an image from your device (PNG, JPG, WebP) or paste an external URL.'}
+                </span>
               </div>
             </div>
           </div>
@@ -249,7 +380,7 @@ export default function CreateCoursePage() {
                     required
                     value={priceDollars}
                     onChange={(e) => handlePriceChange(e.target.value)}
-                    className="w-full ps-9 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                    className="w-full ps-9 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                   />
                 </div>
               </div>
@@ -263,7 +394,7 @@ export default function CreateCoursePage() {
                   value={displayPriceLabel}
                   onChange={(e) => setDisplayPriceLabel(e.target.value)}
                   placeholder="13,000 د.ع"
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                 />
               </div>
 
@@ -279,7 +410,7 @@ export default function CreateCoursePage() {
                     required
                     value={promotionalTickets}
                     onChange={(e) => setPromotionalTickets(e.target.value)}
-                    className="w-full ps-10 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-amber-400 focus:outline-hidden focus:border-brand-gold transition-colors"
+                    className="w-full ps-10 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-amber-400 focus:outline-hidden focus:border-primary transition-colors"
                   />
                 </div>
               </div>
@@ -303,7 +434,7 @@ export default function CreateCoursePage() {
                   value={descAr}
                   onChange={(e) => setDescAr(e.target.value)}
                   placeholder="اكتب وصفاً جذاباً وتفصيلياً للدورة يوضح القيمة المهنية..."
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors leading-relaxed"
+                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary transition-colors leading-relaxed"
                 />
               </div>
 
@@ -317,7 +448,7 @@ export default function CreateCoursePage() {
                   value={descEn}
                   onChange={(e) => setDescEn(e.target.value)}
                   placeholder="Enter a compelling and detailed description of the course..."
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors leading-relaxed"
+                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary transition-colors leading-relaxed"
                 />
               </div>
             </div>
@@ -332,7 +463,7 @@ export default function CreateCoursePage() {
                   value={curriculumSummaryAr}
                   onChange={(e) => setCurriculumSummaryAr(e.target.value)}
                   placeholder="ملخص محتويات المنهج المتقدم..."
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                 />
               </div>
 
@@ -345,7 +476,7 @@ export default function CreateCoursePage() {
                   value={curriculumSummaryEn}
                   onChange={(e) => setCurriculumSummaryEn(e.target.value)}
                   placeholder="Overview of the modular curriculum..."
-                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                 />
               </div>
             </div>
@@ -355,7 +486,7 @@ export default function CreateCoursePage() {
           <div className="bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-brand-gold" />
+                <Sparkles className="w-5 h-5 text-primary" />
                 <h2 className="text-base font-bold text-content-primary">
                   {isAr ? 'ما ستتقنه في هذا المنهاج (مخرجات التدريب)' : 'What You Will Master (Learning Outcomes)'}
                 </h2>
@@ -363,7 +494,7 @@ export default function CreateCoursePage() {
               <button
                 type="button"
                 onClick={handleAddOutcome}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-brand-gold transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-primary transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{isAr ? 'إضافة مخرج جديد' : 'Add Outcome'}</span>
@@ -377,7 +508,7 @@ export default function CreateCoursePage() {
                   className="p-4 bg-surface-elevated/50 border border-border-subtle rounded-xl space-y-3 relative group"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-brand-gold">
+                    <span className="text-xs font-bold text-primary">
                       {isAr ? `المخرج #${idx + 1}` : `Outcome #${idx + 1}`}
                     </span>
                     {outcomes.length > 1 && (
@@ -397,14 +528,14 @@ export default function CreateCoursePage() {
                       value={outcome.title_ar}
                       onChange={(e) => handleOutcomeChange(idx, 'title_ar', e.target.value)}
                       placeholder={isAr ? 'عنوان المخرج (بالعربية)' : 'Outcome Title (Arabic)'}
-                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-primary"
                     />
                     <input
                       type="text"
                       value={outcome.title_en}
                       onChange={(e) => handleOutcomeChange(idx, 'title_en', e.target.value)}
                       placeholder={isAr ? 'عنوان المخرج (بالإنجليزية)' : 'Outcome Title (English)'}
-                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-primary"
                     />
                   </div>
 
@@ -414,14 +545,14 @@ export default function CreateCoursePage() {
                       value={outcome.desc_ar}
                       onChange={(e) => handleOutcomeChange(idx, 'desc_ar', e.target.value)}
                       placeholder={isAr ? 'تفاصيل المخرج والمهارات العملية (بالعربية)' : 'Outcome Details (Arabic)'}
-                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-primary"
                     />
                     <textarea
                       rows={2}
                       value={outcome.desc_en}
                       onChange={(e) => handleOutcomeChange(idx, 'desc_en', e.target.value)}
                       placeholder={isAr ? 'تفاصيل المخرج والمهارات العملية (بالإنجليزية)' : 'Outcome Details (English)'}
-                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-primary"
                     />
                   </div>
                 </div>
@@ -441,7 +572,7 @@ export default function CreateCoursePage() {
             <button
               type="submit"
               disabled={isCreating}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-gold text-brand-navy font-bold text-sm hover:bg-brand-gold-light transition-colors shadow-xs disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors shadow-xs disabled:opacity-50"
             >
               {isCreating ? (
                 <>

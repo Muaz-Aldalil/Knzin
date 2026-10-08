@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
@@ -33,7 +33,14 @@ import {
   Loader2,
   AlertTriangle,
   Info,
+  ImageIcon,
+  Upload,
+  X,
+  RotateCcw,
+  Archive,
 } from 'lucide-react';
+import { normalizeImageUrl } from '@/lib/image';
+import { uploadAdminImage } from '@/lib/api/media';
 
 export default function CourseDetailPage() {
   const locale = useLocale();
@@ -60,6 +67,8 @@ export default function CourseDetailPage() {
     isUpdatingPart,
     deletePart,
     isDeletingPart,
+    restorePart,
+    isRestoringPart,
     reorderParts,
     isReorderingParts,
   } = useAdminCourseDetail(id);
@@ -71,9 +80,47 @@ export default function CourseDetailPage() {
   const [titleEn, setTitleEn] = useState('');
   const [slug, setSlug] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [previewError, setPreviewError] = useState(false);
   const [priceDollars, setPriceDollars] = useState('10.00');
   const [promotionalTickets, setPromotionalTickets] = useState('15');
   const [displayPriceLabel, setDisplayPriceLabel] = useState('');
+
+  // Local image upload state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const handleImageFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showWarning(isAr ? 'يرجى اختيار ملف صورة صالح (PNG, JPG, WebP).' : 'Please select a valid image file (PNG, JPG, WebP).');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      showWarning(isAr ? 'حجم الصورة كبير جداً. الحد الأقصى هو 10 ميغابايت.' : 'Image file is too large. Max size is 10MB.');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const data = await uploadAdminImage(file, 'courses');
+      if (data?.url) {
+        setCoverImageUrl(data.url);
+        setPreviewError(false);
+        showSuccess(isAr ? 'تم رفع صورة الغلاف بنجاح.' : 'Cover image uploaded successfully.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      showError(err?.message || (isAr ? 'فشل رفع الصورة.' : 'Failed to upload image.'));
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   // Form states for Content & Curriculum Summary
   const [descAr, setDescAr] = useState('');
@@ -105,6 +152,7 @@ export default function CourseDetailPage() {
 
   // Delete part confirmation
   const [partToDelete, setPartToDelete] = useState<AdminCoursePart | null>(null);
+  const [forceDeletePart, setForceDeletePart] = useState(false);
 
   // Sync state when course is loaded
   useEffect(() => {
@@ -314,22 +362,51 @@ export default function CourseDetailPage() {
     const orderedIds = parts.map((p) => p.id);
     try {
       await reorderParts(orderedIds);
+      showSuccess(isAr ? 'تم حفظ الترتيب الجديد للأجزاء بنجاح.' : 'Parts reordered successfully.');
     } catch (err) {
       console.error(err);
       showError(isAr ? 'فشل إعادة ترتيب الأجزاء.' : 'Failed to reorder parts.');
     }
   };
 
+  const handleToggleCourseStatus = async () => {
+    try {
+      const res = await toggleStatus();
+      const newStatus = res?.is_active ?? !course?.is_active;
+      showSuccess(
+        newStatus
+          ? (isAr ? 'تم تفعيل الدورة التدريبية ونشرها بنجاح.' : 'Course activated and published successfully.')
+          : (isAr ? 'تم إيقاف الدورة مؤقتاً ونقلها للأرشيف.' : 'Course paused and moved to archive.')
+      );
+    } catch (err: any) {
+      console.error(err);
+      showError(err?.message || (isAr ? 'فشل تغيير حالة الدورة.' : 'Failed to toggle course status.'));
+    }
+  };
+
   const handleDeletePart = async () => {
     if (!partToDelete) return;
     try {
-      const res = await deletePart(partToDelete.id);
-      showSuccess(res.message || (isAr ? 'تمت معالجة حذف / أرشفة الجزء بأمان.' : 'Part safely deleted/archived.'));
+      const shouldForce = forceDeletePart || !partToDelete.is_active;
+      const res = await deletePart({ partId: partToDelete.id, force: shouldForce });
+      showSuccess(res.message || (isAr ? 'تمت معالجة حذف / أرشفة الجزء بنجاح.' : 'Part successfully processed.'));
       setPartToDelete(null);
+      setForceDeletePart(false);
       refetch();
     } catch (err: any) {
       console.error(err);
       showError(err?.message || (isAr ? 'فشل حذف الجزء.' : 'Failed to delete part.'));
+    }
+  };
+
+  const handleRestorePart = async (part: AdminCoursePart) => {
+    try {
+      await restorePart(part.id);
+      showSuccess(isAr ? 'تمت استعادة وتفعيل الجزء التدريبي بنجاح.' : 'Training part restored and activated.');
+      refetch();
+    } catch (err: any) {
+      console.error(err);
+      showError(err?.message || (isAr ? 'فشل استعادة الجزء.' : 'Failed to restore part.'));
     }
   };
 
@@ -349,7 +426,7 @@ export default function CourseDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex items-center gap-3 text-brand-gold">
+        <div className="flex items-center gap-3 text-primary">
           <Loader2 className="w-6 h-6 animate-spin" />
           <span className="text-sm font-semibold">{isAr ? 'جاري تحميل الدورة...' : 'Loading course...'}</span>
         </div>
@@ -410,7 +487,7 @@ export default function CourseDetailPage() {
                 <Link
                   href={`/${locale}/courses/${course.slug}`}
                   target="_blank"
-                  className="inline-flex items-center gap-1 text-brand-gold hover:underline"
+                  className="inline-flex items-center gap-1 text-primary hover:underline"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>{isAr ? 'معاينة في الموقع' : 'Public Catalog Preview'}</span>
@@ -422,7 +499,7 @@ export default function CourseDetailPage() {
           {/* Quick Header Actions */}
           <div className="flex items-center gap-2">
             <button
-              onClick={() => toggleStatus()}
+              onClick={handleToggleCourseStatus}
               disabled={isTogglingStatus}
               className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-colors flex items-center gap-1.5 ${
                 course.is_active
@@ -438,10 +515,11 @@ export default function CourseDetailPage() {
 
             <button
               onClick={() => setIsDeleteCourseOpen(true)}
-              className="p-2 rounded-xl bg-surface-elevated hover:bg-rose-500/10 border border-border-subtle text-content-muted hover:text-rose-400 transition-colors"
-              title={isAr ? 'أرشفة أو حذف الدورة' : 'Archive or Delete'}
+              className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              title={isAr ? 'أرشفة أو حذف الدورة كاملة' : 'Archive or Delete Entire Course'}
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>{isAr ? 'حذف / أرشفة الدورة' : 'Delete / Archive'}</span>
             </button>
           </div>
         </div>
@@ -467,7 +545,7 @@ export default function CourseDetailPage() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition-all shrink-0 ${
                   isActive
-                    ? 'bg-brand-gold text-brand-navy shadow-xs'
+                    ? 'bg-primary text-white shadow-xs'
                     : 'text-content-secondary hover:text-content-primary hover:bg-surface-elevated/50'
                 }`}
               >
@@ -480,11 +558,12 @@ export default function CourseDetailPage() {
 
         {/* TAB 1: General Info & Pricing */}
         {activeTab === 'general' && (
-          <form onSubmit={handleSaveGeneral} className="space-y-6">
-            <div className="bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-xs space-y-4">
-              <h2 className="text-base font-bold text-content-primary pb-2 border-b border-border-subtle">
-                {isAr ? 'بيانات الدورة الأساسية' : 'Course Details'}
-              </h2>
+          <div className="space-y-8">
+            <form onSubmit={handleSaveGeneral} className="space-y-6">
+              <div className="bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-xs space-y-4">
+                <h2 className="text-base font-bold text-content-primary pb-2 border-b border-border-subtle">
+                  {isAr ? 'بيانات الدورة الأساسية' : 'Course Details'}
+                </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -496,7 +575,7 @@ export default function CourseDetailPage() {
                     required
                     value={titleAr}
                     onChange={(e) => setTitleAr(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                   />
                 </div>
 
@@ -509,7 +588,7 @@ export default function CourseDetailPage() {
                     required
                     value={titleEn}
                     onChange={(e) => setTitleEn(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                   />
                 </div>
               </div>
@@ -523,20 +602,109 @@ export default function CourseDetailPage() {
                     type="text"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
+                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-primary transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-content-secondary mb-1">
-                    {isAr ? 'رابط صورة الغلاف' : 'Cover Image URL'}
-                  </label>
-                  <input
-                    type="url"
-                    value={coverImageUrl}
-                    onChange={(e) => setCoverImageUrl(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-brand-gold transition-colors"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-content-secondary">
+                      {isAr ? 'صورة الغلاف (Cover Image)' : 'Cover Image'}
+                    </label>
+                    <span className="text-[11px] text-content-muted">
+                      {isAr ? 'رفع من الجهاز أو إدخال رابط' : 'Upload from device or URL'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="url"
+                        value={coverImageUrl}
+                        onChange={(e) => {
+                          const normalized = normalizeImageUrl(e.target.value);
+                          setCoverImageUrl(normalized);
+                          setPreviewError(false);
+                        }}
+                        placeholder={isAr ? 'أدخل رابط الصورة https://... أو ارفع من جهازك' : 'https://... or upload from device'}
+                        className="w-full px-3.5 py-2.5 pe-8 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-primary transition-colors"
+                      />
+                      {coverImageUrl && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCoverImageUrl('');
+                            setPreviewError(false);
+                          }}
+                          className="absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-content-muted hover:text-content-primary hover:bg-surface transition-colors cursor-pointer"
+                          title={isAr ? 'مسح الرابط' : 'Clear'}
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageFileSelect}
+                      accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                      className="hidden"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploadingImage}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary hover:text-primary transition-colors cursor-pointer shrink-0 shadow-2xs disabled:opacity-50"
+                      title={isAr ? 'رفع صورة من جهازك المحلي' : 'Upload image from local device'}
+                    >
+                      {isUploadingImage ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                          <span>{isAr ? 'جاري الرفع...' : 'Uploading...'}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 text-primary" />
+                          <span>{isAr ? 'رفع من الجهاز' : 'Upload Image'}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {coverImageUrl && (
+                    <div className="mt-2.5 flex items-center gap-3 p-2.5 bg-surface-elevated/60 border border-border-subtle rounded-xl">
+                      <div className="relative w-16 h-10 rounded-lg overflow-hidden bg-slate-900 border border-border-subtle shrink-0 flex items-center justify-center">
+                        {!previewError ? (
+                          <img
+                            src={coverImageUrl}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            onError={() => setPreviewError(true)}
+                          />
+                        ) : (
+                          <ImageIcon className="w-5 h-5 text-content-muted" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-xs font-semibold text-content-primary block truncate">
+                          {previewError
+                            ? (isAr ? 'تعذر تحميل الصورة من الرابط' : 'Failed to preview image')
+                            : (isAr ? 'معاينة الغلاف' : 'Cover image preview')}
+                        </span>
+                        <span className="text-[10px] text-content-muted font-mono block truncate" dir="ltr">
+                          {coverImageUrl}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <span className="text-[11px] text-content-muted mt-1.5 block">
+                    {isAr
+                      ? 'يمكنك رفع صورة مباشرة من جهازك (PNG, JPG, WebP) أو إدخال رابط صورة خارجي.'
+                      : 'You can upload an image from your device (PNG, JPG, WebP) or paste an external URL.'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -561,7 +729,7 @@ export default function CourseDetailPage() {
                       required
                       value={priceDollars}
                       onChange={(e) => handlePriceChange(e.target.value)}
-                      className="w-full ps-9 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full ps-9 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-primary"
                     />
                   </div>
                 </div>
@@ -574,7 +742,7 @@ export default function CourseDetailPage() {
                     type="text"
                     value={displayPriceLabel}
                     onChange={(e) => setDisplayPriceLabel(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-brand-gold"
+                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-primary"
                   />
                 </div>
 
@@ -590,7 +758,7 @@ export default function CourseDetailPage() {
                       required
                       value={promotionalTickets}
                       onChange={(e) => setPromotionalTickets(e.target.value)}
-                      className="w-full ps-10 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-amber-400 focus:outline-hidden focus:border-brand-gold"
+                      className="w-full ps-10 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-amber-400 focus:outline-hidden focus:border-primary"
                     />
                   </div>
                 </div>
@@ -601,13 +769,39 @@ export default function CourseDetailPage() {
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-gold text-brand-navy font-bold text-sm hover:bg-brand-gold-light transition-colors shadow-xs disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors shadow-xs disabled:opacity-50"
               >
                 {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>{isAr ? 'حفظ التعديلات' : 'Save Changes'}</span>
               </button>
             </div>
           </form>
+
+          {/* Danger Zone */}
+          <div className="bg-rose-500/5 border border-rose-500/20 rounded-2xl p-6 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h3 className="text-sm font-bold text-rose-400 flex items-center gap-2">
+                  <Trash2 className="w-4 h-4" />
+                  <span>{isAr ? 'منطقة الخطر: حذف أو أرشفة الدورة كاملة' : 'Danger Zone: Delete or Archive Course'}</span>
+                </h3>
+                <p className="text-xs text-content-muted leading-relaxed max-w-xl">
+                  {isAr
+                    ? 'إذا لم يكن هناك طلاب مشتركون أو طلبات سابقة، فسيتم حذف الدورة وجميع دروسها نهائياً. وإذا كان هناك طلاب مشتركون، فسيتم أرشفة الدورة وتعطيلها بأمان لحماية سجلات إنجازات الطلاب.'
+                    : 'Permanently deletes this course and its draft lessons if no students are enrolled. If active student enrollments exist, it is safely deactivated and archived.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsDeleteCourseOpen(true)}
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors shrink-0 shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>{isAr ? 'حذف هذه الدورة بالكامل' : 'Delete Entire Course'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
         )}
 
         {/* TAB 2: Description & Curriculum Overview */}
@@ -628,7 +822,7 @@ export default function CourseDetailPage() {
                     required
                     value={descAr}
                     onChange={(e) => setDescAr(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold leading-relaxed"
+                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary leading-relaxed"
                   />
                 </div>
 
@@ -641,7 +835,7 @@ export default function CourseDetailPage() {
                     required
                     value={descEn}
                     onChange={(e) => setDescEn(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold leading-relaxed"
+                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary leading-relaxed"
                   />
                 </div>
               </div>
@@ -662,7 +856,7 @@ export default function CourseDetailPage() {
                     value={curriculumSummaryAr}
                     onChange={(e) => setCurriculumSummaryAr(e.target.value)}
                     placeholder="مقدمة ومحاور المنهاج التفصيلي..."
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold leading-relaxed"
+                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary leading-relaxed"
                   />
                 </div>
 
@@ -675,7 +869,7 @@ export default function CourseDetailPage() {
                     value={curriculumSummaryEn}
                     onChange={(e) => setCurriculumSummaryEn(e.target.value)}
                     placeholder="Curriculum syllabus overview..."
-                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold leading-relaxed"
+                    className="w-full px-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary leading-relaxed"
                   />
                 </div>
               </div>
@@ -685,7 +879,7 @@ export default function CourseDetailPage() {
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-gold text-brand-navy font-bold text-sm hover:bg-brand-gold-light transition-colors shadow-xs disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors shadow-xs disabled:opacity-50"
               >
                 {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>{isAr ? 'حفظ المحتوى' : 'Save Content'}</span>
@@ -700,7 +894,7 @@ export default function CourseDetailPage() {
             <div className="bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-brand-gold" />
+                  <Sparkles className="w-5 h-5 text-primary" />
                   <div>
                     <h2 className="text-base font-bold text-content-primary">
                       {isAr ? 'ما ستتقنه في هذا المنهاج' : 'What You Will Master in This Curriculum'}
@@ -716,7 +910,7 @@ export default function CourseDetailPage() {
                 <button
                   type="button"
                   onClick={handleAddOutcome}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-brand-gold transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-primary transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>{isAr ? 'إضافة مخرج' : 'Add Outcome'}</span>
@@ -730,7 +924,7 @@ export default function CourseDetailPage() {
                     className="p-4 bg-surface-elevated/50 border border-border-subtle rounded-xl space-y-3 relative group"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-brand-gold">
+                      <span className="text-xs font-bold text-primary">
                         {isAr ? `المخرج المهني #${idx + 1}` : `Learning Outcome #${idx + 1}`}
                       </span>
                       {outcomes.length > 1 && (
@@ -754,7 +948,7 @@ export default function CourseDetailPage() {
                           type="text"
                           value={outcome.title_ar}
                           onChange={(e) => handleOutcomeChange(idx, 'title_ar', e.target.value)}
-                          className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-brand-gold"
+                          className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-primary"
                         />
                       </div>
 
@@ -766,7 +960,7 @@ export default function CourseDetailPage() {
                           type="text"
                           value={outcome.title_en}
                           onChange={(e) => handleOutcomeChange(idx, 'title_en', e.target.value)}
-                          className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-brand-gold"
+                          className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-primary"
                         />
                       </div>
                     </div>
@@ -780,7 +974,7 @@ export default function CourseDetailPage() {
                           rows={2}
                           value={outcome.desc_ar}
                           onChange={(e) => handleOutcomeChange(idx, 'desc_ar', e.target.value)}
-                          className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-brand-gold"
+                          className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-primary"
                         />
                       </div>
 
@@ -792,7 +986,7 @@ export default function CourseDetailPage() {
                           rows={2}
                           value={outcome.desc_en}
                           onChange={(e) => handleOutcomeChange(idx, 'desc_en', e.target.value)}
-                          className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-brand-gold"
+                          className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs text-content-primary focus:outline-hidden focus:border-primary"
                         />
                       </div>
                     </div>
@@ -806,7 +1000,7 @@ export default function CourseDetailPage() {
                 type="button"
                 onClick={handleSaveOutcomes}
                 disabled={isUpdating}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-gold text-brand-navy font-bold text-sm hover:bg-brand-gold-light transition-colors shadow-xs disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors shadow-xs disabled:opacity-50"
               >
                 {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>{isAr ? 'حفظ مخرجات المنهاج' : 'Save Learning Outcomes'}</span>
@@ -821,10 +1015,33 @@ export default function CourseDetailPage() {
             <div className="bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-xs space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border-subtle">
                 <div>
-                  <h2 className="text-base font-bold text-content-primary flex items-center gap-2">
-                    <Layers className="w-5 h-5 text-brand-gold" />
-                    <span>{isAr ? 'الأجزاء والدروس التدريبية' : 'Modular Course Parts & Lessons'}</span>
-                  </h2>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h2 className="text-base font-bold text-content-primary flex items-center gap-2">
+                      <Layers className="w-5 h-5 text-primary" />
+                      <span>{isAr ? 'الأجزاء والدروس التدريبية' : 'Modular Course Parts & Lessons'}</span>
+                    </h2>
+                    {course.parts && course.parts.length > 0 && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-elevated border border-border-subtle text-content-secondary">
+                        <span>{isAr ? `إجمالي الأجزاء: ${course.parts.length}` : `Total: ${course.parts.length}`}</span>
+                        <span>•</span>
+                        <span className="text-emerald-400 font-bold">
+                          {isAr
+                            ? `النشطة: ${course.parts.filter((p) => p.is_active).length}`
+                            : `Active: ${course.parts.filter((p) => p.is_active).length}`}
+                        </span>
+                        {course.parts.filter((p) => !p.is_active).length > 0 && (
+                          <>
+                            <span>•</span>
+                            <span className="text-amber-400 font-bold">
+                              {isAr
+                                ? `المؤرشفة: ${course.parts.filter((p) => !p.is_active).length}`
+                                : `Archived: ${course.parts.filter((p) => !p.is_active).length}`}
+                            </span>
+                          </>
+                        )}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-content-muted mt-0.5">
                     {isAr
                       ? 'يمكنك هنا إضافة الدروس، إدارة روابط الفيديو و ملفات الـ PDF، وضبط نموذج الوصول (معاينة مجانية مقابل اشتراك).'
@@ -835,7 +1052,7 @@ export default function CourseDetailPage() {
                 <button
                   type="button"
                   onClick={handleOpenAddPart}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-gold text-brand-navy font-bold text-xs hover:bg-brand-gold-light transition-colors shadow-xs shrink-0"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary-hover transition-colors shadow-xs shrink-0"
                 >
                   <Plus className="w-4 h-4" />
                   <span>{isAr ? 'إضافة جزء تدريبي جديد' : 'Add New Part'}</span>
@@ -851,7 +1068,7 @@ export default function CourseDetailPage() {
                   </p>
                   <button
                     onClick={handleOpenAddPart}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-gold text-brand-navy font-bold text-xs"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>{isAr ? 'إضافة الجزء الأول الآن' : 'Add First Part Now'}</span>
@@ -862,24 +1079,35 @@ export default function CourseDetailPage() {
                   {course.parts.map((part, index) => {
                     const isFirst = index === 0;
                     const isLast = index === course.parts!.length - 1;
+                    const isArchived = !part.is_active;
 
                     return (
                       <div
                         key={part.id}
-                        className="p-4 bg-surface-elevated/40 border border-border-subtle rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-brand-gold/30 transition-colors"
+                        className={`p-4 border rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all ${
+                          isArchived
+                            ? 'bg-amber-500/5 border-amber-500/30 opacity-90 hover:opacity-100'
+                            : 'bg-surface-elevated/40 border-border-subtle hover:border-primary/30'
+                        }`}
                       >
                         {/* Left Info */}
                         <div className="flex items-start gap-3.5 flex-1 min-w-0">
                           {/* Part order badge & buttons */}
                           <div className="flex flex-col items-center gap-1">
-                            <span className="w-7 h-7 rounded-xl bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-black flex items-center justify-center shrink-0">
+                            <span
+                              className={`w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center shrink-0 border ${
+                                isArchived
+                                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                                  : 'bg-primary/10 border-primary/20 text-primary'
+                              }`}
+                            >
                               {part.part_number}
                             </span>
                             <div className="flex flex-col -space-y-1">
                               <button
                                 disabled={isFirst || isReorderingParts}
                                 onClick={() => handleMovePart(index, 'up')}
-                                className="p-0.5 text-content-muted hover:text-brand-gold disabled:opacity-20"
+                                className="p-0.5 text-content-muted hover:text-primary disabled:opacity-20"
                                 title={isAr ? 'تحريك للأعلى' : 'Move Up'}
                               >
                                 <ChevronUp className="w-3.5 h-3.5" />
@@ -887,7 +1115,7 @@ export default function CourseDetailPage() {
                               <button
                                 disabled={isLast || isReorderingParts}
                                 onClick={() => handleMovePart(index, 'down')}
-                                className="p-0.5 text-content-muted hover:text-brand-gold disabled:opacity-20"
+                                className="p-0.5 text-content-muted hover:text-primary disabled:opacity-20"
                                 title={isAr ? 'تحريك للأسفل' : 'Move Down'}
                               >
                                 <ChevronDown className="w-3.5 h-3.5" />
@@ -897,15 +1125,20 @@ export default function CourseDetailPage() {
 
                           <div className="space-y-1 flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              {/* Free vs Subscription badge */}
-                              {part.is_free ? (
+                              {/* Status badge: Archived vs Active */}
+                              {isArchived ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                                  <Archive className="w-3 h-3" />
+                                  <span>{isAr ? 'معطل ومؤرشف' : 'Archived / Inactive'}</span>
+                                </span>
+                              ) : part.is_free ? (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                   <PlayCircle className="w-3 h-3" />
                                   <span>{isAr ? 'معاينة مجانية' : 'Free Preview'}</span>
                                 </span>
                               ) : (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-brand-navy/60 text-content-secondary border border-border-subtle">
-                                  <Lock className="w-3 h-3 text-brand-gold" />
+                                  <Lock className="w-3 h-3 text-primary" />
                                   <span>{isAr ? 'يتطلب اشتراكاً' : 'Subscription Required'}</span>
                                 </span>
                               )}
@@ -924,7 +1157,13 @@ export default function CourseDetailPage() {
                               )}
                             </div>
 
-                            <h3 className="text-sm sm:text-base font-bold text-content-primary leading-snug">
+                            <h3
+                              className={`text-sm sm:text-base font-bold leading-snug ${
+                                isArchived
+                                  ? 'text-content-secondary line-through decoration-amber-500/40'
+                                  : 'text-content-primary'
+                              }`}
+                            >
                               {isAr ? part.title_ar : part.title_en}
                             </h3>
 
@@ -959,21 +1198,56 @@ export default function CourseDetailPage() {
 
                         {/* Right: Actions */}
                         <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
-                          <button
-                            onClick={() => handleOpenEditPart(part)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-brand-gold transition-colors"
-                          >
-                            <Edit className="w-3.5 h-3.5" />
-                            <span>{isAr ? 'تعديل والوسائط' : 'Edit & Media'}</span>
-                          </button>
+                          {isArchived ? (
+                            <>
+                              <button
+                                onClick={() => handleRestorePart(part)}
+                                disabled={isRestoringPart}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-bold text-emerald-400 transition-colors disabled:opacity-50"
+                                title={isAr ? 'استعادة وتفعيل هذا الجزء' : 'Restore & Activate Part'}
+                              >
+                                {isRestoringPart ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                  <RotateCcw className="w-3.5 h-3.5" />
+                                )}
+                                <span>{isAr ? 'استعادة وتفعيل' : 'Restore'}</span>
+                              </button>
 
-                          <button
-                            onClick={() => setPartToDelete(part)}
-                            className="p-1.5 rounded-xl bg-surface-elevated hover:bg-rose-500/10 border border-border-subtle text-content-muted hover:text-rose-400 transition-colors"
-                            title={isAr ? 'حذف أو أرشفة الجزء' : 'Delete/Archive Part'}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                              <button
+                                onClick={() => {
+                                  setForceDeletePart(true);
+                                  setPartToDelete(part);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-xs font-bold text-rose-400 transition-colors"
+                                title={isAr ? 'حذف نهائي من قاعدة البيانات' : 'Permanently Delete Part'}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>{isAr ? 'حذف نهائي' : 'Delete Permanently'}</span>
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => handleOpenEditPart(part)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-primary transition-colors"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                                <span>{isAr ? 'تعديل والوسائط' : 'Edit & Media'}</span>
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  setForceDeletePart(false);
+                                  setPartToDelete(part);
+                                }}
+                                className="p-1.5 rounded-xl bg-surface-elevated hover:bg-rose-500/10 border border-border-subtle text-content-muted hover:text-rose-400 transition-colors"
+                                title={isAr ? 'حذف أو أرشفة الجزء' : 'Delete/Archive Part'}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     );
@@ -990,7 +1264,7 @@ export default function CourseDetailPage() {
             <div className="bg-surface-card border border-border-subtle rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 my-8 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
                 <h3 className="text-base font-bold text-content-primary flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-brand-gold" />
+                  <Layers className="w-5 h-5 text-primary" />
                   <span>
                     {editingPart
                       ? isAr
@@ -1022,7 +1296,7 @@ export default function CourseDetailPage() {
                       value={partTitleAr}
                       onChange={(e) => setPartTitleAr(e.target.value)}
                       placeholder="مثال: الجزء الأول: تشخيص عيوب الطلاء"
-                      className="w-full px-3 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary"
                     />
                   </div>
 
@@ -1035,7 +1309,7 @@ export default function CourseDetailPage() {
                       value={partTitleEn}
                       onChange={(e) => setPartTitleEn(e.target.value)}
                       placeholder="e.g. Part 1: Paint Defect Diagnostics"
-                      className="w-full px-3 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary"
                     />
                   </div>
                 </div>
@@ -1051,7 +1325,7 @@ export default function CourseDetailPage() {
                       min="1"
                       value={partDuration}
                       onChange={(e) => setPartDuration(e.target.value)}
-                      className="w-full px-3 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary focus:outline-hidden focus:border-primary"
                     />
                   </div>
 
@@ -1119,7 +1393,7 @@ export default function CourseDetailPage() {
                 {/* Video Resource */}
                 <div className="p-4 bg-surface-elevated/30 border border-border-subtle rounded-xl space-y-3">
                   <div className="flex items-center gap-2 text-xs font-bold text-content-primary">
-                    <Video className="w-4 h-4 text-brand-gold" />
+                    <Video className="w-4 h-4 text-primary" />
                     <span>{isAr ? 'إدارة الفيديو والتشغيل المحمي' : 'Video Resource Management'}</span>
                   </div>
 
@@ -1132,7 +1406,7 @@ export default function CourseDetailPage() {
                       value={partVideoUrl}
                       onChange={(e) => setPartVideoUrl(e.target.value)}
                       placeholder="https://... أو مسار التخزين الداخلي"
-                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs font-mono text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs font-mono text-content-primary focus:outline-hidden focus:border-primary"
                     />
                     <span className="text-[10px] text-content-muted mt-1 block">
                       {isAr
@@ -1185,7 +1459,7 @@ export default function CourseDetailPage() {
                       value={partPdfUrl}
                       onChange={(e) => setPartPdfUrl(e.target.value)}
                       placeholder="https://... أو مسار التخزين"
-                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs font-mono text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs font-mono text-content-primary focus:outline-hidden focus:border-primary"
                     />
                   </div>
                 </div>
@@ -1203,7 +1477,7 @@ export default function CourseDetailPage() {
                   <button
                     type="submit"
                     disabled={isCreatingPart || isUpdatingPart}
-                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-brand-gold text-brand-navy font-bold text-xs hover:bg-brand-gold-light transition-colors shadow-xs disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary-hover transition-colors shadow-xs disabled:opacity-50"
                   >
                     {(isCreatingPart || isUpdatingPart) ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1221,13 +1495,13 @@ export default function CourseDetailPage() {
         {/* Delete Course Confirm Dialog */}
         <ConfirmDialog
           isOpen={isDeleteCourseOpen}
-          title={isAr ? 'أرشفة أو حذف الدورة' : 'Archive or Delete Course'}
+          title={isAr ? 'حذف أو أرشفة الدورة التدريبية بالكامل' : 'Delete or Archive Entire Course'}
           description={
             isAr
-              ? `هل أنت متأكد من حذف الدورة "${course.title_ar}"؟ إذا كان هناك طلاب مشتركون أو سجلات شراء سابقة، فسيتم إلغاء تفعيل الدورة وأرشفتها لحماية تقدم الطلاب ومنع فقدان البيانات.`
-              : `Are you sure you want to delete "${course.title_en}"? If active student enrollments exist, it will be safely deactivated and archived.`
+              ? `هل أنت متأكد من رغبتك في حذف الدورة كاملة "${course.title_ar}"؟ إذا لم يكن هناك طلاب مشتركون أو طلبات سابقة، فسيتم حذف الدورة وجميع دروسها نهائياً من قاعدة البيانات. وإذا كان هناك طلاب مشتركون، فسيتم إلغاء تفعيلها وأرشفتها بأمان لحماية سجلات الطلاب.`
+              : `Are you sure you want to delete the entire course "${course.title_en}"? If no student enrollments exist, this course and all its lessons will be permanently deleted. If students are enrolled, it will be safely deactivated and archived.`
           }
-          confirmText={isAr ? 'تأكيد الحذف / الأرشفة' : 'Confirm Archive / Delete'}
+          confirmText={isAr ? 'تأكيد حذف الدورة كاملة' : 'Confirm Delete Course'}
           cancelText={isAr ? 'إلغاء' : 'Cancel'}
           isDestructive={true}
           isLoading={isDeleting}
@@ -1238,19 +1512,63 @@ export default function CourseDetailPage() {
         {/* Delete Part Confirm Dialog */}
         <ConfirmDialog
           isOpen={!!partToDelete}
-          title={isAr ? 'حذف أو تعطيل الجزء التدريبي' : 'Archive or Remove Training Part'}
-          description={
-            isAr
-              ? `هل أنت متأكد من حذف "${partToDelete?.title_ar}"؟ إذا كان هناك طلاب بدأوا دراسة هذا الجزء، فسيتم إيقافه وأرشفته بأمان لحماية سجلات إنجازات الطلاب.`
-              : `Are you sure you want to remove "${partToDelete?.title_en}"? If student progress exists, it will be deactivated and archived.`
+          title={
+            !partToDelete?.is_active || forceDeletePart
+              ? isAr
+                ? 'حذف الجزء التدريبي نهائياً من قاعدة البيانات'
+                : 'Permanently Delete Training Part'
+              : isAr
+              ? 'حذف أو أرشفة الجزء التدريبي'
+              : 'Delete or Archive Training Part'
           }
-          confirmText={isAr ? 'تأكيد الحذف / الأرشفة' : 'Confirm'}
+          description={
+            !partToDelete?.is_active || forceDeletePart
+              ? isAr
+                ? `تنبيه: أنت على وشك حذف الجزء التدريبي "${partToDelete?.title_ar}" نهائياً من قاعدة البيانات. سيتم مسح هذا الجزء وجميع موارده، ولا يمكن التراجع عن هذا الإجراء.`
+                : `Warning: You are about to permanently delete "${partToDelete?.title_en}" from the database. This part and all its resources will be removed and cannot be undone.`
+              : isAr
+              ? `هل تريد حذف الجزء التدريبي "${partToDelete?.title_ar}"؟ إذا لم يكن هناك طلاب مشتركون أو تقدم مسجل، فسيتم حذفه نهائياً من قاعدة البيانات. وإذا كان هناك طلاب مشتركون، فسيتم إلغاء تفعيله وأرشفته بأمان لحماية مسار الطلاب.`
+              : `Are you sure you want to delete the training part "${partToDelete?.title_en}"? If no students are enrolled, it will be permanently deleted. If students are enrolled, it will be safely deactivated and archived.`
+          }
+          confirmText={
+            !partToDelete?.is_active || forceDeletePart
+              ? isAr
+                ? 'تأكيد الحذف النهائي'
+                : 'Confirm Permanent Deletion'
+              : isAr
+              ? 'تأكيد حذف / أرشفة الجزء'
+              : 'Confirm Delete / Archive'
+          }
           cancelText={isAr ? 'إلغاء' : 'Cancel'}
           isDestructive={true}
           isLoading={isDeletingPart}
           onConfirm={handleDeletePart}
-          onClose={() => setPartToDelete(null)}
-        />
+          onClose={() => {
+            setPartToDelete(null);
+            setForceDeletePart(false);
+          }}
+        >
+          {partToDelete?.is_active && (
+            <label className="flex items-start gap-2.5 p-3 rounded-xl bg-surface-elevated/70 border border-border-subtle cursor-pointer text-xs text-content-primary hover:border-primary/40 transition-colors mt-2">
+              <input
+                type="checkbox"
+                checked={forceDeletePart}
+                onChange={(e) => setForceDeletePart(e.target.checked)}
+                className="rounded text-primary focus:ring-primary w-4 h-4 mt-0.5"
+              />
+              <div>
+                <span className="font-bold text-rose-400 block">
+                  {isAr ? 'فرض الحذف النهائي (تجاوز الأرشفة)' : 'Force Permanent Deletion (Skip Archive)'}
+                </span>
+                <p className="text-[11px] text-content-muted mt-0.5 leading-relaxed">
+                  {isAr
+                    ? 'مسح الجزء مباشرة وكلياً من قاعدة البيانات دون الاكتفاء بأرشفته وتعطيله.'
+                    : 'Purge directly from database instead of soft deactivating and archiving.'}
+                </p>
+              </div>
+            </label>
+          )}
+        </ConfirmDialog>
       </div>
     </AdminGuard>
   );

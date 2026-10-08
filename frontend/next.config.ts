@@ -33,27 +33,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.r2.cloudflarestorage.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.knzin.com',
+        hostname: '**',
       },
       {
         protocol: 'http',
-        hostname: 'localhost',
-      },
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1',
+        hostname: '**',
       },
     ],
   },
@@ -67,6 +51,10 @@ const nextConfig: NextConfig = {
       {
         source: '/api/v1/:path*',
         destination: `${cleanBase}/api/v1/:path*`,
+      },
+      {
+        source: '/storage/:path*',
+        destination: `${cleanBase}/storage/:path*`,
       },
     ];
   },

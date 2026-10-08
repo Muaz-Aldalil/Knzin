@@ -28,7 +28,7 @@ import {
 export default function AdminCoursesPage() {
   const locale = useLocale();
   const isAr = locale === 'ar';
-  const { showError } = useAdminFeedback();
+  const { showError, showSuccess } = useAdminFeedback();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -53,10 +53,11 @@ export default function AdminCoursesPage() {
     if (!courseToDelete) return;
     setIsDeleting(true);
     try {
-      await apiClient<{ action_taken: string; message: string }>(`/admin/courses/${courseToDelete.id}`, {
+      const res = await apiClient<{ action_taken: string; message: string }>(`/admin/courses/${courseToDelete.id}`, {
         method: 'DELETE',
       });
       setCourseToDelete(null);
+      showSuccess(res?.message || (isAr ? 'تمت معالجة حذف أو أرشفة الدورة بنجاح.' : 'Course successfully processed.'));
       refetch();
     } catch (err: any) {
       console.error(err);
@@ -71,6 +72,7 @@ export default function AdminCoursesPage() {
       await apiClient(`/admin/courses/${courseId}/toggle-status`, {
         method: 'POST',
       });
+      showSuccess(isAr ? 'تم تغيير حالة تفعيل الدورة بنجاح.' : 'Course activation status updated successfully.');
       refetch();
     } catch (err: any) {
       console.error(err);
@@ -88,14 +90,14 @@ export default function AdminCoursesPage() {
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               href={`/${locale}/admin/courses/${item.id}`}
-              className="font-bold text-content-primary hover:text-brand-gold text-sm transition-colors leading-snug line-clamp-2"
+              className="font-bold text-content-primary hover:text-primary text-sm transition-colors leading-snug line-clamp-2"
             >
               {isAr ? item.title_ar : item.title_en}
             </Link>
             <Link
               href={`/${locale}/courses/${item.slug}`}
               target="_blank"
-              className="p-1 rounded-md text-content-muted hover:text-brand-gold hover:bg-surface-elevated transition-colors shrink-0"
+              className="p-1 rounded-md text-content-muted hover:text-primary hover:bg-surface-elevated transition-colors shrink-0"
               title={isAr ? 'عرض في الموقع العام' : 'View in public catalog'}
             >
               <ExternalLink className="w-3.5 h-3.5" />
@@ -150,7 +152,7 @@ export default function AdminCoursesPage() {
         return (
           <div className="flex flex-col gap-1.5 whitespace-nowrap py-0.5">
             <div className="flex items-center gap-1.5 text-xs font-bold text-content-primary">
-              <Layers className="w-3.5 h-3.5 text-brand-gold shrink-0" />
+              <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
               <span>
                 {count} {isAr ? 'أجزاء تدريبية' : 'Parts'}
               </span>
@@ -207,10 +209,10 @@ export default function AdminCoursesPage() {
         <div className="flex items-center gap-2 whitespace-nowrap justify-end">
           <Link
             href={`/${locale}/admin/courses/${item.id}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary hover:text-brand-gold transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary hover:text-primary transition-colors shadow-2xs"
             data-testid={`manage-course-${item.id}`}
           >
-            <Edit3 className="w-3.5 h-3.5 text-brand-gold shrink-0" />
+            <Edit3 className="w-3.5 h-3.5 text-primary shrink-0" />
             <span>{isAr ? 'إدارة المنهاج' : 'Manage'}</span>
           </Link>
           <button
@@ -242,7 +244,7 @@ export default function AdminCoursesPage() {
               <Link
                 href={`/${locale}/courses/${item.slug}`}
                 target="_blank"
-                className="text-content-muted hover:text-brand-gold transition-colors inline-flex shrink-0 p-1"
+                className="text-content-muted hover:text-primary transition-colors inline-flex shrink-0 p-1"
                 title={isAr ? 'عرض في الموقع العام' : 'View in public catalog'}
               >
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -320,7 +322,7 @@ export default function AdminCoursesPage() {
           {/* Modular Parts */}
           <div className="flex items-center justify-between pt-2 border-t border-border-subtle">
             <div className="flex items-center gap-1.5 text-content-secondary font-medium">
-              <Layers className="w-3.5 h-3.5 text-brand-gold shrink-0" />
+              <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
               <span>
                 {partsCount} {isAr ? 'أجزاء تدريبية' : 'Training Parts'}
               </span>
@@ -342,10 +344,10 @@ export default function AdminCoursesPage() {
         <div className="flex items-center gap-2 pt-1">
           <Link
             href={`/${locale}/admin/courses/${item.id}`}
-            className="flex-1 inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary hover:text-brand-gold transition-colors"
+            className="flex-1 inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary hover:text-primary transition-colors"
             data-testid={`manage-course-${item.id}`}
           >
-            <Edit3 className="w-3.5 h-3.5 text-brand-gold" />
+            <Edit3 className="w-3.5 h-3.5 text-primary" />
             <span>{isAr ? 'إدارة المنهاج والمحتوى' : 'Manage Curriculum'}</span>
           </Link>
           <button
@@ -368,7 +370,7 @@ export default function AdminCoursesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-              <BookOpen className="w-7 h-7 text-brand-gold" />
+              <BookOpen className="w-7 h-7 text-primary" />
               <span>{isAr ? 'إدارة الدورات والمناهج التدريبية' : 'Courses & Vocational Curricula'}</span>
             </h1>
             <p className="text-sm text-content-secondary mt-1">
@@ -380,7 +382,7 @@ export default function AdminCoursesPage() {
 
           <Link
             href={`/${locale}/admin/courses/new`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gold text-brand-navy font-bold text-sm hover:bg-brand-gold-light transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors shadow-xs"
             data-testid="create-course-button"
           >
             <Plus className="w-4 h-4" />
@@ -396,7 +398,7 @@ export default function AdminCoursesPage() {
                 <span className="text-xs font-semibold text-content-muted">
                   {isAr ? 'إجمالي الدورات' : 'Total Courses'}
                 </span>
-                <BookOpen className="w-4 h-4 text-brand-gold" />
+                <BookOpen className="w-4 h-4 text-primary" />
               </div>
               <p className="text-2xl font-bold text-content-primary mt-2">{kpis.total_courses}</p>
             </div>
@@ -416,7 +418,7 @@ export default function AdminCoursesPage() {
                 <span className="text-xs font-semibold text-content-muted">
                   {isAr ? 'إجمالي الأجزاء والدروس' : 'Total Training Parts'}
                 </span>
-                <Layers className="w-4 h-4 text-brand-gold" />
+                <Layers className="w-4 h-4 text-primary" />
               </div>
               <p className="text-2xl font-bold text-content-primary mt-2">{kpis.total_parts}</p>
             </div>
@@ -432,7 +434,7 @@ export default function AdminCoursesPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={isAr ? 'ابحث عن دورة أو مسار...' : 'Search courses or slug...'}
-              className="w-full ps-10 pe-4 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary placeholder:text-content-muted focus:outline-hidden focus:border-brand-gold transition-colors"
+              className="w-full ps-10 pe-4 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary placeholder:text-content-muted focus:outline-hidden focus:border-primary transition-colors"
             />
           </form>
 
@@ -450,7 +452,7 @@ export default function AdminCoursesPage() {
                 }}
                 className={`px-3 py-1.5 rounded-lg font-semibold transition-colors ${
                   statusFilter === f.id
-                    ? 'bg-brand-gold text-brand-navy shadow-xs'
+                    ? 'bg-primary text-white shadow-xs'
                     : 'text-content-secondary hover:text-content-primary'
                 }`}
               >
@@ -502,13 +504,13 @@ export default function AdminCoursesPage() {
         {/* Archive/Delete Confirm Dialog */}
         <ConfirmDialog
           isOpen={!!courseToDelete}
-          title={isAr ? 'أرشفة أو حذف الدورة' : 'Archive or Delete Course'}
+          title={isAr ? 'حذف أو أرشفة الدورة التدريبية بالكامل' : 'Delete or Archive Entire Course'}
           description={
             isAr
-              ? `هل أنت متأكد من رغبتك في حذف أو أرشفة الدورة "${courseToDelete?.title_ar}"؟ إذا كان هناك طلاب مشتركون أو طلبات سابقة، فسيتم إيقاف الدورة وأرشفتها بأمان لحماية سجلات الطلاب وتجنب فقدان البيانات.`
-              : `Are you sure you want to delete or archive "${courseToDelete?.title_en}"? If active student enrollments or purchase records exist, it will be safely deactivated and archived to protect student progress.`
+              ? `هل أنت متأكد من رغبتك في حذف الدورة بالكامل "${courseToDelete?.title_ar}"؟ إذا لم يكن هناك طلاب مشتركون أو طلبات سابقة، فسيتم حذف الدورة وجميع دروسها نهائياً من قاعدة البيانات. أما إذا كان هناك طلاب مشتركون، فسيتم إلغاء تفعيلها وأرشفتها بأمان لحماية بيانات الطلاب.`
+              : `Are you sure you want to delete the entire course "${courseToDelete?.title_en}"? If no active student enrollments exist, the course and all its lessons will be permanently deleted. If active students exist, it will be safely deactivated and archived.`
           }
-          confirmText={isAr ? 'تأكيد الحذف / الأرشفة' : 'Confirm Archive / Delete'}
+          confirmText={isAr ? 'تأكيد حذف الدورة بالكامل' : 'Confirm Delete Course'}
           cancelText={isAr ? 'إلغاء' : 'Cancel'}
           isDestructive={true}
           isLoading={isDeleting}

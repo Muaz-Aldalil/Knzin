@@ -9,3 +9,11 @@ Route::get('/', function (Request $request) {
     return redirect($frontendUrl . ($queryString ? '?' . $queryString : ''));
 });
 
+Route::get('/storage/{path}', function (string $path) {
+    $disk = \Illuminate\Support\Facades\Storage::disk('public');
+    if (!$disk->exists($path)) {
+        abort(404, 'File not found');
+    }
+    return $disk->response($path);
+})->where('path', '.*')->name('storage.fallback');
+

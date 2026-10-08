@@ -494,4 +494,50 @@ class AdminCourseManagementTest extends TestCase
         $this->assertEquals('deleted', $courseDeleteRes->json('data.action_taken'));
         $this->assertDatabaseMissing('courses', ['id' => $course->id]);
     }
+
+    public function test_archived_part_can_be_permanently_deleted_or_restored(): void
+    {
+        $course = Course::factory()->create();
+        $part = CoursePart::create([
+            'course_id' => $course->id,
+            'part_number' => 1,
+            'title_ar' => 'جزء معطل',
+            'title_en' => 'Inactive Part',
+            'syllabus_ar' => 'منهاج',
+            'syllabus_en' => 'Syllabus',
+            'part_price_cents' => 100,
+            'part_promotional_tickets' => 1,
+            'duration_minutes' => 15,
+            'is_free' => false,
+            'is_active' => false, // Already archived
+        ]);
+
+        // When already archived, calling delete permanently deletes it
+        $deleteRes = $this->withHeaders($this->adminHeaders)
+            ->deleteJson("/api/v1/admin/courses/{$course->id}/parts/{$part->id}");
+        $deleteRes->assertStatus(200);
+        $this->assertEquals('deleted', $deleteRes->json('data.action_taken'));
+        $this->assertDatabaseMissing('course_parts', ['id' => $part->id]);
+
+        // Create another inactive part to test restore
+        $part2 = CoursePart::create([
+            'course_id' => $course->id,
+            'part_number' => 1,
+            'title_ar' => 'جزء للاستعادة',
+            'title_en' => 'Part to Restore',
+            'syllabus_ar' => 'منهاج',
+            'syllabus_en' => 'Syllabus',
+            'part_price_cents' => 100,
+            'part_promotional_tickets' => 1,
+            'duration_minutes' => 15,
+            'is_free' => false,
+            'is_active' => false,
+        ]);
+
+        $restoreRes = $this->withHeaders($this->adminHeaders)
+            ->postJson("/api/v1/admin/courses/{$course->id}/parts/{$part2->id}/restore");
+        $restoreRes->assertStatus(200);
+        $this->assertTrue($restoreRes->json('data.is_active'));
+        $this->assertDatabaseHas('course_parts', ['id' => $part2->id, 'is_active' => true]);
+    }
 }
