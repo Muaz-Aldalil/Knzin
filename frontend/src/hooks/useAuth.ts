@@ -122,6 +122,19 @@ export function useAuth() {
     return res;
   }, [login]);
 
+  const verifyGoogleCredential = useCallback(async (credential: string): Promise<VerifyOtpResult> => {
+    const res = await apiClient<VerifyOtpResult>('/auth/google/verify', {
+      method: 'POST',
+      body: JSON.stringify({ credential }),
+    });
+
+    if (res.token && res.user) {
+      login(res.token, res.user);
+    }
+
+    return res;
+  }, [login]);
+
   return {
     token,
     user,
@@ -131,5 +144,7 @@ export function useAuth() {
     logout,
     sendOtp,
     verifyOtp,
+    verifyGoogleCredential,
   };
 }
+

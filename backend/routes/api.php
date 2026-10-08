@@ -33,6 +33,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/otp/verify', [AuthController::class, 'verifyOtp'])->middleware('throttle:15,1');
     Route::get('/auth/google/redirect', [AuthController::class, 'googleRedirect'])->middleware('throttle:30,1');
     Route::get('/auth/google/callback', [AuthController::class, 'googleCallback'])->middleware('throttle:30,1');
+    Route::post('/auth/google/verify', [AuthController::class, 'googleVerifyToken'])->middleware('throttle:30,1');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/auth/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 

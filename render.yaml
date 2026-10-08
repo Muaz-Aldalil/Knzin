@@ -39,7 +39,9 @@ services:
       - key: DB_USERNAME
         value: avnadmin
       - key: GOOGLE_AUTH_MOCK
-        value: "true"
+        value: "false"
+      - key: GOOGLE_CLIENT_ID
+        value: 118096304294-3vikmbr2diolhadj2q6lbo4647umueav.apps.googleusercontent.com
       - key: KNZIN_ALLOW_DEMO_ADMIN
         value: "true"
       # Prompted in Render UI (Secrets & Deployment URLs):

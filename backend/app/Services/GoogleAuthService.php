@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class GoogleAuthService
 {
@@ -135,4 +137,109 @@ class GoogleAuthService
             'merge_stats' => $mergeStats,
         ];
     }
+
+    /**
+     * Verify Google Identity Services (GSI) ID token / credential,
+     * create or update user, merge guest orders, and issue Sanctum token.
+     */
+    public function verifyIdToken(string $idToken): array
+    {
+        // 1. Mock fallback for local/testing environments when token is mock-prefixed or mock mode enabled
+        if ($this->isMockMode() && str_starts_with($idToken, 'mock_')) {
+            $email = strtolower(trim(str_replace('mock_', '', $idToken)));
+            if (!str_contains($email, '@')) {
+                $email = 'mock_student_' . Str::random(5) . '@example.com';
+            }
+            $name = 'طالب كَنزين';
+            $providerId = 'mock_sub_' . md5($email);
+            $avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode($name);
+        } else {
+            // 2. Real Google token verification via Google's tokeninfo endpoint
+            $response = Http::timeout(10)->get('https://oauth2.googleapis.com/tokeninfo', [
+                'id_token' => $idToken,
+            ]);
+
+            if ($response->failed()) {
+                throw ValidationException::withMessages([
+                    'credential' => ['رمز المصادقة من Google غير صالح أو منتهي الصلاحية.'],
+                ]);
+            }
+
+            $payload = $response->json();
+            $expectedClientId = config('services.google.client_id');
+
+            // Verify audience matches our Client ID
+            if (!empty($expectedClientId) && ($payload['aud'] ?? '') !== $expectedClientId) {
+                throw ValidationException::withMessages([
+                    'credential' => ['معرّف تطبيق Google غير متطابق.'],
+                ]);
+            }
+
+            // Verify issuer
+            $iss = $payload['iss'] ?? '';
+            if (!in_array($iss, ['accounts.google.com', 'https://accounts.google.com'], true)) {
+                throw ValidationException::withMessages([
+                    'credential' => ['جهة إصدار الرمز غير معتمدة من Google.'],
+                ]);
+            }
+
+            // Verify email verified
+            $emailVerified = filter_var($payload['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
+            if (!$emailVerified) {
+                throw ValidationException::withMessages([
+                    'credential' => ['البريد الإلكتروني لحساب Google غير مؤكد.'],
+                ]);
+            }
+
+            $email = strtolower(trim((string) $payload['email']));
+            $name = (string) ($payload['name'] ?? $payload['given_name'] ?? 'طالب كَنزين');
+            $providerId = (string) $payload['sub'];
+            $avatarUrl = $payload['picture'] ?? null;
+        }
+
+        // 3. Find or create user
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            $user = User::create([
+                'email' => $email,
+                'display_name' => $name,
+                'auth_provider' => 'google',
+                'provider_id' => $providerId,
+                'avatar_url' => $avatarUrl,
+                'status' => 'active',
+                'email_verified_at' => now(),
+            ]);
+        } else {
+            $updateData = [
+                'status' => 'active',
+                'email_verified_at' => $user->email_verified_at ?? now(),
+                'provider_id' => $providerId,
+                'avatar_url' => $avatarUrl ?? $user->avatar_url,
+            ];
+
+            if ($user->auth_provider === 'guest') {
+                $updateData['auth_provider'] = 'google';
+            }
+
+            if (!empty($name) && (empty($user->display_name) || $user->display_name === 'ضيف' || $user->display_name === 'طالب كَنزين')) {
+                $updateData['display_name'] = $name;
+            }
+
+            $user->update($updateData);
+        }
+
+        // 4. One-way merge: re-attribute all unverified guest orders to this verified account
+        $mergeStats = $this->mergeService->mergeGuestIntoGoogle($user);
+
+        // 5. Issue Sanctum API token
+        $token = $user->createToken('google_auth_token')->plainTextToken;
+
+        return [
+            'user' => $user,
+            'token' => $token,
+            'merge_stats' => $mergeStats,
+        ];
+    }
 }
+

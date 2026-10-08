@@ -196,4 +196,48 @@ class AuthController extends ApiController
 
         return redirect()->away($redirectUrl);
     }
+
+    /**
+     * Verify Google Identity Services ID token (credential), authenticate or create user,
+     * merge guest orders, and return Sanctum token.
+     */
+    public function googleVerifyToken(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'credential' => ['nullable', 'string'],
+            'id_token' => ['nullable', 'string'],
+        ]);
+
+        $token = $validated['credential'] ?? $validated['id_token'] ?? null;
+
+        if (!$token) {
+            return $this->failResponse(
+                'VALIDATION_ERROR',
+                'رمز التحقق من Google مطلوب.',
+                ['credential' => ['The credential field is required.']],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        $result = $this->googleAuthService->verifyIdToken($token);
+        $user = $result['user'];
+
+        return $this->successResponse([
+            'token' => $result['token'],
+            'user' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'display_name' => $user->display_name,
+                'displayName' => $user->display_name,
+                'avatar_url' => $user->avatar_url,
+                'avatarUrl' => $user->avatar_url,
+                'auth_provider' => $user->auth_provider,
+                'authProvider' => $user->auth_provider,
+                'is_verified' => $user->isVerified(),
+                'isVerified' => $user->isVerified(),
+            ],
+            'merge_stats' => $result['merge_stats'],
+        ]);
+    }
 }
+
