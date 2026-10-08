@@ -14,23 +14,23 @@ export function StatusBadge({ status, className = '' }: StatusBadgeProps) {
 
   const normalized = status.toLowerCase();
 
-  let styles = 'bg-surface-elevated text-content-secondary border-border-subtle';
+  let styles = 'text-content-secondary';
   let label = status;
 
   switch (normalized) {
     case 'upcoming':
-      styles = 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+      styles = 'text-amber-500';
       label = isAr ? 'قادم' : 'Upcoming';
       break;
     case 'locked':
-      styles = 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+      styles = 'text-indigo-500 dark:text-indigo-400';
       label = isAr ? 'مغلق للسحب' : 'Locked';
       break;
     case 'completed':
     case 'cleared':
     case 'valid':
     case 'active':
-      styles = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+      styles = 'text-emerald-600 dark:text-emerald-400';
       label =
         normalized === 'completed'
           ? isAr
@@ -49,13 +49,13 @@ export function StatusBadge({ status, className = '' }: StatusBadgeProps) {
           : 'Active';
       break;
     case 'available':
-      styles = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      styles = 'text-blue-600 dark:text-blue-400';
       label = isAr ? 'متاح للسحب' : 'Available';
       break;
     case 'pending':
     case 'requested':
     case 'processing':
-      styles = 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+      styles = 'text-amber-600 dark:text-amber-400';
       label =
         normalized === 'requested'
           ? isAr
@@ -73,7 +73,7 @@ export function StatusBadge({ status, className = '' }: StatusBadgeProps) {
     case 'cancelled':
     case 'revoked':
     case 'suspended':
-      styles = 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+      styles = 'text-rose-600 dark:text-rose-400';
       label =
         normalized === 'rejected'
           ? isAr
@@ -92,14 +92,14 @@ export function StatusBadge({ status, className = '' }: StatusBadgeProps) {
           : 'Suspended';
       break;
     case 'superseded':
-      styles = 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+      styles = 'text-slate-500 dark:text-slate-400';
       label = isAr ? 'مستبدل' : 'Superseded';
       break;
   }
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${styles} ${className}`}
+      className={`inline-flex items-center text-xs font-bold ${styles} ${className}`}
     >
       {label}
     </span>

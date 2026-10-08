@@ -219,7 +219,7 @@ export default function AdminAffiliatesPage() {
                     <span className="font-bold text-lg text-content-primary">
                       {isAr ? 'سجل المعاملات الموثق' : 'Immutable Transaction Ledger'}
                     </span>
-                    <span className="px-2 py-0.5 rounded-md bg-brand-gold/15 text-brand-gold text-xs font-mono">
+                    <span className="text-brand-gold text-xs font-mono font-bold">
                       #{selectedUser.user_id}
                     </span>
                   </div>

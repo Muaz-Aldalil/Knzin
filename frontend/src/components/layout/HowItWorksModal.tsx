@@ -107,9 +107,7 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
             id="how-it-works-title"
             className="text-xl sm:text-2xl font-bold text-content-primary flex items-center gap-2"
           >
-            <span className="hidden sm:inline-flex p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
-              <BookOpen className="h-5 w-5" />
-            </span>
+            <BookOpen className="hidden sm:inline-flex h-6 w-6 text-primary shrink-0" />
             {modalTitle}
           </DialogTitle>
           <DialogDescription className="text-sm text-content-muted">
@@ -124,9 +122,9 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
               <div key={item.step} className="relative">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-xl border border-border-subtle bg-surface-secondary/40 hover:bg-surface-secondary/70 transition-colors">
                   <div
-                    className={`hidden sm:flex p-3 rounded-xl border flex-shrink-0 items-center justify-center ${item.iconBg}`}
+                    className={`hidden sm:flex shrink-0 items-center justify-center ${item.badgeTextColor}`}
                   >
-                    <Icon className="h-6 w-6" />
+                    <Icon className="h-7 w-7" />
                   </div>
 
                   <div className="flex-1 min-w-0 space-y-1">

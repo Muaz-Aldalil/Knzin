@@ -105,8 +105,8 @@ export default function NotificationsPage() {
       <div className="bg-surface rounded-2xl border border-border-subtle p-6 mb-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-              <Bell className="w-6 h-6" />
+            <div className="flex items-center justify-center text-primary">
+              <Bell className="w-8 h-8" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -210,8 +210,8 @@ export default function NotificationsPage() {
           </div>
         ) : notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-surface-secondary border border-border-subtle flex items-center justify-center text-content-muted mb-4">
-              <Inbox className="w-7 h-7" />
+            <div className="text-content-muted mb-4 flex items-center justify-center">
+              <Inbox className="w-12 h-12" />
             </div>
             <p className="text-sm font-bold text-content-primary">
               {isAdmin && activeScope === 'admin'

@@ -32,8 +32,8 @@ export function LessonFooterNav({
           href={`/lessons/${courseSlug}?part=${previousPart.part_number}`}
           className="w-full sm:w-auto p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary/40 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all flex items-center gap-3 text-start group"
         >
-          <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:text-primary group-hover:bg-primary-light dark:group-hover:bg-primary/10 flex items-center justify-center shrink-0 transition-colors">
-            <ArrowRight className="w-4 h-4 rtl:rotate-0 ltr:rotate-180" />
+          <div className="text-slate-500 group-hover:text-primary flex items-center justify-center shrink-0 transition-colors">
+            <ArrowRight className="w-5 h-5 rtl:rotate-0 ltr:rotate-180" />
           </div>
           <div className="min-w-0">
             <span className="text-[11px] font-bold text-slate-400 block">
@@ -70,8 +70,8 @@ export function LessonFooterNav({
               <span>{nextPart.duration_minutes} {locale === 'ar' ? 'دقيقة' : 'min'}</span>
             </span>
           </div>
-          <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
-            <ArrowLeft className="w-4 h-4 rtl:rotate-0 ltr:rotate-180" />
+          <div className="text-primary flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+            <ArrowLeft className="w-5 h-5 rtl:rotate-0 ltr:rotate-180" />
           </div>
         </Link>
       ) : (

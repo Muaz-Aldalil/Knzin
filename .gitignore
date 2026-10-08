@@ -51,4 +51,5 @@ __pycache__/
 
 # Testing & Browser artifacts
 .playwright-mcp/
+scratch/
 

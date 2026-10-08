@@ -112,9 +112,7 @@ export function TicketLedgerDrawer({ isOpen: controlledIsOpen, onClose }: Ticket
         <div className="p-6 border-b border-border-subtle">
           <SheetHeader>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center shrink-0">
-                <Ticket className="w-5 h-5" />
-              </div>
+              <Ticket className="w-6 h-6 text-accent shrink-0" />
               <div className="text-start">
                 <SheetTitle className="text-lg font-bold text-content-primary">
                   {isRtl ? 'دفتر التذاكر الترويجية' : 'Promotional Ticket Ledger'}
@@ -184,8 +182,8 @@ export function TicketLedgerDrawer({ isOpen: controlledIsOpen, onClose }: Ticket
           {isUnauthenticated ? (
             /* Unauthenticated Guest State */
             <div className="p-8 rounded-2xl bg-surface-secondary/50 border border-dashed border-border-subtle text-center space-y-4 animate-in fade-in-50 duration-200">
-              <div className="w-14 h-14 rounded-2xl bg-accent/15 text-accent flex items-center justify-center mx-auto shadow-inner">
-                <Ticket className="w-7 h-7" />
+              <div className="flex items-center justify-center mx-auto text-accent">
+                <Ticket className="w-12 h-12" />
               </div>
               <div className="space-y-1.5">
                 <h4 className="text-base font-extrabold text-content-primary">
@@ -238,8 +236,8 @@ export function TicketLedgerDrawer({ isOpen: controlledIsOpen, onClose }: Ticket
           ) : isEmpty ? (
             /* Empty State */
             <div className="p-8 rounded-2xl bg-surface-secondary/50 border border-dashed border-border-subtle text-center space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center mx-auto">
-                <Ticket className="w-6 h-6" />
+              <div className="flex items-center justify-center mx-auto text-accent">
+                <Ticket className="w-10 h-10" />
               </div>
               <h4 className="text-sm font-bold text-content-primary">
                 {isRtl ? 'لا توجد لديك تذاكر سحب بعد' : 'No Raffle Tickets Yet'}

@@ -102,12 +102,12 @@ export function LessonVideoPlayer({
 
           {/* Content */}
           <div className="relative z-10 max-w-md space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500 flex items-center justify-center mx-auto shadow-inner">
-              <Lock className="w-7 h-7" />
+            <div className="text-amber-500 flex items-center justify-center mx-auto">
+              <Lock className="w-12 h-12" />
             </div>
 
             <div className="space-y-1.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 border border-accent/40 text-accent text-xs font-black">
+              <span className="inline-flex items-center gap-1.5 text-accent text-xs font-black">
                 <Ticket className="w-3.5 h-3.5" />
                 <span>{pricing?.part_promotional_tickets ?? 1} {locale === 'ar' ? 'تذكرة سحب ترويجية مجانية' : 'Promotional Ticket'}</span>
               </span>
@@ -224,8 +224,8 @@ export function LessonVideoPlayer({
       {/* Scrimba-style Celebratory "Up Next" Overlay */}
       {(isCompleted || depth >= 95) && !dismissCompletionCard && (
         <div className="absolute inset-0 z-30 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in-0 duration-300">
-          <div className="flex size-14 items-center justify-center rounded-full bg-success/20 border border-success/40 text-success mb-3 shadow-lg">
-            <CheckCircle2 className="w-8 h-8" />
+          <div className="text-success mb-3 flex items-center justify-center">
+            <CheckCircle2 className="w-12 h-12" />
           </div>
 
           <Badge variant="accent" size="sm" className="mb-2 font-black">

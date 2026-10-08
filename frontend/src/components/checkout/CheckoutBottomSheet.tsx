@@ -328,7 +328,8 @@ export default function CheckoutBottomSheet({
                 <label htmlFor="checkout_email" className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5">
                   {t('emailLabel')}
                 </label>
-                <div className="relative">
+                <div className="relative" dir="ltr">
+                  <Mail className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   <input
                     id="checkout_email"
                     type="email"
@@ -337,13 +338,12 @@ export default function CheckoutBottomSheet({
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={t('emailPlaceholder')}
                     required
-                    className={`w-full py-2.5 ps-3.5 pe-10 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
+                    className={`w-full py-2.5 ps-9 pe-3.5 text-xs rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-colors ${
                       emailError
                         ? 'border-red-500 focus:ring-red-400/40'
                         : 'border-slate-200 dark:border-slate-700 focus:ring-primary/40'
                     }`}
                   />
-                  <Mail className="absolute end-3 top-3 w-4 h-4 text-slate-400 pointer-events-none" />
                 </div>
                 {emailError && (
                   <p className="text-red-500 text-[11px] mt-1 font-semibold">{emailError}</p>

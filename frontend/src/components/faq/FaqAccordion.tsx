@@ -154,9 +154,7 @@ export function FaqAccordion({ className = '', kycSlot }: FaqAccordionProps) {
               >
                 {/* Category Header */}
                 <div className="flex items-center gap-2.5 px-5 py-3.5 bg-surface-secondary/50 border-b border-border-subtle">
-                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
-                    <Icon className="w-4 h-4" />
-                  </div>
+                  <Icon className="w-5 h-5 text-primary shrink-0" />
                   <h3 className="font-bold text-sm sm:text-base text-content-primary">
                     {category.title}
                   </h3>

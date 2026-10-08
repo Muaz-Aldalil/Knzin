@@ -66,8 +66,8 @@ export function DraftRestoreBanner() {
       className="mb-6 p-4 rounded-2xl bg-brand-gold/10 border border-brand-gold/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs"
     >
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-brand-gold/20 flex items-center justify-center text-brand-gold shrink-0">
-          <FileEdit className="w-4 h-4 text-brand-gold" />
+        <div className="flex items-center justify-center text-brand-gold shrink-0">
+          <FileEdit className="w-6 h-6 text-brand-gold" />
         </div>
         <div>
           <p className="text-xs font-bold text-content-primary">

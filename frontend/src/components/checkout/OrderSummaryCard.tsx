@@ -39,8 +39,8 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
     <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden">
       {/* Top Success Banner */}
       <div className="bg-gradient-to-r from-success to-emerald-700 p-6 text-white text-center">
-        <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
-          <CheckCircle2 className="w-8 h-8 text-white" />
+        <div className="flex items-center justify-center mx-auto mb-3">
+          <CheckCircle2 className="w-12 h-12 text-white" />
         </div>
         <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
           {celebrationTitle}
@@ -50,7 +50,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
             {celebrationDesc}
           </p>
         )}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 mt-2.5 rounded-full bg-white/20 text-xs font-semibold text-white">
+        <div className="inline-flex items-center gap-1.5 mt-2 text-xs font-bold text-white">
           <Clock className="w-3.5 h-3.5" />
           <span>{t('statusPending')}</span>
         </div>
@@ -92,7 +92,7 @@ export default function OrderSummaryCard({ order }: OrderSummaryCardProps) {
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
               {t('ticketsReserved')}
             </span>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-accent/15 text-accent font-extrabold text-xs border border-accent/30">
+            <div className="inline-flex items-center gap-1.5 text-accent font-extrabold text-xs">
               <Ticket className="w-4 h-4 text-accent" />
               <span>{order.promotional_tickets_granted} {tCommon('ticket')}</span>
             </div>

@@ -28,8 +28,8 @@ export function ContentUpdateNotification({
     >
       <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-surface/95 dark:bg-surface-elevated/95 backdrop-blur-md border border-brand-gold/40 shadow-xl shadow-brand-gold/5 text-content-primary">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl bg-brand-gold/15 text-brand-gold flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 animate-pulse" />
+          <div className="text-brand-gold flex items-center justify-center shrink-0">
+            <Sparkles className="w-5 h-5 animate-pulse" />
           </div>
           <p className="text-xs sm:text-sm font-semibold truncate">
             {isAr ? 'تم نشر تحديثات جديدة للصفحة' : 'New page updates published'}

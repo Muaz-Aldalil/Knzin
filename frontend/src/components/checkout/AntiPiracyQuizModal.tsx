@@ -100,7 +100,7 @@ export default function AntiPiracyQuizModal({
 
         {/* Pinned Header */}
         <div className="p-6 pb-2 shrink-0 text-start">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-light text-primary text-xs font-bold mb-2">
+          <div className="inline-flex items-center gap-1.5 text-primary text-xs font-bold mb-2">
             <ShieldAlert className="w-3.5 h-3.5 text-primary" />
             <span>{t('step', { current: step, total: 3 })}</span>
           </div>

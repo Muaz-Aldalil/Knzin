@@ -133,7 +133,7 @@ export default function SimulatorDeck({ transactionData, onSuccessRedirect }: Si
             {t('actionsSubtitle')}
           </p>
         </div>
-        <span className="text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 px-2.5 py-1 rounded-full">
+        <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
           {transaction.status}
         </span>
       </div>
@@ -166,8 +166,8 @@ export default function SimulatorDeck({ transactionData, onSuccessRedirect }: Si
           disabled={isSuccessLoading || isCompleted}
           className="flex items-start gap-3.5 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/70 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/40 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 disabled:cursor-not-allowed group"
         >
-          <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            {isSuccessLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+          <div className="text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+            {isSuccessLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <CheckCircle2 className="w-6 h-6" />}
           </div>
           <div>
             <div className="text-sm font-bold text-emerald-900 dark:text-emerald-300">
@@ -185,8 +185,8 @@ export default function SimulatorDeck({ transactionData, onSuccessRedirect }: Si
           disabled={isFailureLoading || isTerminal}
           className="flex items-start gap-3.5 p-4 rounded-xl border border-rose-200 dark:border-rose-800/70 bg-rose-50/50 dark:bg-rose-950/20 hover:bg-rose-100/60 dark:hover:bg-rose-950/40 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 disabled:cursor-not-allowed group"
         >
-          <div className="w-9 h-9 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            {isFailureLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <XCircle className="w-5 h-5" />}
+          <div className="text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+            {isFailureLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <XCircle className="w-6 h-6" />}
           </div>
           <div>
             <div className="text-sm font-bold text-rose-900 dark:text-rose-300">
@@ -203,8 +203,8 @@ export default function SimulatorDeck({ transactionData, onSuccessRedirect }: Si
           onClick={handleCarrierDropout}
           className="flex items-start gap-3.5 p-4 rounded-xl border border-amber-200 dark:border-amber-800/70 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-100/60 dark:hover:bg-amber-950/40 transition text-right rtl:text-right ltr:text-left group"
         >
-          <div className="w-9 h-9 rounded-lg bg-amber-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <WifiOff className="w-5 h-5" />
+          <div className="text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+            <WifiOff className="w-6 h-6" />
           </div>
           <div>
             <div className="text-sm font-bold text-amber-900 dark:text-amber-300">
@@ -222,8 +222,8 @@ export default function SimulatorDeck({ transactionData, onSuccessRedirect }: Si
           disabled={isTamperLoading}
           className="flex items-start gap-3.5 p-4 rounded-xl border border-purple-200 dark:border-purple-800/70 bg-purple-50/50 dark:bg-purple-950/20 hover:bg-purple-100/60 dark:hover:bg-purple-950/40 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 group"
         >
-          <div className="w-9 h-9 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            {isTamperLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShieldAlert className="w-5 h-5" />}
+          <div className="text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+            {isTamperLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <ShieldAlert className="w-6 h-6" />}
           </div>
           <div>
             <div className="text-sm font-bold text-purple-900 dark:text-purple-300">
@@ -241,8 +241,8 @@ export default function SimulatorDeck({ transactionData, onSuccessRedirect }: Si
           disabled={isReplayLoading}
           className="flex items-start gap-3.5 p-4 rounded-xl border border-sky-200 dark:border-sky-800/70 bg-sky-50/50 dark:bg-sky-950/20 hover:bg-sky-100/60 dark:hover:bg-sky-950/40 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 group"
         >
-          <div className="w-9 h-9 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            {isReplayLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Copy className="w-5 h-5" />}
+          <div className="text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+            {isReplayLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Copy className="w-6 h-6" />}
           </div>
           <div>
             <div className="text-sm font-bold text-sky-900 dark:text-sky-300">
@@ -260,8 +260,8 @@ export default function SimulatorDeck({ transactionData, onSuccessRedirect }: Si
           disabled={isReconcileLoading || isCompleted}
           className="flex items-start gap-3.5 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800/70 bg-indigo-50/50 dark:bg-indigo-950/20 hover:bg-indigo-100/60 dark:hover:bg-indigo-950/40 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 group"
         >
-          <div className="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            {isReconcileLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
+          <div className="text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+            {isReconcileLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <RefreshCw className="w-6 h-6" />}
           </div>
           <div>
             <div className="text-sm font-bold text-indigo-900 dark:text-indigo-300">
@@ -279,8 +279,8 @@ export default function SimulatorDeck({ transactionData, onSuccessRedirect }: Si
           disabled={isRefundLoading || !isCompleted}
           className="flex items-start gap-3.5 p-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 group md:col-span-2"
         >
-          <div className="w-9 h-9 rounded-lg bg-slate-700 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            {isRefundLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <RotateCcw className="w-5 h-5" />}
+          <div className="text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+            {isRefundLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <RotateCcw className="w-6 h-6" />}
           </div>
           <div>
             <div className="text-sm font-bold text-slate-900 dark:text-white">

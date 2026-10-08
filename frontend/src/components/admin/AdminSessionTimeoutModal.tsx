@@ -47,8 +47,8 @@ export function AdminSessionTimeoutModal({
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader className="items-center text-center space-y-3">
-          <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500">
-            <Clock className="w-8 h-8 animate-pulse text-amber-500" />
+          <div className="relative flex items-center justify-center text-amber-500">
+            <Clock className="w-12 h-12 animate-pulse text-amber-500" />
             <span className="absolute -top-1 -end-1 flex h-3.5 w-3.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>

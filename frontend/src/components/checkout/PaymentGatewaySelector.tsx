@@ -79,7 +79,7 @@ export default function PaymentGatewaySelector({
         <label className="text-sm font-bold text-slate-800 dark:text-slate-100">
           {t('gatewaySelectorTitle')}
         </label>
-        <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
           {formattedAmount} {isRtl ? 'د.ع' : 'IQD'}
         </span>
       </div>

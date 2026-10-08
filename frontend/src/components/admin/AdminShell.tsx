@@ -250,8 +250,8 @@ export function AdminShell({ children }: AdminShellProps) {
       <aside className="hidden md:flex flex-col w-64 lg:w-72 bg-surface border-e border-border-subtle shrink-0 sticky top-0 h-screen z-20">
         <div className="p-6 border-b border-border-subtle flex items-center justify-between">
           <Link href={`/${locale}/admin`} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold to-brand-gold-dark flex items-center justify-center text-brand-navy shadow-sm">
-              <Sparkles className="w-6 h-6" />
+            <div className="text-brand-gold flex items-center justify-center">
+              <Sparkles className="w-8 h-8" />
             </div>
             <div>
               <span className="font-bold text-lg text-content-primary block leading-tight">
@@ -318,7 +318,7 @@ export function AdminShell({ children }: AdminShellProps) {
         }`}
       >
         <Link href={`/${locale}/admin`} className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-brand-gold flex items-center justify-center text-brand-navy font-bold text-sm">
+          <div className="text-brand-gold font-bold text-base flex items-center justify-center">
             K
           </div>
           <span className="font-bold text-content-primary">

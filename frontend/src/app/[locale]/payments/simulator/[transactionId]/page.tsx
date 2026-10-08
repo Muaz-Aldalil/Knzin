@@ -83,8 +83,8 @@ export default function SimulatorTransactionPage() {
         {/* Top Sandbox Notice Bar */}
         <div className="bg-amber-500/10 dark:bg-amber-950/40 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 shadow-sm font-black text-xs">
-              <ShieldAlert className="w-5 h-5 text-slate-950" />
+            <div className="text-amber-500 flex items-center justify-center shrink-0">
+              <ShieldAlert className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">

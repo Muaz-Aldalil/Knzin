@@ -561,7 +561,7 @@ export default function CourseDetailPage() {
                       required
                       value={priceDollars}
                       onChange={(e) => handlePriceChange(e.target.value)}
-                      className="w-full ps-8 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-brand-gold"
+                      className="w-full ps-9 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-content-primary focus:outline-hidden focus:border-brand-gold"
                     />
                   </div>
                 </div>
@@ -590,7 +590,7 @@ export default function CourseDetailPage() {
                       required
                       value={promotionalTickets}
                       onChange={(e) => setPromotionalTickets(e.target.value)}
-                      className="w-full ps-9 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-amber-400 focus:outline-hidden focus:border-brand-gold"
+                      className="w-full ps-10 pe-3.5 py-2.5 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-bold text-amber-400 focus:outline-hidden focus:border-brand-gold"
                     />
                   </div>
                 </div>

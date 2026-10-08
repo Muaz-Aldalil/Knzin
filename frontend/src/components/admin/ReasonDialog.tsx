@@ -50,8 +50,8 @@ export function ReasonDialog({
         className="bg-surface-card border border-border-subtle rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4"
       >
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center shrink-0">
-            <AlertCircle className="w-6 h-6" />
+          <div className="text-rose-500 flex items-center justify-center shrink-0">
+            <AlertCircle className="w-10 h-10" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-content-primary">{title}</h3>

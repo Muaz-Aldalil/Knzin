@@ -87,7 +87,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             <label className="text-sm font-bold text-content-primary">
               {isAr ? 'نسبة عمولة المبيعات الفورية (%):' : 'Direct Sales Commission Rate (%):'}
             </label>
-            <span className="text-xs font-mono text-brand-gold bg-brand-gold/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-mono font-bold text-brand-gold">
               {Math.round(ratePercent * 100)} bps
             </span>
           </div>

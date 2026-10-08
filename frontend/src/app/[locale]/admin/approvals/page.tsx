@@ -43,7 +43,7 @@ export default function AdminApprovalsPage() {
       key: 'approval_type',
       header: isAr ? 'نوع التدقيق' : 'Audit Type',
       render: (item) => (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-surface-elevated text-content-primary">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-content-primary">
           {item.approval_type === 'kyc' ? (
             <>
               <UserCheck className="w-3.5 h-3.5 text-blue-400" />

@@ -32,8 +32,8 @@ export default function WinnerKycPage() {
 
       {/* Page Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 mb-4 shadow-xs">
-          <Trophy className="w-8 h-8" />
+        <div className="inline-flex items-center justify-center text-amber-600 dark:text-amber-400 mb-4">
+          <Trophy className="w-12 h-12" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-content-primary tracking-tight">
           {isRtl ? 'التحقق من هوية الفائز (KYC)' : 'Winner Identity Verification (KYC)'}

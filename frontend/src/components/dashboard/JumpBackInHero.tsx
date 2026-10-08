@@ -56,7 +56,7 @@ export function JumpBackInHero({ item }: JumpBackInHeroProps) {
         <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary">
                 <Sparkles className="w-3.5 h-3.5" />
                 {isRtl ? 'تابع من حيث توقفت' : 'Jump Back In'}
               </span>

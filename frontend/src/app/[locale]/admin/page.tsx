@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-surface-card via-surface-card to-brand-navy/60 border border-border-subtle p-6 sm:p-8 shadow-xs">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/15 text-brand-gold border border-brand-gold/30 text-xs font-bold">
+            <div className="inline-flex items-center gap-2 text-brand-gold text-xs font-bold">
               <ShieldCheck className="w-4 h-4" />
               <span>{isAr ? 'جلسة إدارية مشفرة ومراقبة' : 'Monitored & Cryptographically Audited'}</span>
             </div>
@@ -157,8 +157,8 @@ export default function AdminDashboardPage() {
               <span className="text-xs font-semibold text-content-secondary">
                 {isAr ? 'نسبة عمولة المسوقين' : 'Sales Commission'}
               </span>
-              <div className="w-8 h-8 rounded-lg bg-brand-gold/10 text-brand-gold flex items-center justify-center">
-                <Settings className="w-4 h-4" />
+              <div className="text-brand-gold flex items-center justify-center">
+                <Settings className="w-6 h-6" />
               </div>
             </div>
             <div className="mt-3">
@@ -182,8 +182,8 @@ export default function AdminDashboardPage() {
               <span className="text-xs font-semibold text-content-secondary">
                 {isAr ? 'طلبات السحب المعلقة' : 'Pending Payouts'}
               </span>
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center">
-                <BadgeDollarSign className="w-4 h-4" />
+              <div className="text-amber-500 flex items-center justify-center">
+                <BadgeDollarSign className="w-6 h-6" />
               </div>
             </div>
             <div className="mt-3">
@@ -210,8 +210,8 @@ export default function AdminDashboardPage() {
               <span className="text-xs font-semibold text-content-secondary">
                 {isAr ? 'جوائز الشركاء (40%)' : 'Co-Prize Queue (40%)'}
               </span>
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                <Trophy className="w-4 h-4" />
+              <div className="text-emerald-500 dark:text-emerald-400 flex items-center justify-center">
+                <Trophy className="w-6 h-6" />
               </div>
             </div>
             <div className="mt-3">
@@ -238,8 +238,8 @@ export default function AdminDashboardPage() {
               <span className="text-xs font-semibold text-content-secondary">
                 {isAr ? 'السحوبات والجوائز' : 'Promotional Draws'}
               </span>
-              <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
-                <Sparkles className="w-4 h-4" />
+              <div className="text-purple-500 dark:text-purple-400 flex items-center justify-center">
+                <Sparkles className="w-6 h-6" />
               </div>
             </div>
             <div className="mt-3">
@@ -403,10 +403,10 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-mono text-content-primary font-bold">{log.action}</span>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    className={`text-[10px] font-bold ${
                       log.outcome === 'success'
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                        ? 'text-emerald-500 dark:text-emerald-400'
+                        : 'text-rose-500 dark:text-rose-400'
                     }`}
                   >
                     {log.outcome}
@@ -442,10 +442,10 @@ export default function AdminDashboardPage() {
                     <td className="py-2.5 text-content-secondary">{log.actor?.email || `Admin #${log.actor_id}`}</td>
                     <td className="py-2.5 font-mono text-content-secondary">{log.target_type}: {log.target_id}</td>
                     <td className="py-2.5">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      <span className={`text-[10px] font-bold ${
                         log.outcome === 'success'
-                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                          : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                          ? 'text-emerald-500 dark:text-emerald-400'
+                          : 'text-rose-500 dark:text-rose-400'
                       }`}>
                         {log.outcome}
                       </span>
@@ -476,8 +476,8 @@ export default function AdminDashboardPage() {
                 className="group p-6 rounded-2xl bg-surface-card border border-border-subtle hover:border-brand-gold/40 hover:bg-surface-elevated transition-all duration-200 shadow-xs flex flex-col justify-between"
               >
                 <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <Icon className="w-6 h-6" />
+                  <div className="text-brand-gold flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Icon className="w-8 h-8" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-content-primary group-hover:text-brand-gold transition-colors">

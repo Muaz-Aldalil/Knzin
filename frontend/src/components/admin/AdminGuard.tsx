@@ -31,8 +31,8 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
   if (isUnauthenticated) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mb-6">
-          <LogIn className="w-8 h-8" />
+        <div className="flex items-center justify-center text-amber-500 mb-6">
+          <LogIn className="w-12 h-12" />
         </div>
         <h2 className="text-2xl font-bold text-content-primary mb-2">
           {isAr ? 'تسجيل الدخول الإداري مطلوب' : 'Admin Authentication Required'}
@@ -56,8 +56,8 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
   if (isForbidden || capabilities.length === 0) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center" data-testid="admin-403-state">
-        <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 mb-6">
-          <ShieldAlert className="w-8 h-8" />
+        <div className="flex items-center justify-center text-rose-500 mb-6">
+          <ShieldAlert className="w-12 h-12" />
         </div>
         <h2 className="text-2xl font-bold text-content-primary mb-2">
           {isAr ? '403 - غير مصرح لك بالوصول' : '403 - Forbidden Access'}
@@ -81,8 +81,8 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
   if (requiredCapability && !can(requiredCapability)) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center" data-testid="admin-missing-capability-state">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mb-6">
-          <ShieldAlert className="w-8 h-8" />
+        <div className="flex items-center justify-center text-amber-500 mb-6">
+          <ShieldAlert className="w-12 h-12" />
         </div>
         <h2 className="text-2xl font-bold text-content-primary mb-2">
           {isAr ? 'صلاحية غير متوفرة' : 'Missing Capability'}

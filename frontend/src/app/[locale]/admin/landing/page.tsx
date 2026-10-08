@@ -269,7 +269,7 @@ export default function AdminLandingCmsHubPage() {
                   : 'Centralized presentation control across all application surfaces, from global shell and landing page to checkout and affiliate portal.'}
               </p>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-semibold self-start sm:self-auto">
+            <div className="flex items-center gap-2 text-brand-gold text-xs font-semibold self-start sm:self-auto">
               <Sliders className="w-4 h-4" />
               <span>
                 {ALL_CMS_SECTIONS.length} {isAr ? 'أقسام مُدارة' : 'Managed Surfaces'}

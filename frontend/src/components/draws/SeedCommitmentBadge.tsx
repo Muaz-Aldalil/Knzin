@@ -38,16 +38,16 @@ export function SeedCommitmentBadge({
 
   return (
     <div
-      className={`inline-flex flex-col rounded-xl border text-xs transition-all ${
+      className={`inline-flex flex-col text-xs transition-all ${
         isRevealed
-          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-          : 'bg-brand-gold/10 border-brand-gold/30 text-brand-gold'
+          ? 'text-emerald-600 dark:text-emerald-400 font-bold'
+          : 'text-brand-gold font-bold'
       } ${className}`}
       data-testid="seed-commitment-badge"
     >
       <div
         onClick={() => isDetailed && setExpanded(!expanded)}
-        className={`flex items-center gap-2 px-2.5 py-1 ${isDetailed ? 'cursor-pointer' : ''}`}
+        className={`flex items-center gap-1.5 ${isDetailed ? 'cursor-pointer' : ''}`}
       >
         {isRevealed ? (
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />

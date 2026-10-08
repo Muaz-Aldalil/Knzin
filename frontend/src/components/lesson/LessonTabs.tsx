@@ -529,7 +529,7 @@ export function LessonTabs({
                   {isRtl ? 'قائمة مهام وملاحظات التطبيق العملي' : 'Practical To-Do & Execution Notes'}
                 </h3>
                 {todoItems.length > 0 && (
-                  <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-primary/10 text-primary">
+                  <span className="text-[11px] font-bold text-primary">
                     {todoItems.filter((i) => i.completed).length} / {todoItems.length} {isRtl ? 'منجز' : 'done'}
                   </span>
                 )}

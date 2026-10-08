@@ -39,8 +39,8 @@ export function WhatsAppFallbackDialog({ isOpen, onClose }: WhatsAppFallbackDial
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md p-6 bg-surface-primary border border-border-subtle rounded-2xl shadow-xl">
         <DialogHeader className="text-start space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-            <MessageSquareOff className="w-6 h-6" />
+          <div className="text-amber-600 dark:text-amber-400 flex items-center justify-center">
+            <MessageSquareOff className="w-10 h-10" />
           </div>
           <DialogTitle className="text-xl font-bold text-content-primary">
             {t('fallbackTitle')}

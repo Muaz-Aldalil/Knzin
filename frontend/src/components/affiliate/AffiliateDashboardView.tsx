@@ -71,8 +71,8 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
 
     return (
       <div className="max-w-2xl mx-auto my-16 p-8 rounded-3xl bg-surface border border-border-subtle text-center shadow-xs">
-        <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-          <Users className="w-7 h-7" />
+        <div className="flex items-center justify-center mx-auto mb-4 text-primary">
+          <Users className="w-12 h-12" />
         </div>
         <h2 className="text-xl font-bold text-content-primary">
           {onboardingTitle}
@@ -182,7 +182,7 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
       {/* Top Header & Program Vision */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-subtle pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-2">
+          <div className="inline-flex items-center gap-1.5 text-primary text-xs font-bold mb-2">
             <Sparkles className="w-3.5 h-3.5" />
             <span>{isRtl ? 'برنامج شركاء كنزيْن الرسمي' : 'Official KNZiN Partner Program'}</span>
           </div>
@@ -211,7 +211,7 @@ export function AffiliateDashboardView({ onOpenPayoutModal }: AffiliateDashboard
       {/* Co-Prize 40% Partner Rules Presentation (Feature 006) */}
       {affPortal && affPortal.is_visible !== false && (
         <div className="p-5 rounded-2xl bg-brand-gold/10 border border-brand-gold/25 flex items-start gap-4">
-          <div className="p-2.5 rounded-xl bg-brand-gold/20 text-brand-gold shrink-0">
+          <div className="text-brand-gold shrink-0 mt-0.5">
             <Sparkles className="w-5 h-5" />
           </div>
           <div className="space-y-1">

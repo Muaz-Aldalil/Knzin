@@ -52,8 +52,8 @@ export function ConcludedDrawsList({ draws, className = '' }: ConcludedDrawsList
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
               <div className="absolute top-3 start-3">
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-amber-950 shadow-xs">
-                  <Trophy className="h-3 w-3" />
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 drop-shadow-sm">
+                  <Trophy className="h-3.5 w-3.5" />
                   {item.tier === 'monthly'
                     ? t('tierMonthly')
                     : item.tier === 'daily'

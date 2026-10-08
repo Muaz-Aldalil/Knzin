@@ -9,12 +9,12 @@ import { ActivityEventType, ActivityEvent } from '@/types/activity';
 function getBadgeStyles(type: ActivityEventType): string {
   switch (type) {
     case 'enrollment':
-      return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+      return 'text-emerald-600 dark:text-emerald-400 font-bold';
     case 'countdown_alert':
-      return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+      return 'text-amber-600 dark:text-amber-400 font-bold';
     case 'bulletin':
     default:
-      return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20';
+      return 'text-blue-600 dark:text-blue-400 font-bold';
   }
 }
 
@@ -78,7 +78,7 @@ export function ActivityTicker() {
                 className="inline-flex items-center gap-2 mx-5 text-xs text-content-primary"
               >
                 <span
-                  className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${getBadgeStyles(
+                  className={`inline-flex items-center text-[11px] ${getBadgeStyles(
                     event.type
                   )}`}
                 >

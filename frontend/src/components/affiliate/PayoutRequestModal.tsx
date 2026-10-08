@@ -115,8 +115,8 @@ export function PayoutRequestModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border-subtle">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Wallet className="w-5 h-5" />
+            <div className="text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Wallet className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-bold text-content-primary">
               {t('payoutModalTitle')}
@@ -135,8 +135,8 @@ export function PayoutRequestModal({
         <div className="p-6">
           {successPayoutNumber ? (
             <div className="text-center py-6 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-8 h-8" />
+              <div className="text-emerald-500 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-12 h-12" />
               </div>
               <h4 className="text-lg font-bold text-content-primary">
                 {isRtl ? 'تم تقديم طلب السحب بنجاح' : 'Payout Request Submitted!'}
@@ -215,7 +215,7 @@ export function PayoutRequestModal({
                     disabled={!isEligible}
                     value={amountDollars}
                     onChange={(e) => setAmountDollars(e.target.value)}
-                    className="w-full ps-8 pe-4 py-2.5 rounded-xl bg-surface-secondary border border-border-subtle text-content-primary text-sm font-semibold focus:outline-hidden focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full ps-9 pe-4 py-2.5 rounded-xl bg-surface-secondary border border-border-subtle text-content-primary text-sm font-semibold focus:outline-hidden focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     required
                   />
                 </div>

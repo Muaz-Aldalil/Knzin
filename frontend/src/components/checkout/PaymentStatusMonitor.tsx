@@ -129,8 +129,8 @@ export default function PaymentStatusMonitor({
           <Sparkles className="w-10 h-10 animate-pulse" />
         </div>
 
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 mb-4 ring-8 ring-emerald-500/10 shadow-lg">
-          <CheckCircle2 className="w-10 h-10" />
+        <div className="inline-flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4">
+          <CheckCircle2 className="w-16 h-16" />
         </div>
 
         <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2">
@@ -142,8 +142,8 @@ export default function PaymentStatusMonitor({
         </p>
 
         {/* Tickets Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 font-bold text-sm mb-6">
-          <Ticket className="w-5 h-5 text-amber-600 dark:text-amber-400 animate-bounce" />
+        <div className="inline-flex items-center gap-2 text-accent font-bold text-sm mb-6">
+          <Ticket className="w-5 h-5 animate-bounce" />
           <span>
             {isRtl 
               ? `تم تفعيل ${promotionalTickets} تذكرة سحب ترويجية مجانية لحسابك`
@@ -193,8 +193,8 @@ export default function PaymentStatusMonitor({
 
     return (
       <div className="p-6 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border-2 border-rose-500/30 text-center animate-in fade-in duration-200">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 mb-3">
-          <AlertCircle className="w-8 h-8" />
+        <div className="inline-flex items-center justify-center text-rose-600 dark:text-rose-400 mb-3">
+          <AlertCircle className="w-14 h-14" />
         </div>
 
         <h3 className="text-lg font-black text-rose-900 dark:text-rose-200 mb-1">
@@ -246,8 +246,8 @@ export default function PaymentStatusMonitor({
   // 3. Pending / Polling State
   return (
     <div className="p-6 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-300/50 dark:border-amber-700/40 text-center animate-in fade-in duration-200">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 mb-3">
-        <Loader2 className="w-6 h-6 animate-spin" />
+      <div className="inline-flex items-center justify-center text-amber-600 dark:text-amber-400 mb-3">
+        <Loader2 className="w-12 h-12 animate-spin" />
       </div>
 
       <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">

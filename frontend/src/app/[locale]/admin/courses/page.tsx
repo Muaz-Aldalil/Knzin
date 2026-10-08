@@ -118,7 +118,7 @@ export default function AdminCoursesPage() {
           {/* Price row */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <span
-              className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-extrabold font-mono"
+              className="inline-flex items-center gap-0.5 text-emerald-500 dark:text-emerald-400 text-xs font-extrabold font-mono"
               dir="ltr"
             >
               <DollarSign className="w-3 h-3 text-emerald-400 shrink-0" />
@@ -131,7 +131,7 @@ export default function AdminCoursesPage() {
             )}
           </div>
           {/* Tickets pill */}
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-semibold w-fit whitespace-nowrap">
+          <div className="inline-flex items-center gap-1.5 text-amber-500 dark:text-amber-400 text-[11px] font-semibold w-fit whitespace-nowrap">
             <Ticket className="w-3 h-3 shrink-0" />
             <span>
               {item.bundle_promotional_tickets} {isAr ? 'تذكرة سحب' : 'Tickets'}
@@ -156,7 +156,7 @@ export default function AdminCoursesPage() {
               </span>
             </div>
             {freeCount > 0 ? (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-500 dark:text-emerald-400 w-fit">
                 <PlayCircle className="w-3 h-3 shrink-0" />
                 <span>
                   {freeCount} {isAr ? 'معاينة مجانية' : 'Free Preview'}
@@ -289,7 +289,7 @@ export default function AdminCoursesPage() {
               </span>
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span
-                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-extrabold font-mono"
+                  className="inline-flex items-center gap-0.5 text-emerald-500 dark:text-emerald-400 text-xs font-extrabold font-mono"
                   dir="ltr"
                 >
                   <DollarSign className="w-3 h-3 text-emerald-400 shrink-0" />
@@ -308,7 +308,7 @@ export default function AdminCoursesPage() {
               <span className="text-[11px] text-content-muted block">
                 {isAr ? 'تذاكر السحب' : 'Raffle Tickets'}
               </span>
-              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[11px] font-semibold whitespace-nowrap">
+              <div className="inline-flex items-center gap-1.5 text-amber-500 dark:text-amber-400 text-[11px] font-semibold whitespace-nowrap">
                 <Ticket className="w-3.5 h-3.5 shrink-0" />
                 <span>
                   {item.bundle_promotional_tickets} {isAr ? 'تذكرة' : 'Tickets'}
@@ -326,7 +326,7 @@ export default function AdminCoursesPage() {
               </span>
             </div>
             {freeCount > 0 ? (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-500 dark:text-emerald-400">
                 <PlayCircle className="w-3 h-3" />
                 <span>{isAr ? `${freeCount} معاينة مجانية` : `${freeCount} Free`}</span>
               </span>
@@ -432,7 +432,7 @@ export default function AdminCoursesPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={isAr ? 'ابحث عن دورة أو مسار...' : 'Search courses or slug...'}
-              className="w-full ps-9 pe-4 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary placeholder:text-content-muted focus:outline-hidden focus:border-brand-gold transition-colors"
+              className="w-full ps-10 pe-4 py-2 bg-surface-elevated border border-border-subtle rounded-xl text-sm text-content-primary placeholder:text-content-muted focus:outline-hidden focus:border-brand-gold transition-colors"
             />
           </form>
 

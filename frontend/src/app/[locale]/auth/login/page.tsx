@@ -227,7 +227,8 @@ function LoginContent() {
               <label htmlFor="auth-email" className="block text-xs font-semibold text-content-secondary mb-2">
                 {isRtl ? 'البريد الإلكتروني' : 'Email Address'}
               </label>
-              <div className="relative">
+              <div className="relative" dir="ltr">
+                <Mail className="absolute start-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-content-muted pointer-events-none" />
                 <input
                   id="auth-email"
                   type="email"
@@ -237,9 +238,8 @@ function LoginContent() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   dir="ltr"
-                  className="w-full px-4 py-3 rounded-xl bg-surface-secondary border border-border-subtle text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary text-sm font-medium transition-all"
+                  className="w-full ps-11 pe-4 py-3 rounded-xl bg-surface-secondary border border-border-subtle text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary text-sm font-medium transition-all"
                 />
-                <Mail className="absolute top-3.5 end-3.5 w-5 h-5 text-content-muted pointer-events-none" />
               </div>
             </div>
 

@@ -88,7 +88,7 @@ export default function SandboxHubPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-black uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full border border-amber-500/30">
+              <span className="text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
                 {t('badge')}
               </span>
             </div>
@@ -149,8 +149,8 @@ export default function SandboxHubPage() {
               className="flex items-center justify-between p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/40 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                  <ShoppingBag className="w-5 h-5" />
+                <div className="text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <ShoppingBag className="w-6 h-6" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-emerald-950 dark:text-emerald-200 block">
@@ -170,8 +170,8 @@ export default function SandboxHubPage() {
               className="flex items-center justify-between p-4 rounded-xl border border-blue-200 dark:border-blue-800/60 bg-blue-50/40 dark:bg-blue-950/20 hover:bg-blue-100/60 dark:hover:bg-blue-950/40 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
-                  <ShoppingBag className="w-5 h-5" />
+                <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                  <ShoppingBag className="w-6 h-6" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-blue-950 dark:text-blue-200 block">
@@ -191,8 +191,8 @@ export default function SandboxHubPage() {
               className="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-slate-700 text-white flex items-center justify-center shrink-0">
-                  <ShoppingBag className="w-5 h-5" />
+                <div className="text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
+                  <ShoppingBag className="w-6 h-6" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-slate-900 dark:text-white block">
@@ -212,8 +212,8 @@ export default function SandboxHubPage() {
               className="flex items-center justify-between p-4 rounded-xl border border-rose-200 dark:border-rose-800/60 bg-rose-50/40 dark:bg-rose-950/20 hover:bg-rose-100/60 dark:hover:bg-rose-950/40 transition text-right rtl:text-right ltr:text-left disabled:opacity-50 group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0">
-                  <UserCheck className="w-5 h-5" />
+                <div className="text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                  <UserCheck className="w-6 h-6" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-rose-950 dark:text-rose-200 block">

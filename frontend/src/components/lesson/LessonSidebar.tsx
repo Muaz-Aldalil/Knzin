@@ -67,8 +67,8 @@ export function LessonSidebar({
       {/* Course Overview Card & Progress Track */}
       <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary-light dark:bg-primary/10 text-primary flex items-center justify-center shrink-0">
-            <Layers className="w-4 h-4" />
+          <div className="text-primary flex items-center justify-center shrink-0">
+            <Layers className="w-5 h-5" />
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-xs font-black text-secondary dark:text-white truncate">
@@ -158,8 +158,8 @@ export function LessonSidebar({
                 </div>
 
                 {!part.isUnlocked && !isActive && (
-                  <span className="p-1 rounded-md text-slate-400 bg-slate-100 dark:bg-slate-800 shrink-0">
-                    <Lock className="w-3 h-3" />
+                  <span className="text-slate-400 shrink-0">
+                    <Lock className="w-3.5 h-3.5" />
                   </span>
                 )}
               </Link>
@@ -174,7 +174,7 @@ export function LessonSidebar({
           <span className="text-[11px] font-black text-primary-light uppercase tracking-wide">
             {locale === 'ar' ? 'باقة الدورة كاملة' : 'Full Course Bundle'}
           </span>
-          <span className="px-2 py-0.5 rounded-full bg-accent/20 text-accent text-[10px] font-black flex items-center gap-1">
+          <span className="text-accent text-[10px] font-black flex items-center gap-1">
             <Ticket className="w-3 h-3" />
             <span>{bundlePromotionalTickets} {locale === 'ar' ? 'تذاكر' : 'tickets'}</span>
           </span>

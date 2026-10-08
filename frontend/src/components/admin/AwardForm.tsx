@@ -65,8 +65,8 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
       data-testid="admin-award-form"
     >
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-brand-gold/15 text-brand-gold flex items-center justify-center">
-          <Gift className="w-6 h-6" />
+        <div className="text-brand-gold flex items-center justify-center">
+          <Gift className="w-10 h-10" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-content-primary">

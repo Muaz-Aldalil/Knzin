@@ -282,8 +282,8 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
           {/* Empty Results State */}
           {!isLoading && data && filteredResults.length === 0 && (
             <div className="py-10 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-surface-secondary text-content-muted flex items-center justify-center mx-auto">
-                <Search className="w-6 h-6" />
+              <div className="text-content-muted flex items-center justify-center mx-auto">
+                <Search className="w-10 h-10" />
               </div>
               <div className="space-y-1">
                 <div className="text-sm font-bold text-content-primary">
@@ -336,7 +336,7 @@ export function SearchCommandDialog({ open, onOpenChange }: SearchCommandDialogP
                       </span>
 
                       {isVideo && result.momentLabel && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/15 text-accent text-[11px] font-bold">
+                        <span className="inline-flex items-center gap-1 text-accent text-[11px] font-bold">
                           <Clock className="w-3 h-3 text-accent" />
                           <span>{result.momentLabel}</span>
                         </span>

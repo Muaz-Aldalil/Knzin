@@ -37,29 +37,29 @@ export function AffiliateLedgerTable({
     switch (status) {
       case 'available':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            <CheckCircle2 className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{t('statusAvailable')}</span>
           </span>
         );
       case 'pending':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400">
-            <Clock className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400">
+            <Clock className="w-3.5 h-3.5" />
             <span>{t('statusPending')}</span>
           </span>
         );
       case 'cleared':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400">
-            <CheckCircle2 className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400">
+            <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{t('statusCleared')}</span>
           </span>
         );
       case 'cancelled':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400">
-            <XCircle className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 dark:text-red-400">
+            <XCircle className="w-3.5 h-3.5" />
             <span>{t('statusCancelled')}</span>
           </span>
         );
@@ -72,28 +72,28 @@ export function AffiliateLedgerTable({
     switch (type) {
       case 'sales_commission':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-            <ArrowDownLeft className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <ArrowDownLeft className="w-3.5 h-3.5" />
             <span>{isRtl ? 'عمولة بيع' : 'Sales Commission'}</span>
           </span>
         );
       case 'co_prize_credit':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-700 dark:text-amber-300">
-            <ArrowDownLeft className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400">
+            <ArrowDownLeft className="w-3.5 h-3.5" />
             <span>{isRtl ? 'مكافأة فوز 40%' : '40% Co-Prize'}</span>
           </span>
         );
       case 'payout_debit':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
-            <ArrowUpRight className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400">
+            <ArrowUpRight className="w-3.5 h-3.5" />
             <span>{isRtl ? 'سحب أرباح' : 'Payout Debit'}</span>
           </span>
         );
       case 'reversal_credit':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-700 dark:text-rose-300">
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 dark:text-rose-400">
             <span>{isRtl ? 'إعادة رصيد' : 'Reversal Credit'}</span>
           </span>
         );

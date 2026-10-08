@@ -78,7 +78,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
       {/* Hero Section */}
       <div className="text-center max-w-3xl mx-auto pt-6 sm:pt-10 space-y-4">
         {heroBadge && (
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/25 text-brand-gold text-xs font-bold tracking-wide shadow-xs mb-1 animate-in fade-in">
+          <div className="inline-flex items-center gap-1.5 text-brand-gold text-xs font-bold tracking-wide mb-1 animate-in fade-in">
             <Sparkles className="w-3.5 h-3.5" />
             <span>{heroBadge}</span>
           </div>
@@ -110,7 +110,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
         <div className="max-w-5xl mx-auto px-4">
           <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-brand-gold/20 via-surface-elevated to-brand-gold/10 border border-brand-gold/30 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-center md:text-start">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/20 text-brand-gold text-xs font-bold">
+              <div className="inline-flex items-center gap-1.5 text-brand-gold text-xs font-bold">
                 <Gift className="w-3.5 h-3.5" />
                 <span>{isAr ? 'عرض ترويجي خاص' : 'Special Promotional Event'}</span>
               </div>
@@ -199,11 +199,11 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
                   {isAr ? referralCms.description_ar : referralCms.description_en}
                 </p>
 
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-xs font-bold">
+                <div className="flex flex-wrap items-center gap-3 pt-1">
+                  <span className="text-xs font-bold text-emerald-500">
                     {isAr ? referralCms.commission_badge_ar : referralCms.commission_badge_en}
                   </span>
-                  <span className="px-2.5 py-1 rounded-lg bg-brand-gold/10 text-brand-gold border border-brand-gold/20 text-xs font-bold">
+                  <span className="text-xs font-bold text-brand-gold">
                     {isAr ? referralCms.coprize_badge_ar : referralCms.coprize_badge_en}
                   </span>
                 </div>
@@ -236,7 +236,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 text-center">
+              <div className="p-3 text-center">
                 <span className="text-xs font-bold text-primary">
                   {isAr ? 'شارك رابطك الشخصي الآن' : 'Share Your Referral Link Now'}
                 </span>
@@ -261,7 +261,7 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
           )}
           {coursesCms?.show_bundle_discount_badge && coursesCms?.bundle_badge_text_ar && (
             <div className="inline-block mt-1">
-              <span className="px-3 py-1 rounded-full bg-brand-gold/15 text-brand-gold border border-brand-gold/30 text-xs font-bold">
+              <span className="text-xs font-bold text-brand-gold">
                 {isAr ? coursesCms.bundle_badge_text_ar : coursesCms.bundle_badge_text_en}
               </span>
             </div>

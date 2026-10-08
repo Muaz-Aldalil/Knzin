@@ -288,8 +288,8 @@ function SearchResultsContent() {
       {/* State 3: Empty State */}
       {!isLoading && data && data.results.length === 0 && (
         <div className="p-12 text-center rounded-2xl bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 space-y-4">
-          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto">
-            <Search className="w-6 h-6" />
+          <div className="text-slate-400 flex items-center justify-center mx-auto">
+            <Search className="w-10 h-10" />
           </div>
           <div className="space-y-1">
             <h3 className="text-base font-bold text-secondary dark:text-white">
@@ -351,7 +351,7 @@ function SearchResultsContent() {
                     </p>
 
                     {/* Timestamp Deep-link Tag */}
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-accent/15 border border-accent/30 text-secondary dark:text-accent text-xs font-bold">
+                    <div className="inline-flex items-center gap-1.5 text-accent text-xs font-bold">
                       <Clock className="w-3.5 h-3.5 text-accent" />
                       <span>{result.momentLabel}</span>
                     </div>

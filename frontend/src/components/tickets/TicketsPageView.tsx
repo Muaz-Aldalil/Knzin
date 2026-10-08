@@ -67,8 +67,8 @@ export function TicketsPageView() {
   if (!hasToken || isUnauthenticated) {
     return (
       <div className="max-w-2xl mx-auto my-16 p-8 rounded-3xl bg-surface border border-border-subtle text-center shadow-sm">
-        <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mx-auto mb-4">
-          <Ticket className="w-7 h-7" />
+        <div className="flex items-center justify-center mx-auto mb-4">
+          <Ticket className="w-10 h-10 text-accent" />
         </div>
         <h2 className="text-xl font-bold text-content-primary">
           {isRtl ? 'سجّل الدخول لعرض تذاكر السحب الخاصة بك' : 'Sign In to View Your Raffle Tickets'}
@@ -169,8 +169,8 @@ export function TicketsPageView() {
               <span>{isRtl ? 'مؤهلة لجميع السحوبات' : 'Eligible for all tiers'}</span>
             </span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center shrink-0">
-            <Ticket className="w-6 h-6" />
+          <div className="flex items-center justify-center shrink-0">
+            <Ticket className="w-7 h-7 text-accent" />
           </div>
         </div>
 
@@ -222,13 +222,13 @@ export function TicketsPageView() {
         {/* Filter & Search Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl bg-surface border border-border-subtle">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-content-muted absolute inset-inline-start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-content-muted absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={isRtl ? 'بحث برقم التذكرة أو رقم الطلب...' : 'Search by serial or order #...'}
-              className="w-full ps-9 pe-3 py-2 rounded-xl border border-border-subtle bg-input-bg text-content-primary text-xs focus:outline-none focus:border-primary transition-colors"
+              className="w-full ps-10 pe-4 py-2 rounded-xl border border-border-subtle bg-input-bg text-content-primary text-xs focus:outline-none focus:border-primary transition-colors"
             />
           </div>
 
@@ -259,8 +259,8 @@ export function TicketsPageView() {
           </div>
         ) : isEmpty ? (
           <div className="p-12 rounded-3xl bg-surface border border-dashed border-border-subtle text-center space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mx-auto">
-              <Ticket className="w-8 h-8" />
+            <div className="flex items-center justify-center mx-auto">
+              <Ticket className="w-12 h-12 text-accent" />
             </div>
             <h3 className="text-lg font-bold text-content-primary">
               {isRtl ? 'لا توجد لديك تذاكر سحب حتى الآن' : 'No Raffle Tickets Yet'}
@@ -339,17 +339,17 @@ export function TicketsPageView() {
                   <span className="text-[10px] text-content-muted font-semibold block mb-1.5">
                     {isRtl ? 'حالة الأهلية للسحوبات المباشرة:' : 'Draws Eligibility:'}
                   </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                      <CheckCircle2 className="w-3 h-3" />
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>{isRtl ? 'ساعي' : 'Hourly'}</span>
                     </span>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                      <CheckCircle2 className="w-3 h-3" />
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>{isRtl ? 'يومي' : 'Daily'}</span>
                     </span>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                      <Sparkles className="w-3 h-3" />
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                      <Sparkles className="w-3.5 h-3.5" />
                       <span>{isRtl ? 'الجائزة الكبرى' : 'Grand Prize'}</span>
                     </span>
                   </div>

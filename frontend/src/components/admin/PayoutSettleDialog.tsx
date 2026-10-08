@@ -71,8 +71,8 @@ export function PayoutSettleDialog({
         data-testid="payout-settle-dialog"
       >
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shrink-0">
-            <CheckCircle2 className="w-6 h-6" />
+          <div className="text-emerald-500 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-10 h-10" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-content-primary">
