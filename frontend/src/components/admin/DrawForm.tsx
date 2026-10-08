@@ -53,7 +53,7 @@ export function DrawForm({ initialDraw, onSubmit, isLoading = false }: DrawFormP
   return (
     <form onSubmit={handleSubmit} className="bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-xs space-y-5" data-testid="admin-draw-form">
       <h3 className="text-base font-bold text-content-primary flex items-center gap-2">
-        <Sparkles className="w-5 h-5 text-brand-gold" />
+        <Sparkles className="w-5 h-5 text-primary" />
         <span>{isEditing ? (isAr ? 'تعديل بيانات السحب' : 'Edit Draw Details') : (isAr ? 'إنشاء مسودة سحب جديدة' : 'Create New Draw Draft')}</span>
       </h3>
 
@@ -68,7 +68,7 @@ export function DrawForm({ initialDraw, onSubmit, isLoading = false }: DrawFormP
             value={titleAr}
             onChange={(e) => setTitleAr(e.target.value)}
             placeholder="مثال: سحب الجائزة الكبرى الشهري"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden"
             data-testid="input-draw-title-ar"
           />
         </div>
@@ -82,7 +82,7 @@ export function DrawForm({ initialDraw, onSubmit, isLoading = false }: DrawFormP
             value={titleEn}
             onChange={(e) => setTitleEn(e.target.value)}
             placeholder="e.g. Monthly Grand Prize Draw"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden"
             data-testid="input-draw-title-en"
           />
         </div>
@@ -97,7 +97,7 @@ export function DrawForm({ initialDraw, onSubmit, isLoading = false }: DrawFormP
             <select
               value={tier}
               onChange={(e) => setTier(e.target.value as any)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden"
               data-testid="select-draw-tier"
             >
               <option value="hourly">{isAr ? 'ساعي (Hourly)' : 'Hourly'}</option>
@@ -112,7 +112,7 @@ export function DrawForm({ initialDraw, onSubmit, isLoading = false }: DrawFormP
             <select
               value={executionType}
               onChange={(e) => setExecutionType(e.target.value as any)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden"
               data-testid="select-draw-execution"
             >
               <option value="automated_electronic">{isAr ? 'إلكتروني مؤتمت (Automated)' : 'Automated Electronic'}</option>
@@ -132,7 +132,7 @@ export function DrawForm({ initialDraw, onSubmit, isLoading = false }: DrawFormP
             required
             value={startsAt}
             onChange={(e) => setStartsAt(e.target.value)}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono text-sm focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono text-sm focus:border-primary focus:outline-hidden"
             data-testid="input-draw-starts-at"
           />
         </div>
@@ -145,7 +145,7 @@ export function DrawForm({ initialDraw, onSubmit, isLoading = false }: DrawFormP
             required
             value={endsAt}
             onChange={(e) => setEndsAt(e.target.value)}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono text-sm focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono text-sm focus:border-primary focus:outline-hidden"
             data-testid="input-draw-ends-at"
           />
         </div>
@@ -155,7 +155,7 @@ export function DrawForm({ initialDraw, onSubmit, isLoading = false }: DrawFormP
         <button
           type="submit"
           disabled={isLoading}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-gold hover:bg-brand-gold-light text-brand-navy font-bold text-sm shadow-xs transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-xs transition-colors disabled:opacity-50"
           data-testid="submit-draw-form-button"
         >
           {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}

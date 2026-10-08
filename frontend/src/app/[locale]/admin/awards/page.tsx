@@ -15,7 +15,7 @@ export default function AdminAwardsPage() {
       <div className="space-y-6" data-testid="admin-awards-page">
         <div>
           <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-            <Gift className="w-7 h-7 text-brand-gold" />
+            <Gift className="w-7 h-7 text-primary" />
             <span>{isAr ? 'منح الجوائز والتذاكر الترويجية' : 'Promotional Awards & Grants'}</span>
           </h1>
           <p className="text-sm text-content-secondary mt-1">

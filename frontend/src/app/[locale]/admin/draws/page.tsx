@@ -30,7 +30,7 @@ export default function AdminDrawsPage() {
       render: (item) => (
         <div>
           <span className="font-bold text-content-primary block">{isAr ? item.title_ar : item.title_en}</span>
-          <span className="text-xs text-brand-gold capitalize">{item.tier} • {item.execution_type}</span>
+          <span className="text-xs text-primary capitalize">{item.tier} • {item.execution_type}</span>
         </div>
       ),
     },
@@ -60,8 +60,8 @@ export default function AdminDrawsPage() {
       render: (item) => (
         <div className="text-xs">
           {(item.server_seed_hash || item.seed_commitment_hash) ? (
-            <div className="flex items-center gap-1 font-mono text-[11px] text-brand-gold">
-              <Lock className="w-3 h-3 text-brand-gold shrink-0" />
+            <div className="flex items-center gap-1 font-mono text-[11px] text-primary">
+              <Lock className="w-3 h-3 text-primary shrink-0" />
               <span>{(item.server_seed_hash || item.seed_commitment_hash)!.slice(0, 10)}...</span>
             </div>
           ) : (
@@ -89,7 +89,7 @@ export default function AdminDrawsPage() {
           className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary transition-colors"
           data-testid={`manage-draw-${item.id}`}
         >
-          <Edit3 className="w-3.5 h-3.5 text-brand-gold" />
+          <Edit3 className="w-3.5 h-3.5 text-primary" />
           <span>{isAr ? 'إدارة السحب' : 'Manage'}</span>
         </Link>
       ),
@@ -121,8 +121,8 @@ export default function AdminDrawsPage() {
           <div>
             <span className="text-[11px] text-content-muted block">{isAr ? 'الالتزام التشفيري' : 'Cryptographic Proof'}</span>
             {(item.server_seed_hash || item.seed_commitment_hash) ? (
-              <div className="flex items-center gap-1 font-mono text-[11px] text-brand-gold mt-0.5">
-                <Lock className="w-3 h-3 text-brand-gold shrink-0" />
+              <div className="flex items-center gap-1 font-mono text-[11px] text-primary mt-0.5">
+                <Lock className="w-3 h-3 text-primary shrink-0" />
                 <span className="truncate">{(item.server_seed_hash || item.seed_commitment_hash)!.slice(0, 16)}...</span>
               </div>
             ) : (
@@ -143,7 +143,7 @@ export default function AdminDrawsPage() {
             className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary transition-colors"
             data-testid={`manage-draw-${item.id}`}
           >
-            <Edit3 className="w-3.5 h-3.5 text-brand-gold" />
+            <Edit3 className="w-3.5 h-3.5 text-primary" />
             <span>{isAr ? 'إدارة السحب' : 'Manage Draw'}</span>
           </Link>
         </div>
@@ -158,7 +158,7 @@ export default function AdminDrawsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-              <Sparkles className="w-7 h-7 text-brand-gold" />
+              <Sparkles className="w-7 h-7 text-primary" />
               <span>{isAr ? 'إدارة السحوبات والجوائز الترويجية' : 'Promotional Draws & Prizes'}</span>
             </h1>
             <p className="text-sm text-content-secondary mt-1">
@@ -170,7 +170,7 @@ export default function AdminDrawsPage() {
 
           <Link
             href={`/${locale}/admin/draws/new`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gold text-brand-navy font-bold text-sm hover:bg-brand-gold-light transition-colors shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors shadow-xs"
             data-testid="create-draw-button"
           >
             <Plus className="w-4 h-4" />
@@ -186,7 +186,7 @@ export default function AdminDrawsPage() {
               onClick={() => setStatusFilter(status)}
               className={`px-3 py-1.5 rounded-lg font-semibold transition-colors capitalize ${
                 statusFilter === status
-                  ? 'bg-brand-gold text-brand-navy shadow-xs'
+                  ? 'bg-primary text-white shadow-xs'
                   : 'text-content-secondary hover:text-content-primary'
               }`}
             >

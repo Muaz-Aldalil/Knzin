@@ -50,8 +50,8 @@ export function ReasonDialog({
         className="bg-surface-card border border-border-subtle rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4"
       >
         <div className="flex items-start gap-4">
-          <div className="text-rose-500 flex items-center justify-center shrink-0">
-            <AlertCircle className="w-10 h-10" />
+          <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center shrink-0">
+            <AlertCircle className="w-6 h-6" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-content-primary">{title}</h3>
@@ -72,7 +72,7 @@ export function ReasonDialog({
               placeholder ||
               (isAr ? 'اكتب سبب الرفض أو الإلغاء بالتفصيل...' : 'Provide detailed justification...')
             }
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:outline-hidden focus:border-brand-gold resize-none"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:outline-hidden focus:border-primary resize-none"
           />
           <div className="flex justify-end text-xs text-content-muted">
             {reason.length} / {maxLength}

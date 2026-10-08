@@ -36,7 +36,7 @@ export default function AdminAffiliateContentCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات محتوى صفحة الشركاء...' : 'Loading affiliate content...'}
           </p>
@@ -75,7 +75,7 @@ export default function AdminAffiliateContentCmsPage() {
                   type="text"
                   value={formData.hero_title_ar || ''}
                   onChange={(e) => handleChange('hero_title_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -87,7 +87,7 @@ export default function AdminAffiliateContentCmsPage() {
                   type="text"
                   value={formData.hero_title_en || ''}
                   onChange={(e) => handleChange('hero_title_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -108,7 +108,7 @@ export default function AdminAffiliateContentCmsPage() {
                   rows={3}
                   value={formData.hero_subtitle_ar || ''}
                   onChange={(e) => handleChange('hero_subtitle_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -120,7 +120,7 @@ export default function AdminAffiliateContentCmsPage() {
                   rows={3}
                   value={formData.hero_subtitle_en || ''}
                   onChange={(e) => handleChange('hero_subtitle_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>
@@ -141,7 +141,7 @@ export default function AdminAffiliateContentCmsPage() {
                   rows={3}
                   value={formData.how_it_works_ar || ''}
                   onChange={(e) => handleChange('how_it_works_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -153,7 +153,7 @@ export default function AdminAffiliateContentCmsPage() {
                   rows={3}
                   value={formData.how_it_works_en || ''}
                   onChange={(e) => handleChange('how_it_works_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>

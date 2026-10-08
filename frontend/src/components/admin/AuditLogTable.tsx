@@ -46,7 +46,7 @@ export function AuditLogTable({ logs, isLoading }: AuditLogTableProps) {
                 <div className="flex items-center gap-1.5 font-mono text-xs">
                   <span className="text-content-muted">#{log.id}</span>
                   <span className="text-content-secondary">•</span>
-                  <span className="font-bold text-brand-gold">{log.action}</span>
+                  <span className="font-bold text-primary">{log.action}</span>
                 </div>
                 <span
                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
@@ -73,7 +73,7 @@ export function AuditLogTable({ logs, isLoading }: AuditLogTableProps) {
                 <span className="text-content-secondary truncate">
                   {log.target_type}:{log.target_id}
                 </span>
-                <span className="text-brand-gold/90 text-[10px] bg-brand-gold/10 px-2 py-0.5 rounded border border-brand-gold/20 shrink-0">
+                <span className="text-primary/90 text-[10px] bg-primary/10 px-2 py-0.5 rounded border border-primary/20 shrink-0">
                   {log.capability_used}
                 </span>
               </div>
@@ -90,7 +90,7 @@ export function AuditLogTable({ logs, isLoading }: AuditLogTableProps) {
                     onClick={() => setExpandedId(isExpanded ? null : log.id)}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-elevated hover:bg-surface border border-border-subtle text-xs text-content-secondary transition-colors"
                   >
-                    <Code className="w-3 h-3 text-brand-gold" />
+                    <Code className="w-3 h-3 text-primary" />
                     <span>{isExpanded ? (isAr ? 'إخفاء البيانات' : 'Hide Payload') : (isAr ? 'عرض البيانات المشفرة' : 'View Payload')}</span>
                     {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                   </button>
@@ -137,7 +137,7 @@ export function AuditLogTable({ logs, isLoading }: AuditLogTableProps) {
                       <span className="font-bold text-content-primary block">{log.actor?.email || 'System'}</span>
                       <span className="font-mono text-[10px] text-content-muted">{log.ip_address}</span>
                     </td>
-                    <td className="px-4 py-3 font-mono font-bold text-brand-gold">{log.action}</td>
+                    <td className="px-4 py-3 font-mono font-bold text-primary">{log.action}</td>
                     <td className="px-4 py-3 font-mono text-content-secondary">{log.capability_used}</td>
                     <td className="px-4 py-3 font-mono text-content-primary">
                       {log.target_type}:{log.target_id}

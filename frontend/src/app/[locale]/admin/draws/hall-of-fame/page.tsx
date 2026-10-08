@@ -36,7 +36,7 @@ export default function AdminHallOfFameCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات لوحة الشرف...' : 'Loading Hall of Fame settings...'}
           </p>
@@ -85,7 +85,7 @@ export default function AdminHallOfFameCmsPage() {
                   type="text"
                   value={formData.hall_of_fame_title_ar || ''}
                   onChange={(e) => handleChange('hall_of_fame_title_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -97,7 +97,7 @@ export default function AdminHallOfFameCmsPage() {
                   type="text"
                   value={formData.hall_of_fame_title_en || ''}
                   onChange={(e) => handleChange('hall_of_fame_title_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -118,7 +118,7 @@ export default function AdminHallOfFameCmsPage() {
                   rows={3}
                   value={formData.hall_of_fame_subtitle_ar || ''}
                   onChange={(e) => handleChange('hall_of_fame_subtitle_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -130,7 +130,7 @@ export default function AdminHallOfFameCmsPage() {
                   rows={3}
                   value={formData.hall_of_fame_subtitle_en || ''}
                   onChange={(e) => handleChange('hall_of_fame_subtitle_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>

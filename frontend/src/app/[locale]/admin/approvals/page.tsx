@@ -51,7 +51,7 @@ export default function AdminApprovalsPage() {
             </>
           ) : (
             <>
-              <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
               <span>{isAr ? 'نزاهة السحب' : 'Draw Integrity'}</span>
             </>
           )}
@@ -123,7 +123,7 @@ export default function AdminApprovalsPage() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3.5 h-3.5 text-brand-gold" />
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
                   <span className="text-content-primary">{isAr ? 'نزاهة السحب' : 'Draw Integrity'}</span>
                 </>
               )}
@@ -168,7 +168,7 @@ export default function AdminApprovalsPage() {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-            <ShieldCheck className="w-7 h-7 text-brand-gold" />
+            <ShieldCheck className="w-7 h-7 text-primary" />
             <span>{isAr ? 'سجل الموافقات والتدقيق الرقابي' : 'Approvals & Verification Registry'}</span>
           </h1>
           <p className="text-sm text-content-secondary mt-1">
@@ -194,7 +194,7 @@ export default function AdminApprovalsPage() {
                   onClick={() => setFilterType(type)}
                   className={`px-3 py-1.5 rounded-lg font-semibold transition-colors capitalize whitespace-nowrap shrink-0 cursor-pointer ${
                     filterType === type
-                      ? 'bg-brand-gold text-brand-navy shadow-xs'
+                      ? 'bg-primary text-white shadow-xs'
                       : 'text-content-secondary hover:text-content-primary'
                   }`}
                 >

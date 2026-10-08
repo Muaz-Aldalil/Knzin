@@ -117,13 +117,13 @@ export function CapabilityManager({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-brand-gold" />
+              <Shield className="w-5 h-5 text-primary" />
               <h3 className="text-lg font-bold text-content-primary">
                 {isAr ? 'إدارة الصلاحيات الإدارية' : 'Manage Administrative Capabilities'}
               </h3>
             </div>
             <p className="text-xs text-content-secondary mt-1">
-              {user.email} <span className="font-mono text-brand-gold">({user.learner_code})</span>
+              {user.email} <span className="font-mono text-primary">({user.learner_code})</span>
             </p>
           </div>
           <button
@@ -155,7 +155,7 @@ export function CapabilityManager({
                 key={cap.key}
                 className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-start justify-between gap-3 ${
                   hasCap
-                    ? 'bg-brand-gold/5 border-brand-gold/30'
+                    ? 'bg-primary/5 border-primary/30'
                     : 'bg-surface-elevated/40 border-border-subtle'
                 }`}
               >
@@ -188,7 +188,7 @@ export function CapabilityManager({
                       type="button"
                       disabled={isSelf || isLoading}
                       onClick={() => handleGrant(cap.key)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-gold hover:bg-brand-gold-hover text-brand-navy text-xs font-bold transition-colors shadow-xs cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-colors shadow-xs cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                       data-testid={`grant-cap-${cap.key}`}
                     >
                       <Plus className="w-3.5 h-3.5" />

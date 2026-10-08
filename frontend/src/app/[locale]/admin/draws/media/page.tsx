@@ -36,7 +36,7 @@ export default function AdminDrawsMediaCmsPage() {
     return (
       <AdminGuard requiredCapability="manage_platform_settings">
         <div className="p-12 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-xs text-content-secondary">
             {isAr ? 'جارِ تحميل إعدادات البث والبودكاست...' : 'Loading media settings...'}
           </p>
@@ -75,7 +75,7 @@ export default function AdminDrawsMediaCmsPage() {
                   type="text"
                   value={formData.podcast_title_ar || ''}
                   onChange={(e) => handleChange('podcast_title_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="rtl"
                 />
               </div>
@@ -87,7 +87,7 @@ export default function AdminDrawsMediaCmsPage() {
                   type="text"
                   value={formData.podcast_title_en || ''}
                   onChange={(e) => handleChange('podcast_title_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -108,7 +108,7 @@ export default function AdminDrawsMediaCmsPage() {
                   rows={3}
                   value={formData.podcast_description_ar || ''}
                   onChange={(e) => handleChange('podcast_description_ar', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="rtl"
                 />
               </div>
@@ -120,7 +120,7 @@ export default function AdminDrawsMediaCmsPage() {
                   rows={3}
                   value={formData.podcast_description_en || ''}
                   onChange={(e) => handleChange('podcast_description_en', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none resize-none"
                   dir="ltr"
                 />
               </div>
@@ -142,7 +142,7 @@ export default function AdminDrawsMediaCmsPage() {
                   placeholder="https://youtube.com/live/..."
                   value={formData.live_stream_url || ''}
                   onChange={(e) => handleChange('live_stream_url', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>
@@ -155,7 +155,7 @@ export default function AdminDrawsMediaCmsPage() {
                   placeholder="https://..."
                   value={formData.latest_podcast_url || ''}
                   onChange={(e) => handleChange('latest_podcast_url', e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary outline-none"
                   dir="ltr"
                 />
               </div>

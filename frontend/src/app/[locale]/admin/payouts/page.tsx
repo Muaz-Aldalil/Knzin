@@ -229,7 +229,7 @@ export default function AdminPayoutsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-              <BadgeDollarSign className="w-7 h-7 text-brand-gold" />
+              <BadgeDollarSign className="w-7 h-7 text-primary" />
               <span>{isAr ? 'تسوية طلبات سحب الأرباح' : 'Affiliate Payout Settlements'}</span>
             </h1>
             <p className="text-sm text-content-secondary mt-1">
@@ -253,7 +253,7 @@ export default function AdminPayoutsPage() {
                 onClick={() => setStatusFilter(tab.id)}
                 className={`px-3 py-1.5 rounded-lg font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                   statusFilter === tab.id
-                    ? 'bg-brand-gold text-brand-navy shadow-xs'
+                    ? 'bg-primary text-white shadow-xs'
                     : 'text-content-secondary hover:text-content-primary'
                 }`}
               >

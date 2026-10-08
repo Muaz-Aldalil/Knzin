@@ -40,7 +40,7 @@ export default function NewDrawPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-content-primary flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-brand-gold" />
+              <Sparkles className="w-6 h-6 text-primary" />
               <span>{isAr ? 'إنشاء مسودة سحب جديدة' : 'Create New Draw Draft'}</span>
             </h1>
             <p className="text-xs text-content-secondary mt-0.5">

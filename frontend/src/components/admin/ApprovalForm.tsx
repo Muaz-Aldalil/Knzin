@@ -77,7 +77,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
     <div className="bg-surface-card border border-border-subtle rounded-2xl p-6 shadow-xs space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h3 className="text-base font-bold text-content-primary flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-brand-gold" />
+          <ShieldCheck className="w-5 h-5 text-primary" />
           <span>{isAr ? 'إصدار موافقة تدقيق جديدة' : 'Issue New Verification Record'}</span>
         </h3>
 
@@ -89,7 +89,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
               onClick={() => setActiveTab('kyc')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 activeTab === 'kyc'
-                  ? 'bg-brand-gold text-brand-navy'
+                  ? 'bg-primary text-white'
                   : 'text-content-secondary hover:text-content-primary'
               }`}
             >
@@ -103,7 +103,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
               onClick={() => setActiveTab('draw_integrity')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
                 activeTab === 'draw_integrity'
-                  ? 'bg-brand-gold text-brand-navy'
+                  ? 'bg-primary text-white'
                   : 'text-content-secondary hover:text-content-primary'
               }`}
             >
@@ -140,7 +140,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               placeholder="e.g. LRN-RR5DB3 or 9d3a4b..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-brand-gold focus:outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-primary focus:outline-hidden"
               data-testid="input-kyc-user-id"
             />
           </div>
@@ -155,7 +155,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
               value={drawId}
               onChange={(e) => setDrawId(e.target.value)}
               placeholder="e.g. 5 or UUID"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-brand-gold focus:outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-primary focus:outline-hidden"
               data-testid="input-draw-audit-id"
             />
           </div>
@@ -169,7 +169,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden"
             >
               <option value="valid">{isAr ? 'معتمد ومقبول (Valid / Approved)' : 'Valid / Approved'}</option>
               <option value="rejected">{isAr ? 'مرفوض (Rejected)' : 'Rejected'}</option>
@@ -185,7 +185,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={isAr ? 'تفاصيل الفحص والتوثيق...' : 'Verification details...'}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden"
             />
           </div>
         </div>
@@ -194,7 +194,7 @@ export function ApprovalForm({ onSuccess }: ApprovalFormProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gold hover:bg-brand-gold-light text-brand-navy font-bold text-xs shadow-xs transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-xs shadow-xs transition-colors disabled:opacity-50"
             data-testid="submit-approval-button"
           >
             {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}

@@ -70,7 +70,7 @@ export function FeedbackDialog({
     warning: {
       icon: AlertTriangle,
       iconWrapper: 'bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-lg shadow-amber-500/10',
-      button: 'bg-brand-gold hover:bg-brand-gold-light text-brand-navy shadow-md shadow-amber-950/30',
+      button: 'bg-amber-500 hover:bg-amber-600 text-white shadow-md shadow-amber-950/30',
     },
     info: {
       icon: Info,

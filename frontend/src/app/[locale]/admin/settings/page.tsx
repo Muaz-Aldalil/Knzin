@@ -17,7 +17,7 @@ export default function AdminSettingsPage() {
       <div className="space-y-6" data-testid="admin-settings-page">
         <div>
           <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-            <SettingsIcon className="w-7 h-7 text-brand-gold" />
+            <SettingsIcon className="w-7 h-7 text-primary" />
             <span>{isAr ? 'إعدادات المنصة والعمولات' : 'Platform Settings & Commissions'}</span>
           </h1>
           <p className="text-sm text-content-secondary mt-1">
@@ -29,7 +29,7 @@ export default function AdminSettingsPage() {
 
         {isLoading ? (
           <div className="p-12 flex flex-col items-center justify-center space-y-3">
-            <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
             <p className="text-xs text-content-secondary">
               {isAr ? 'جارِ تحميل الإعدادات...' : 'Loading settings...'}
             </p>

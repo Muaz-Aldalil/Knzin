@@ -70,7 +70,7 @@ export function WinnerMetadataForm({ winner, isCompleted, onSetWinner }: WinnerM
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-semibold text-content-primary transition-colors"
             >
-              <Edit3 className="w-3.5 h-3.5 text-brand-gold" />
+              <Edit3 className="w-3.5 h-3.5 text-primary" />
               <span>{isAr ? 'تعديل بيانات العرض' : 'Edit Display Metadata'}</span>
             </button>
           )}
@@ -91,7 +91,7 @@ export function WinnerMetadataForm({ winner, isCompleted, onSetWinner }: WinnerM
         <div className="p-4 rounded-xl bg-surface-elevated border border-border-subtle grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           <div>
             <span className="text-content-secondary block">{isAr ? 'رقم التذكرة الرابحة:' : 'Winning Ticket Serial:'}</span>
-            <span className="font-mono font-bold text-brand-gold text-sm">{winner.winning_ticket_serial}</span>
+            <span className="font-mono font-bold text-primary text-sm">{winner.winning_ticket_serial}</span>
           </div>
           <div>
             <span className="text-content-secondary block">{isAr ? 'اسم الفائز (المحجوب):' : 'Masked Name:'}</span>
@@ -121,7 +121,7 @@ export function WinnerMetadataForm({ winner, isCompleted, onSetWinner }: WinnerM
                   value={maskedName}
                   onChange={(e) => setMaskedName(e.target.value)}
                   placeholder="e.g. A*** M***"
-                  className="w-full px-3 py-2 rounded-lg bg-surface-elevated border border-border-subtle text-xs text-content-primary focus:border-brand-gold focus:outline-hidden"
+                  className="w-full px-3 py-2 rounded-lg bg-surface-elevated border border-border-subtle text-xs text-content-primary focus:border-primary focus:outline-hidden"
                 />
               </div>
 
@@ -134,7 +134,7 @@ export function WinnerMetadataForm({ winner, isCompleted, onSetWinner }: WinnerM
                   value={governorate}
                   onChange={(e) => setGovernorate(e.target.value)}
                   placeholder="e.g. Baghdad"
-                  className="w-full px-3 py-2 rounded-lg bg-surface-elevated border border-border-subtle text-xs text-content-primary focus:border-brand-gold focus:outline-hidden"
+                  className="w-full px-3 py-2 rounded-lg bg-surface-elevated border border-border-subtle text-xs text-content-primary focus:border-primary focus:outline-hidden"
                 />
               </div>
 
@@ -147,7 +147,7 @@ export function WinnerMetadataForm({ winner, isCompleted, onSetWinner }: WinnerM
                   value={streamRecordingUrl}
                   onChange={(e) => setStreamRecordingUrl(e.target.value)}
                   placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-lg bg-surface-elevated border border-border-subtle text-xs text-content-primary focus:border-brand-gold focus:outline-hidden"
+                  className="w-full px-3 py-2 rounded-lg bg-surface-elevated border border-border-subtle text-xs text-content-primary focus:border-primary focus:outline-hidden"
                 />
               </div>
 
@@ -157,7 +157,7 @@ export function WinnerMetadataForm({ winner, isCompleted, onSetWinner }: WinnerM
                   id="prizeDeliveredCheck"
                   checked={prizeDelivered}
                   onChange={(e) => setPrizeDelivered(e.target.checked)}
-                  className="w-4 h-4 rounded-sm border-border-subtle text-brand-gold focus:ring-brand-gold"
+                  className="w-4 h-4 rounded-sm border-border-subtle text-primary focus:ring-primary"
                 />
                 <label htmlFor="prizeDeliveredCheck" className="text-xs font-semibold text-content-primary cursor-pointer">
                   {isAr ? 'تم تسليم الجائزة رسمياً للفائز' : 'Prize officially delivered to winner'}
@@ -176,7 +176,7 @@ export function WinnerMetadataForm({ winner, isCompleted, onSetWinner }: WinnerM
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-brand-gold text-brand-navy font-bold text-xs shadow-xs disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-primary text-white font-bold text-xs shadow-xs disabled:opacity-50"
               >
                 {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 <span>{isAr ? 'حفظ التعديلات' : 'Save Changes'}</span>
@@ -195,7 +195,7 @@ export function WinnerMetadataForm({ winner, isCompleted, onSetWinner }: WinnerM
         <span>{isAr ? 'سجل الفائز المعتمد' : 'Canonical Draw Winner'}</span>
       </h3>
       <div className="p-4 rounded-xl bg-surface-elevated/50 border border-border-subtle flex items-start gap-3">
-        <ShieldAlert className="w-5 h-5 text-brand-gold shrink-0 mt-0.5" />
+        <ShieldAlert className="w-5 h-5 text-primary shrink-0 mt-0.5" />
         <div className="text-xs text-content-secondary leading-relaxed">
           <p className="font-semibold text-content-primary">
             {isAr ? 'لا يوجد فائز معتمد مسجل حتى الآن' : 'No Canonical Winner Recorded Yet'}

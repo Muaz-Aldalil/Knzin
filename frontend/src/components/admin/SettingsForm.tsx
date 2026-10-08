@@ -77,7 +77,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
       {/* Dynamic Settings Card */}
       <div className="p-6 rounded-2xl bg-surface-card border border-border-subtle shadow-xs space-y-6">
         <h3 className="text-lg font-bold text-content-primary flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-brand-gold" />
+          <ShieldCheck className="w-5 h-5 text-primary" />
           <span>{isAr ? 'الإعدادات المالية الفعالة' : 'Active Financial Parameters'}</span>
         </h3>
 
@@ -87,7 +87,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             <label className="text-sm font-bold text-content-primary">
               {isAr ? 'نسبة عمولة المبيعات الفورية (%):' : 'Direct Sales Commission Rate (%):'}
             </label>
-            <span className="text-xs font-mono font-bold text-brand-gold">
+            <span className="text-xs font-mono font-bold text-primary">
               {Math.round(ratePercent * 100)} bps
             </span>
           </div>
@@ -99,7 +99,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               max="100"
               value={ratePercent}
               onChange={(e) => setRatePercent(parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono focus:border-brand-gold focus:outline-hidden"
+              className="w-full px-4 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono focus:border-primary focus:outline-hidden"
               data-testid="input-commission-rate"
             />
             <span className="text-sm font-bold text-content-secondary">%</span>
@@ -134,7 +134,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               min="0"
               value={minPayoutDollars}
               onChange={(e) => setMinPayoutDollars(parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono focus:border-brand-gold focus:outline-hidden"
+              className="w-full px-4 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono focus:border-primary focus:outline-hidden"
               data-testid="input-payout-min"
             />
             <span className="text-sm font-bold text-content-secondary">$</span>
@@ -150,7 +150,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
       {/* Read-Only Invariants Card */}
       <div className="p-6 rounded-2xl bg-surface-elevated/40 border border-border-subtle shadow-xs space-y-4">
         <h4 className="text-sm font-bold text-content-primary flex items-center gap-2">
-          <Info className="w-4 h-4 text-brand-gold" />
+          <Info className="w-4 h-4 text-primary" />
           <span>{isAr ? 'ثوابت المنظومة المحمية (للقراءة فقط)' : 'Protected System Invariants (Read-Only)'}</span>
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
@@ -185,7 +185,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           type="submit"
           disabled={!hasChanges || isUpdating}
           data-testid="save-settings-button"
-          className="px-6 py-3 rounded-xl bg-brand-gold hover:bg-brand-gold-light text-brand-navy font-bold text-sm shadow-xs transition-colors disabled:opacity-40 disabled:pointer-events-none"
+          className="px-6 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-xs transition-colors disabled:opacity-40 disabled:pointer-events-none"
         >
           {isAr ? 'حفظ وتأكيد التغييرات' : 'Save & Confirm Changes'}
         </button>

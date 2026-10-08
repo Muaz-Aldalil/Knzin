@@ -63,11 +63,11 @@ export function DraftRestoreBanner() {
   return (
     <div
       data-testid="admin-draft-restore-banner"
-      className="mb-6 p-4 rounded-2xl bg-brand-gold/10 border border-brand-gold/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs"
+      className="mb-6 p-4 rounded-2xl bg-primary/10 border border-primary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs"
     >
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center text-brand-gold shrink-0">
-          <FileEdit className="w-6 h-6 text-brand-gold" />
+        <div className="flex items-center justify-center text-primary shrink-0">
+          <FileEdit className="w-6 h-6 text-primary" />
         </div>
         <div>
           <p className="text-xs font-bold text-content-primary">
@@ -95,7 +95,7 @@ export function DraftRestoreBanner() {
           type="button"
           onClick={handleRestore}
           data-testid="admin-draft-restore-btn"
-          className="px-3.5 py-1.5 rounded-lg bg-brand-gold hover:bg-brand-gold-light text-brand-navy text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+          className="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>{isAr ? 'استعادة المسودة' : 'Restore Draft'}</span>

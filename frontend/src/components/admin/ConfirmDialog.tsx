@@ -13,6 +13,7 @@ interface ConfirmDialogProps {
   confirmWord?: string;
   isDestructive?: boolean;
   isLoading?: boolean;
+  children?: React.ReactNode;
   onConfirm: () => void;
   onClose: () => void;
 }
@@ -26,6 +27,7 @@ export function ConfirmDialog({
   confirmWord,
   isDestructive = false,
   isLoading = false,
+  children,
   onConfirm,
   onClose,
 }: ConfirmDialogProps) {
@@ -68,10 +70,12 @@ export function ConfirmDialog({
               value={typedInput}
               onChange={(e) => setTypedInput(e.target.value)}
               placeholder={confirmWord}
-              className="w-full px-3.5 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:outline-hidden focus:border-brand-gold"
+              className="w-full px-3.5 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:outline-hidden focus:border-primary"
             />
           </div>
         )}
+
+        {children && <div className="pt-1">{children}</div>}
 
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-border-subtle">
           <button
@@ -89,7 +93,7 @@ export function ConfirmDialog({
             className={`flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold shadow-xs transition-colors disabled:opacity-40 disabled:pointer-events-none ${
               isDestructive
                 ? 'bg-rose-600 hover:bg-rose-500 text-white'
-                : 'bg-brand-gold hover:bg-brand-gold-light text-brand-navy'
+                : 'bg-primary hover:bg-primary-hover text-white'
             }`}
           >
             {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}

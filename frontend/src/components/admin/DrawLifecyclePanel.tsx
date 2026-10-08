@@ -72,7 +72,7 @@ export function DrawLifecyclePanel({ draw, onPublish, onComplete }: DrawLifecycl
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h3 className="text-base font-bold text-content-primary flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-brand-gold" />
+            <ShieldCheck className="w-5 h-5 text-primary" />
             <span>{isAr ? 'إدارة دورة حياة السحب والالتزام المشفر' : 'Draw Lifecycle & Cryptographic Commitments'}</span>
           </h3>
           <div className="flex items-center gap-2 mt-2">
@@ -100,7 +100,7 @@ export function DrawLifecyclePanel({ draw, onPublish, onComplete }: DrawLifecycl
           {!draw.is_published && (
             <button
               onClick={() => setIsPublishOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-gold text-brand-navy font-bold text-xs shadow-xs hover:bg-brand-gold-light transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs shadow-xs hover:bg-primary-hover transition-colors"
               data-testid="publish-draw-button"
             >
               <Eye className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ export function DrawLifecyclePanel({ draw, onPublish, onComplete }: DrawLifecycl
       {/* Cryptographic Proof Card */}
       <div className="p-4 rounded-xl bg-surface-elevated/60 border border-border-subtle space-y-3">
         <h4 className="text-xs font-bold text-content-primary flex items-center gap-1.5">
-          <Lock className="w-3.5 h-3.5 text-brand-gold" />
+          <Lock className="w-3.5 h-3.5 text-primary" />
           <span>{isAr ? 'الالتزام التشفيري المسبق (SHA-256 Seed Commitment)' : 'SHA-256 Cryptographic Commitment'}</span>
         </h4>
 
@@ -141,7 +141,7 @@ export function DrawLifecyclePanel({ draw, onPublish, onComplete }: DrawLifecycl
                 {isAr ? 'بصمة الالتزام المنشورة علناً (Hash):' : 'Public Commitment Hash:'}
               </span>
               <div className="flex items-center gap-2">
-                <div className="flex-1 bg-surface-card border border-border-subtle rounded-lg px-3 py-1.5 font-mono text-xs text-brand-gold truncate">
+                <div className="flex-1 bg-surface-card border border-border-subtle rounded-lg px-3 py-1.5 font-mono text-xs text-primary truncate">
                   {draw.server_seed_hash || draw.seed_commitment_hash || '—'}
                 </div>
                 {(draw.server_seed_hash || draw.seed_commitment_hash) && (

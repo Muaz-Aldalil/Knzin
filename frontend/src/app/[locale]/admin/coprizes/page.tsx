@@ -58,7 +58,7 @@ export default function AdminCoPrizesPage() {
       header: isAr ? 'تذكرة الفوز' : 'Winning Ticket',
       render: (item) => (
         <div>
-          <span className="font-mono text-xs font-bold text-brand-gold block">
+          <span className="font-mono text-xs font-bold text-primary block">
             {item.ticket_serial}
           </span>
           <span className="text-xs text-content-secondary">
@@ -169,7 +169,7 @@ export default function AdminCoPrizesPage() {
       <div className="space-y-3" data-testid={`coprize-card-${item.ticket_serial}`}>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <span className="font-mono text-xs font-bold text-brand-gold block">
+            <span className="font-mono text-xs font-bold text-primary block">
               {item.ticket_serial}
             </span>
             <span className="text-xs text-content-secondary block">
@@ -243,7 +243,7 @@ export default function AdminCoPrizesPage() {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-            <Trophy className="w-7 h-7 text-brand-gold" />
+            <Trophy className="w-7 h-7 text-primary" />
             <span>{isAr ? 'البت في جوائز الشركاء (حصة الـ 40%)' : 'Affiliate Co-Prize Adjudication'}</span>
           </h1>
           <p className="text-sm text-content-secondary mt-1">

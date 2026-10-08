@@ -69,7 +69,7 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-base font-bold text-content-primary flex items-center gap-2">
-            <Gift className="w-5 h-5 text-brand-gold" />
+            <Gift className="w-5 h-5 text-primary" />
             <span>{isAr ? 'جوائز السحب المعتمدة' : 'Draw Prize Inventory'}</span>
           </h3>
           <p className="text-xs text-content-secondary mt-0.5">
@@ -83,7 +83,7 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold border border-brand-gold/20 text-xs font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary-hover/20 text-primary border border-primary/20 text-xs font-bold transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>{isAr ? 'إضافة جائزة' : 'Add Prize'}</span>
@@ -105,7 +105,7 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
                 value={titleAr}
                 onChange={(e) => setTitleAr(e.target.value)}
                 placeholder="مثال: سيارة شيري تيجو 8 برو"
-                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary focus:border-brand-gold focus:outline-hidden"
+                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary focus:border-primary focus:outline-hidden"
               />
             </div>
             <div>
@@ -118,7 +118,7 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
                 value={titleEn}
                 onChange={(e) => setTitleEn(e.target.value)}
                 placeholder="e.g. Chery Tiggo 8 Pro"
-                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary focus:border-brand-gold focus:outline-hidden"
+                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary focus:border-primary focus:outline-hidden"
               />
             </div>
           </div>
@@ -131,7 +131,7 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary focus:border-brand-gold focus:outline-hidden"
+                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary focus:border-primary focus:outline-hidden"
               >
                 <option value="cash">{isAr ? 'نقدي (Cash)' : 'Cash'}</option>
                 <option value="merchandise">{isAr ? 'عيني (Merchandise)' : 'Merchandise'}</option>
@@ -147,7 +147,7 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
                 required
                 value={usdValue}
                 onChange={(e) => setUsdValue(parseFloat(e.target.value) || 0)}
-                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary font-mono focus:border-brand-gold focus:outline-hidden"
+                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary font-mono focus:border-primary focus:outline-hidden"
               />
             </div>
             <div>
@@ -159,7 +159,7 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
                 value={iqdLabel}
                 onChange={(e) => setIqdLabel(e.target.value)}
                 placeholder="130,000,000 IQD"
-                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary focus:border-brand-gold focus:outline-hidden"
+                className="w-full px-3 py-2 rounded-lg bg-surface-card border border-border-subtle text-xs text-content-primary focus:border-primary focus:outline-hidden"
               />
             </div>
           </div>
@@ -175,7 +175,7 @@ export function PrizeEditor({ prizes, isLocked, onAddPrize, onDeletePrize }: Pri
             <button
               type="submit"
               disabled={isLoading}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-brand-gold text-brand-navy font-bold text-xs shadow-xs"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary text-white font-bold text-xs shadow-xs"
             >
               {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>{isAr ? 'حفظ الجائزة' : 'Save Prize'}</span>

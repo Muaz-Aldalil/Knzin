@@ -47,8 +47,8 @@ export function AdminSessionTimeoutModal({
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader className="items-center text-center space-y-3">
-          <div className="relative flex items-center justify-center text-amber-500">
-            <Clock className="w-12 h-12 animate-pulse text-amber-500" />
+          <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500">
+            <Clock className="w-8 h-8 animate-pulse text-amber-500" />
             <span className="absolute -top-1 -end-1 flex h-3.5 w-3.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>
@@ -103,16 +103,16 @@ export function AdminSessionTimeoutModal({
             onClick={onExtend}
             disabled={isExtending}
             data-testid="admin-session-extend-btn"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-gold to-brand-gold-dark hover:from-brand-gold-light hover:to-brand-gold text-brand-navy text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isExtending ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-brand-navy" />
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
                 <span>{isAr ? 'جارِ التمديد...' : 'Extending...'}</span>
               </>
             ) : (
               <>
-                <RefreshCw className="w-3.5 h-3.5 text-brand-navy" />
+                <RefreshCw className="w-3.5 h-3.5 text-white" />
                 <span>{isAr ? 'تمديد الجلسة' : 'Extend Session'}</span>
               </>
             )}

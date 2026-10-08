@@ -65,7 +65,7 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
       data-testid="admin-award-form"
     >
       <div className="flex items-center gap-3">
-        <div className="text-brand-gold flex items-center justify-center">
+        <div className="text-primary flex items-center justify-center">
           <Gift className="w-10 h-10" />
         </div>
         <div>
@@ -105,7 +105,7 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
             value={recipientUserId}
             onChange={(e) => setRecipientUserId(e.target.value)}
             placeholder="e.g. 101"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-primary focus:outline-hidden"
             data-testid="input-award-recipient"
           />
         </div>
@@ -118,7 +118,7 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
             value={drawId}
             onChange={(e) => setDrawId(e.target.value)}
             placeholder="e.g. 5"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm font-mono focus:border-primary focus:outline-hidden"
           />
         </div>
       </div>
@@ -134,7 +134,7 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
           value={awardTitle}
           onChange={(e) => setAwardTitle(e.target.value)}
           placeholder={isAr ? 'مثال: حزمة تذاكر تفوق تدريبي' : 'e.g. VIP Learner Bonus Tickets'}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden"
+          className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden"
           data-testid="input-award-title"
         />
       </div>
@@ -149,7 +149,7 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
             min="0"
             value={valuationUsd}
             onChange={(e) => setValuationUsd(parseFloat(e.target.value) || 0)}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono text-sm focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono text-sm focus:border-primary focus:outline-hidden"
           />
         </div>
         <div>
@@ -161,7 +161,7 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
             value={awardDetails}
             onChange={(e) => setAwardDetails(e.target.value)}
             placeholder={isAr ? 'مثال: 5 تذاكر ترويجية إضافية' : 'e.g. 5 Extra Promo Tickets'}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden"
           />
         </div>
       </div>
@@ -177,7 +177,7 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder={isAr ? 'اكتب سبب المنح بدقة وتفصيل...' : 'Provide clear justification for this award...'}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-brand-gold focus:outline-hidden resize-none"
+          className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-sm focus:border-primary focus:outline-hidden resize-none"
           data-testid="input-award-reason"
         />
       </div>
@@ -186,7 +186,7 @@ export function AwardForm({ onSuccess }: AwardFormProps) {
         <button
           type="submit"
           disabled={isGranting || !recipientUserId || !awardTitle || !reason.trim()}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand-gold hover:bg-brand-gold-light text-brand-navy font-bold text-sm shadow-xs transition-colors disabled:opacity-40"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-xs transition-colors disabled:opacity-40"
           data-testid="submit-award-button"
         >
           {isGranting && <Loader2 className="w-4 h-4 animate-spin" />}

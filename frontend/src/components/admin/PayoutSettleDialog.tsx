@@ -71,8 +71,8 @@ export function PayoutSettleDialog({
         data-testid="payout-settle-dialog"
       >
         <div className="flex items-start gap-4">
-          <div className="text-emerald-500 flex items-center justify-center shrink-0">
-            <CheckCircle2 className="w-10 h-10" />
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shrink-0">
+            <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-content-primary">
@@ -80,7 +80,7 @@ export function PayoutSettleDialog({
             </h3>
             <p className="text-xs text-content-secondary mt-0.5">
               {isAr ? 'رقم الطلب: ' : 'Payout: '}
-              <span className="font-mono font-bold text-brand-gold">{payout.payout_number}</span>
+              <span className="font-mono font-bold text-primary">{payout.payout_number}</span>
             </p>
           </div>
         </div>
@@ -127,7 +127,7 @@ export function PayoutSettleDialog({
             value={referenceNumber}
             onChange={(e) => setReferenceNumber(e.target.value)}
             placeholder={isAr ? 'مثال: WU-982341098 أو ZC-202610-09' : 'e.g. MTCN-12345678'}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono text-sm focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary font-mono text-sm focus:border-primary focus:outline-hidden"
             data-testid="input-settle-reference"
           />
         </div>
@@ -138,8 +138,8 @@ export function PayoutSettleDialog({
             {isAr ? 'وصل التحويل البنكي / صورة الإشعار (إلزامي):' : 'Receipt / Transfer Slip (Mandatory):'}
           </label>
           <div className="flex items-center gap-3">
-            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-border-subtle hover:border-brand-gold cursor-pointer bg-surface-elevated text-xs text-content-secondary hover:text-content-primary transition-colors">
-              <Upload className="w-4 h-4 text-brand-gold" />
+            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-border-subtle hover:border-primary cursor-pointer bg-surface-elevated text-xs text-content-secondary hover:text-content-primary transition-colors">
+              <Upload className="w-4 h-4 text-primary" />
               <span className="truncate">
                 {receiptFile ? receiptFile.name : isAr ? 'اختر صورة الوصل (JPG, PNG, WebP)' : 'Choose receipt file'}
               </span>
@@ -169,7 +169,7 @@ export function PayoutSettleDialog({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder={isAr ? 'ملاحظات داخلية للفريق...' : 'Internal reference note...'}
-            className="w-full px-3.5 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-xs focus:border-brand-gold focus:outline-hidden"
+            className="w-full px-3.5 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-content-primary text-xs focus:border-primary focus:outline-hidden"
           />
         </div>
 

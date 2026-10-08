@@ -84,10 +84,10 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8" data-testid="admin-dashboard-page">
       {/* 1. Welcome & Security Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-surface-card via-surface-card to-brand-navy/60 border border-border-subtle p-6 sm:p-8 shadow-xs">
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div className="relative py-2 sm:py-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 text-brand-gold text-xs font-bold">
+            <div className="inline-flex items-center gap-1.5 text-primary text-xs font-bold">
               <ShieldCheck className="w-4 h-4" />
               <span>{isAr ? 'جلسة إدارية مشفرة ومراقبة' : 'Monitored & Cryptographically Audited'}</span>
             </div>
@@ -101,33 +101,22 @@ export default function AdminDashboardPage() {
                 ? 'مركز العمليات الموحد لإدارة منصة كنزين: السحوبات الترويجية، مراجعة العمولات والتسويات، الرقابة المالية وتدقيق الموافقات.'
                 : 'Central KNZiN Operations Command: Promotional draws, commission settlement pipeline, financial audits, and security oversight.'}
             </p>
-
-            <div className="pt-2 flex flex-wrap gap-2">
-              {capabilities.map((cap) => (
-                <span
-                  key={cap}
-                  className="px-2.5 py-1 rounded-lg bg-surface-elevated border border-border-subtle text-[11px] font-mono text-content-secondary"
-                >
-                  {cap}
-                </span>
-              ))}
-            </div>
           </div>
 
           {/* Quick Platform Bridge */}
-          <div className="shrink-0 flex flex-col sm:flex-row lg:flex-col gap-3">
+          <div className="shrink-0 flex flex-col sm:flex-row lg:flex-col gap-2">
             <Link
               href={`/${locale}`}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-bold text-content-primary transition-colors shadow-xs"
+              className="inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-content-primary hover:text-primary transition-colors"
               data-testid="dashboard-view-platform-link"
             >
-              <ExternalLink className="w-4 h-4 text-brand-gold" />
+              <ExternalLink className="w-4 h-4 text-primary" />
               <span>{isAr ? 'عرض المنصة للجمهور' : 'View Public Platform'}</span>
             </Link>
 
             {serverTimeUtc && (
-              <div className="px-3.5 py-2 rounded-xl bg-surface-elevated/50 border border-border-subtle/50 text-[11px] text-content-secondary flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-brand-gold shrink-0" />
+              <div className="px-3 py-1 text-[11px] text-content-secondary flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span className="font-mono">UTC: {serverTimeUtc.slice(11, 19)}</span>
               </div>
             )}
@@ -139,7 +128,7 @@ export default function AdminDashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-content-primary flex items-center gap-2">
-            <Activity className="w-5 h-5 text-brand-gold" />
+            <Activity className="w-5 h-5 text-primary" />
             <span>{isAr ? 'مؤشرات العمليات الحية للمنصة' : 'Live Platform Operational Metrics'}</span>
           </h2>
           <span className="text-xs text-content-secondary">
@@ -151,15 +140,13 @@ export default function AdminDashboardPage() {
           {/* Card 1: Platform Commission Rate */}
           <Link
             href={`/${locale}/admin/settings`}
-            className="p-5 rounded-2xl bg-surface-card border border-border-subtle hover:border-brand-gold/40 transition-colors shadow-xs group"
+            className="p-5 rounded-2xl bg-surface-card border border-border-subtle hover:border-primary/40 transition-colors shadow-xs group"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-content-secondary">
                 {isAr ? 'نسبة عمولة المسوقين' : 'Sales Commission'}
               </span>
-              <div className="text-brand-gold flex items-center justify-center">
-                <Settings className="w-6 h-6" />
-              </div>
+              <Settings className="w-5 h-5 text-primary shrink-0" />
             </div>
             <div className="mt-3">
               <span className="text-2xl font-extrabold text-content-primary">
@@ -176,22 +163,20 @@ export default function AdminDashboardPage() {
           {/* Card 2: Payout Settlements */}
           <Link
             href={`/${locale}/admin/payouts`}
-            className="p-5 rounded-2xl bg-surface-card border border-border-subtle hover:border-brand-gold/40 transition-colors shadow-xs group"
+            className="p-5 rounded-2xl bg-surface-card border border-border-subtle hover:border-primary/40 transition-colors shadow-xs group"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-content-secondary">
                 {isAr ? 'طلبات السحب المعلقة' : 'Pending Payouts'}
               </span>
-              <div className="text-amber-500 flex items-center justify-center">
-                <BadgeDollarSign className="w-6 h-6" />
-              </div>
+              <BadgeDollarSign className="w-5 h-5 text-amber-500 shrink-0" />
             </div>
             <div className="mt-3">
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-extrabold text-content-primary">
                   {isPayoutsLoading ? '...' : pendingPayoutsCount}
                 </span>
-                <span className="text-xs text-amber-400 font-semibold">
+                <span className="text-xs text-amber-500 font-semibold">
                   {isAr ? 'بحاجة لتسوية' : 'Awaiting Settlement'}
                 </span>
               </div>
@@ -204,22 +189,20 @@ export default function AdminDashboardPage() {
           {/* Card 3: Co-Prizes Adjudication */}
           <Link
             href={`/${locale}/admin/coprizes`}
-            className="p-5 rounded-2xl bg-surface-card border border-border-subtle hover:border-brand-gold/40 transition-colors shadow-xs group"
+            className="p-5 rounded-2xl bg-surface-card border border-border-subtle hover:border-primary/40 transition-colors shadow-xs group"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-content-secondary">
                 {isAr ? 'جوائز الشركاء (40%)' : 'Co-Prize Queue (40%)'}
               </span>
-              <div className="text-emerald-500 dark:text-emerald-400 flex items-center justify-center">
-                <Trophy className="w-6 h-6" />
-              </div>
+              <Trophy className="w-5 h-5 text-emerald-500 shrink-0" />
             </div>
             <div className="mt-3">
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-extrabold text-content-primary">
                   {isCoPrizesLoading ? '...' : pendingCoPrizesCount}
                 </span>
-                <span className="text-xs text-emerald-400 font-semibold">
+                <span className="text-xs text-emerald-500 font-semibold">
                   {isAr ? 'قيد التدقيق' : 'Gated by KYC/Audit'}
                 </span>
               </div>
@@ -232,22 +215,20 @@ export default function AdminDashboardPage() {
           {/* Card 4: Promotional Draws & Seed Commitments */}
           <Link
             href={`/${locale}/admin/draws`}
-            className="p-5 rounded-2xl bg-surface-card border border-border-subtle hover:border-brand-gold/40 transition-colors shadow-xs group"
+            className="p-5 rounded-2xl bg-surface-card border border-border-subtle hover:border-primary/40 transition-colors shadow-xs group"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-content-secondary">
                 {isAr ? 'السحوبات والجوائز' : 'Promotional Draws'}
               </span>
-              <div className="text-purple-500 dark:text-purple-400 flex items-center justify-center">
-                <Sparkles className="w-6 h-6" />
-              </div>
+              <Sparkles className="w-5 h-5 text-purple-500 shrink-0" />
             </div>
             <div className="mt-3">
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-extrabold text-content-primary">
                   {isDrawsLoading ? '...' : activeDrawsCount}
                 </span>
-                <span className="text-xs text-purple-400 font-semibold">
+                <span className="text-xs text-purple-500 font-semibold">
                   {isAr ? 'سحب نشط ومجدول' : 'Active & Scheduled'}
                 </span>
               </div>
@@ -262,7 +243,7 @@ export default function AdminDashboardPage() {
       {/* 3. Quick Operational Action Hub */}
       <div className="p-6 rounded-2xl bg-surface-card border border-border-subtle shadow-xs">
         <h3 className="text-sm font-bold text-content-primary flex items-center gap-2 mb-4">
-          <Zap className="w-4 h-4 text-brand-gold" />
+          <Zap className="w-4 h-4 text-primary" />
           <span>{isAr ? 'إجراءات سريعة فورية' : 'Immediate Operations Hub'}</span>
         </h3>
 
@@ -271,7 +252,7 @@ export default function AdminDashboardPage() {
             href={`/${locale}/admin/payouts`}
             className="p-3.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-center flex flex-col items-center justify-center gap-2 group transition-all"
           >
-            <BadgeDollarSign className="w-5 h-5 text-brand-gold group-hover:scale-110 transition-transform" />
+            <BadgeDollarSign className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
             <span className="text-xs font-semibold text-content-primary">
               {isAr ? 'تسوية السحوبات' : 'Settle Payouts'}
             </span>
@@ -332,7 +313,7 @@ export default function AdminDashboardPage() {
       {/* 4. Live System Integrity & Platform Connectivity Status */}
       <div className="p-5 rounded-2xl bg-surface-card border border-border-subtle shadow-xs">
         <h3 className="text-xs font-bold text-content-primary uppercase tracking-wider mb-3 flex items-center gap-2">
-          <Server className="w-4 h-4 text-brand-gold" />
+          <Server className="w-4 h-4 text-primary" />
           <span>{isAr ? 'حالة تكامل الأنظمة والاتصال بالمنصة' : 'Platform System Integrity & Connectivity'}</span>
         </h3>
 
@@ -354,7 +335,7 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="p-3 rounded-xl bg-surface-elevated border border-border-subtle flex items-center gap-2.5">
-            <Lock className="w-4 h-4 text-brand-gold" />
+            <Lock className="w-4 h-4 text-primary" />
             <div>
               <span className="font-bold text-content-primary block">{isAr ? 'محرك التشفير' : 'Crypto Engine'}</span>
               <span className="text-[10px] text-content-secondary">HMAC-SHA256</span>
@@ -384,12 +365,12 @@ export default function AdminDashboardPage() {
         <div className="p-6 rounded-2xl bg-surface-card border border-border-subtle shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-content-primary flex items-center gap-2">
-              <ScrollText className="w-4 h-4 text-brand-gold" />
+              <ScrollText className="w-4 h-4 text-primary" />
               <span>{isAr ? 'أحدث العمليات في سجل الرقابة والتدقيق' : 'Recent Security Audit Events'}</span>
             </h3>
             <Link
               href={`/${locale}/admin/audit`}
-              className="text-xs font-bold text-brand-gold hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
             >
               <span>{isAr ? 'عرض السجل الكامل' : 'View Full Trail'}</span>
               <ArrowIcon className="w-3.5 h-3.5" />
@@ -462,7 +443,7 @@ export default function AdminDashboardPage() {
       {/* 6. Accessible Operational Sections Grid */}
       <div>
         <h2 className="text-xl font-bold text-content-primary mb-4 flex items-center gap-2">
-          <Layers className="w-5 h-5 text-brand-gold" />
+          <Layers className="w-5 h-5 text-primary" />
           <span>{isAr ? 'أقسام الإدارة والعمليات' : 'Administrative Operations Departments'}</span>
         </h2>
 
@@ -473,14 +454,12 @@ export default function AdminDashboardPage() {
               <Link
                 key={section.id}
                 href={`/${locale}${section.path}`}
-                className="group p-6 rounded-2xl bg-surface-card border border-border-subtle hover:border-brand-gold/40 hover:bg-surface-elevated transition-all duration-200 shadow-xs flex flex-col justify-between"
+                className="group p-6 rounded-2xl bg-surface-card border border-border-subtle hover:border-primary/40 hover:bg-surface-elevated transition-all duration-200 shadow-xs flex flex-col justify-between"
               >
                 <div className="space-y-3">
-                  <div className="text-brand-gold flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Icon className="w-8 h-8" />
-                  </div>
+                  <Icon className="w-8 h-8 text-primary group-hover:scale-105 transition-transform shrink-0" />
                   <div>
-                    <h3 className="text-lg font-bold text-content-primary group-hover:text-brand-gold transition-colors">
+                    <h3 className="text-lg font-bold text-content-primary group-hover:text-primary transition-colors">
                       {isAr ? getArTitle(section.id) : getEnTitle(section.id)}
                     </h3>
                     <p className="text-xs text-content-secondary mt-1 line-clamp-2">
@@ -489,7 +468,7 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-border-subtle flex items-center justify-between text-xs font-bold text-brand-gold">
+                <div className="pt-4 mt-4 border-t border-border-subtle flex items-center justify-between text-xs font-bold text-primary">
                   <span>{isAr ? 'فتح القسم' : 'Open Section'}</span>
                   <ArrowIcon className="w-4 h-4 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                 </div>

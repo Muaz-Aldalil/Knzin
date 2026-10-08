@@ -114,12 +114,12 @@ export function AdminNav({ capabilities, onItemClick }: AdminNavProps) {
               data-testid={`admin-nav-item-${group.id}`}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 cursor-pointer ${
                 isActive
-                  ? 'bg-brand-gold/15 text-brand-gold font-bold border border-brand-gold/30 shadow-xs'
+                  ? 'bg-primary/10 text-primary font-bold'
                   : 'text-content-secondary hover:text-content-primary hover:bg-surface-elevated/70'
               }`}
             >
               <IconComponent
-                className={`w-5 h-5 shrink-0 ${isActive ? 'text-brand-gold' : 'text-content-muted'}`}
+                className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary' : 'text-content-muted'}`}
                 aria-hidden="true"
               />
               <span className="truncate">{groupLabel}</span>
@@ -144,20 +144,20 @@ export function AdminNav({ capabilities, onItemClick }: AdminNavProps) {
               data-testid={`admin-nav-group-${group.id}`}
               className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 cursor-pointer text-start ${
                 hasActiveChild
-                  ? 'bg-brand-gold/10 text-brand-gold font-semibold border border-brand-gold/20'
+                  ? 'bg-primary/5 text-primary font-semibold'
                   : 'text-content-secondary hover:text-content-primary hover:bg-surface-elevated/60'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <IconComponent
-                  className={`w-5 h-5 shrink-0 ${hasActiveChild ? 'text-brand-gold' : 'text-content-muted'}`}
+                  className={`w-5 h-5 shrink-0 ${hasActiveChild ? 'text-primary' : 'text-content-muted'}`}
                   aria-hidden="true"
                 />
                 <span className="truncate">{groupLabel}</span>
               </div>
               <ChevronDown
                 className={`w-4 h-4 shrink-0 text-content-muted transition-transform duration-200 ${
-                  isExpanded ? 'rotate-180 text-brand-gold' : ''
+                  isExpanded ? 'rotate-180 text-primary' : ''
                 }`}
                 aria-hidden="true"
               />
@@ -183,14 +183,14 @@ export function AdminNav({ capabilities, onItemClick }: AdminNavProps) {
                       data-testid={`admin-nav-subitem-${sub.id}`}
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer ${
                         isSubActive
-                          ? 'bg-brand-gold/20 text-brand-gold font-bold border border-brand-gold/30 shadow-2xs'
+                          ? 'bg-primary/10 text-primary font-bold'
                           : 'text-content-muted hover:text-content-primary hover:bg-surface-elevated/50'
                       }`}
                     >
                       {SubIcon && (
                         <SubIcon
                           className={`w-3.5 h-3.5 shrink-0 ${
-                            isSubActive ? 'text-brand-gold' : 'text-content-muted'
+                            isSubActive ? 'text-primary' : 'text-content-muted'
                           }`}
                           aria-hidden="true"
                         />

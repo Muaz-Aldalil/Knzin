@@ -20,7 +20,7 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-10 h-10 animate-spin text-brand-gold" />
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
         <p className="text-content-secondary font-medium">
           {isAr ? 'جارِ التحقق من الصلاحيات الإدارية...' : 'Verifying administrative privileges...'}
         </p>
@@ -31,8 +31,8 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
   if (isUnauthenticated) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-        <div className="flex items-center justify-center text-amber-500 mb-6">
-          <LogIn className="w-12 h-12" />
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mb-6">
+          <LogIn className="w-8 h-8" />
         </div>
         <h2 className="text-2xl font-bold text-content-primary mb-2">
           {isAr ? 'تسجيل الدخول الإداري مطلوب' : 'Admin Authentication Required'}
@@ -44,7 +44,7 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
         </p>
         <Link
           href={`/${locale}`}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-gold text-brand-navy font-bold hover:bg-brand-gold-light transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-colors"
         >
           {isAr ? 'العودة للرئيسية وتسجيل الدخول' : 'Return Home & Sign In'}
         </Link>
@@ -56,8 +56,8 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
   if (isForbidden || capabilities.length === 0) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center" data-testid="admin-403-state">
-        <div className="flex items-center justify-center text-rose-500 mb-6">
-          <ShieldAlert className="w-12 h-12" />
+        <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 mb-6">
+          <ShieldAlert className="w-8 h-8" />
         </div>
         <h2 className="text-2xl font-bold text-content-primary mb-2">
           {isAr ? '403 - غير مصرح لك بالوصول' : '403 - Forbidden Access'}
@@ -81,8 +81,8 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
   if (requiredCapability && !can(requiredCapability)) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center" data-testid="admin-missing-capability-state">
-        <div className="flex items-center justify-center text-amber-500 mb-6">
-          <ShieldAlert className="w-12 h-12" />
+        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mb-6">
+          <ShieldAlert className="w-8 h-8" />
         </div>
         <h2 className="text-2xl font-bold text-content-primary mb-2">
           {isAr ? 'صلاحية غير متوفرة' : 'Missing Capability'}
@@ -94,7 +94,7 @@ export function AdminGuard({ children, requiredCapability }: AdminGuardProps) {
         </p>
         <Link
           href={`/${locale}/admin`}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-gold text-brand-navy font-semibold hover:bg-brand-gold-light transition-colors text-sm"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-semibold hover:bg-primary-hover transition-colors text-sm"
         >
           {isAr ? 'العودة للوحة التحكم' : 'Return to Admin Dashboard'}
         </Link>

@@ -67,7 +67,7 @@ export function DataTable<T>({
           {isLoading ? (
             <div className="px-6 py-12 text-center text-content-secondary">
               <div className="flex items-center justify-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin text-brand-gold" />
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
                 <span>{isAr ? 'جارِ تحميل البيانات...' : 'Loading data...'}</span>
               </div>
             </div>
@@ -104,7 +104,7 @@ export function DataTable<T>({
               <tr>
                 <td colSpan={columns.length} className="px-6 py-12 text-center text-content-secondary">
                   <div className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-5 h-5 animate-spin text-brand-gold" />
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
                     <span>{isAr ? 'جارِ تحميل البيانات...' : 'Loading data...'}</span>
                   </div>
                 </td>

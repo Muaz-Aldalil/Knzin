@@ -40,7 +40,7 @@ export default function AdminAffiliatesPage() {
       render: (item) => (
         <div>
           <span className="font-bold text-content-primary block">{item.email}</span>
-          <span className="text-xs font-mono text-brand-gold">{item.learner_code}</span>
+          <span className="text-xs font-mono text-primary">{item.learner_code}</span>
         </div>
       ),
     },
@@ -84,7 +84,7 @@ export default function AdminAffiliatesPage() {
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-semibold text-content-primary transition-colors"
           data-testid={`inspect-ledger-${item.user_id}`}
         >
-          <BookOpen className="w-3.5 h-3.5 text-brand-gold" />
+          <BookOpen className="w-3.5 h-3.5 text-primary" />
           <span>{isAr ? 'عرض السجل' : 'View Ledger'}</span>
         </button>
       ),
@@ -99,7 +99,7 @@ export default function AdminAffiliatesPage() {
             <span className="font-bold text-content-primary text-sm block truncate">
               {item.email}
             </span>
-            <span className="font-mono text-xs text-brand-gold bg-brand-gold/10 px-2 py-0.5 rounded border border-brand-gold/20 inline-block mt-0.5">
+            <span className="font-mono text-xs text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20 inline-block mt-0.5">
               {item.referral_code}
             </span>
           </div>
@@ -137,7 +137,7 @@ export default function AdminAffiliatesPage() {
             className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-surface-elevated hover:bg-surface-elevated/80 border border-border-subtle text-xs font-semibold text-content-primary transition-colors"
             data-testid={`inspect-ledger-${item.user_id}`}
           >
-            <BookOpen className="w-3.5 h-3.5 text-brand-gold" />
+            <BookOpen className="w-3.5 h-3.5 text-primary" />
             <span>{isAr ? 'عرض السجل المالي' : 'View Financial Ledger'}</span>
           </button>
         </div>
@@ -152,7 +152,7 @@ export default function AdminAffiliatesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-              <Users className="w-7 h-7 text-brand-gold" />
+              <Users className="w-7 h-7 text-primary" />
               <span>{isAr ? 'دليل المسوقين وأرصدة الشركاء' : 'Affiliate Oversight & Balances'}</span>
             </h1>
             <p className="text-sm text-content-secondary mt-1">
@@ -170,13 +170,13 @@ export default function AdminAffiliatesPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={isAr ? 'بحث بالبريد أو كود الإحالة...' : 'Search by email or code...'}
-                className="w-64 ps-10 pe-4 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-brand-gold focus:outline-hidden transition-colors"
+                className="w-64 ps-10 pe-4 py-2 rounded-xl bg-surface-elevated border border-border-subtle text-sm text-content-primary focus:border-primary focus:outline-hidden transition-colors"
               />
               <Search className="w-4 h-4 text-content-muted absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             <button
               type="submit"
-              className="px-4 py-2 rounded-xl bg-brand-gold text-brand-navy font-bold text-xs hover:bg-brand-gold-light transition-colors"
+              className="px-4 py-2 rounded-xl bg-primary text-white font-bold text-xs hover:bg-primary-hover transition-colors"
             >
               {isAr ? 'بحث' : 'Search'}
             </button>
@@ -219,7 +219,7 @@ export default function AdminAffiliatesPage() {
                     <span className="font-bold text-lg text-content-primary">
                       {isAr ? 'سجل المعاملات الموثق' : 'Immutable Transaction Ledger'}
                     </span>
-                    <span className="text-brand-gold text-xs font-mono font-bold">
+                    <span className="text-primary text-xs font-mono font-bold">
                       #{selectedUser.user_id}
                     </span>
                   </div>

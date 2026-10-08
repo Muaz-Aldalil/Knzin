@@ -181,8 +181,8 @@ export function AdminShell({ children }: AdminShellProps) {
           </span>
         )}
         <span className="truncate block">{user?.email}</span>
-        <div className="flex items-center gap-1.5 mt-1 text-brand-gold font-medium">
-          <Shield className="w-3.5 h-3.5 text-brand-gold shrink-0" />
+        <div className="flex items-center gap-1.5 mt-1 text-primary font-medium">
+          <Shield className="w-3.5 h-3.5 text-primary shrink-0" />
           <span>
             {capabilities.length} {isAr ? 'صلاحيات مفعلة' : 'Active Capabilities'}
           </span>
@@ -195,7 +195,7 @@ export function AdminShell({ children }: AdminShellProps) {
           data-testid="admin-dropdown-dashboard"
           className="flex items-center gap-2 w-full cursor-pointer text-xs"
         >
-          <LayoutDashboard className="w-4 h-4 text-brand-gold" />
+          <LayoutDashboard className="w-4 h-4 text-primary" />
           <span>{isAr ? 'لوحة التحكم الإدارية' : 'Admin Dashboard'}</span>
         </Link>
       </DropdownMenuItem>
@@ -250,14 +250,12 @@ export function AdminShell({ children }: AdminShellProps) {
       <aside className="hidden md:flex flex-col w-64 lg:w-72 bg-surface border-e border-border-subtle shrink-0 sticky top-0 h-screen z-20">
         <div className="p-6 border-b border-border-subtle flex items-center justify-between">
           <Link href={`/${locale}/admin`} className="flex items-center gap-3">
-            <div className="text-brand-gold flex items-center justify-center">
-              <Sparkles className="w-8 h-8" />
-            </div>
+            <Sparkles className="w-7 h-7 text-primary shrink-0" />
             <div>
               <span className="font-bold text-lg text-content-primary block leading-tight">
                 {isAr ? 'كَنزين الإدارة' : 'KNZiN Admin'}
               </span>
-              <span className="text-xs text-brand-gold font-medium">
+              <span className="text-xs text-primary font-medium">
                 {isAr ? 'لوحة العمليات والرقابة' : 'Back-Office Portal'}
               </span>
             </div>
@@ -265,17 +263,17 @@ export function AdminShell({ children }: AdminShellProps) {
         </div>
 
         {/* View Platform Shortcut in Sidebar */}
-        <div className="px-4 py-3 border-b border-border-subtle bg-surface-elevated/20">
+        <div className="px-4 py-2.5 border-b border-border-subtle">
           <Link
             href={`/${locale}`}
             data-testid="admin-sidebar-view-platform"
-            className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-surface-elevated hover:bg-surface border border-border-subtle text-xs font-semibold text-content-primary hover:text-brand-gold transition-colors group"
+            className="flex items-center justify-between gap-2 px-2 py-1.5 text-xs font-semibold text-primary hover:text-primary-hover transition-colors group"
           >
             <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4 text-brand-gold" />
+              <Eye className="w-4 h-4 text-primary" />
               <span>{isAr ? 'عرض المنصة للجمهور' : 'View Platform'}</span>
             </div>
-            <ExternalLink className="w-3.5 h-3.5 text-content-muted group-hover:text-brand-gold transition-colors" />
+            <ExternalLink className="w-3.5 h-3.5 text-primary/60 group-hover:text-primary transition-colors" />
           </Link>
         </div>
 
@@ -291,7 +289,7 @@ export function AdminShell({ children }: AdminShellProps) {
                 {user?.display_name || user?.email}
               </p>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <Shield className="w-3.5 h-3.5 text-brand-gold shrink-0" />
+                <Shield className="w-3.5 h-3.5 text-primary shrink-0" />
                 <span className="text-xs text-content-secondary truncate">
                   {capabilities.length} {isAr ? 'صلاحيات مفعلة' : 'Capabilities'}
                 </span>
@@ -318,9 +316,7 @@ export function AdminShell({ children }: AdminShellProps) {
         }`}
       >
         <Link href={`/${locale}/admin`} className="flex items-center gap-2">
-          <div className="text-brand-gold font-bold text-base flex items-center justify-center">
-            K
-          </div>
+          <Sparkles className="w-6 h-6 text-primary shrink-0" />
           <span className="font-bold text-content-primary">
             {isAr ? 'لوحة التحكم الإدارية' : 'Admin Panel'}
           </span>
@@ -330,7 +326,7 @@ export function AdminShell({ children }: AdminShellProps) {
             href={`/${locale}`}
             data-testid="admin-mobile-header-view-platform"
             title={isAr ? 'عرض المنصة للجمهور' : 'View Platform'}
-            className="p-2 rounded-lg border border-border-subtle text-brand-gold hover:bg-surface-elevated transition-colors"
+            className="p-2 text-primary hover:text-primary-hover transition-colors"
           >
             <Eye className="w-4 h-4" />
           </Link>
@@ -340,7 +336,7 @@ export function AdminShell({ children }: AdminShellProps) {
               className="p-2 rounded-lg border border-border-subtle text-content-secondary hover:text-content-primary cursor-pointer"
               aria-label={isAr ? 'خيارات المشرف' : 'Admin options'}
             >
-              <Shield className="w-4 h-4 text-brand-gold" />
+              <Shield className="w-4 h-4 text-primary" />
             </DropdownMenuTrigger>
             {renderAdminDropdownContent()}
           </DropdownMenu>
@@ -367,7 +363,7 @@ export function AdminShell({ children }: AdminShellProps) {
             className="w-72 bg-surface text-content-primary h-full flex flex-col p-4 shadow-2xl border-e border-border-subtle relative z-10"
           >
             <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
-              <span className="font-bold text-brand-gold">
+              <span className="font-bold text-primary">
                 {isAr ? 'قائمة الإدارة' : 'Admin Navigation'}
               </span>
               <button
@@ -380,12 +376,12 @@ export function AdminShell({ children }: AdminShellProps) {
             </div>
 
             {/* View Platform in Mobile Drawer */}
-            <div className="py-3 border-b border-border-subtle">
+            <div className="py-2.5 border-b border-border-subtle">
               <Link
                 href={`/${locale}`}
                 onClick={() => setMobileMenuOpen(false)}
                 data-testid="admin-drawer-view-platform"
-                className="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-brand-gold/10 border border-brand-gold/30 text-xs font-bold text-brand-gold hover:bg-brand-gold/20 transition-colors"
+                className="flex items-center justify-center gap-2 w-full py-2 px-3 text-xs font-bold text-primary hover:text-primary-hover transition-colors"
               >
                 <Eye className="w-4 h-4" />
                 <span>{isAr ? 'عرض المنصة للجمهور' : 'View Platform'}</span>
@@ -435,7 +431,7 @@ export function AdminShell({ children }: AdminShellProps) {
                   <HelpCircle className="w-4 h-4 text-primary" />
                   <span>{tHowItWorks('trigger')}</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-bold">
+                <span className="text-[10px] text-primary font-bold">
                   {isAr ? 'دليل كَنزين' : 'Guide'}
                 </span>
               </button>
@@ -471,7 +467,7 @@ export function AdminShell({ children }: AdminShellProps) {
           }`}
         >
           <div className="flex items-center gap-2 text-xs font-semibold text-content-secondary">
-            <span className="px-2.5 py-1 rounded-md bg-brand-gold/10 text-brand-gold border border-brand-gold/20">
+            <span className="text-primary font-bold">
               {isAr ? 'منطقة الرقابة والإدارة' : 'Administrative Operations Zone'}
             </span>
             <span>•</span>
@@ -483,10 +479,10 @@ export function AdminShell({ children }: AdminShellProps) {
             <Link
               href={`/${locale}`}
               data-testid="admin-topbar-view-platform"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-gold/10 hover:bg-brand-gold/20 border border-brand-gold/30 text-xs font-bold text-brand-gold transition-colors"
+              className="flex items-center gap-1.5 px-2 py-1 text-xs font-bold text-primary hover:text-primary-hover transition-colors"
               title={isAr ? 'عرض المنصة للجمهور' : 'View Platform'}
             >
-              <Eye className="w-3.5 h-3.5" />
+              <Eye className="w-4 h-4 text-primary" />
               <span>{isAr ? 'عرض المنصة للجمهور' : 'View Platform'}</span>
             </Link>
 
@@ -494,11 +490,9 @@ export function AdminShell({ children }: AdminShellProps) {
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger
                 data-testid="admin-topbar-profile-trigger"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-elevated/70 hover:bg-surface-elevated border border-border-subtle text-xs font-semibold text-content-primary transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-brand-gold/40"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-elevated/70 hover:bg-surface-elevated border border-border-subtle text-xs font-semibold text-content-primary transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-primary/40"
               >
-                <div className="w-5 h-5 rounded-md bg-brand-gold/20 flex items-center justify-center text-brand-gold font-bold">
-                  <Shield className="w-3 h-3 text-brand-gold" />
-                </div>
+                <Shield className="w-4 h-4 text-primary shrink-0" />
                 <span className="max-w-[200px] sm:max-w-[240px] truncate">
                   {user?.display_name || user?.email || (isAr ? 'المشرف' : 'Admin')}
                 </span>

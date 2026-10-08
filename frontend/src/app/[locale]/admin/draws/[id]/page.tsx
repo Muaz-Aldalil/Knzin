@@ -38,7 +38,7 @@ export default function AdminDrawDetailPage() {
   if (isLoading) {
     return (
       <div className="p-16 flex flex-col items-center justify-center space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
         <p className="text-xs text-content-secondary">{isAr ? 'جارِ تحميل السحب...' : 'Loading draw details...'}</p>
       </div>
     );
@@ -67,7 +67,7 @@ export default function AdminDrawDetailPage() {
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs text-brand-gold font-bold">#{draw.id}</span>
+              <span className="font-mono text-xs text-primary font-bold">#{draw.id}</span>
               <span className="text-content-muted">•</span>
               <span className="text-xs font-semibold text-content-secondary capitalize">
                 {draw.tier} • {draw.execution_type}

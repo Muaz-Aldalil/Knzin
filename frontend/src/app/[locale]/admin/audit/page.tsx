@@ -20,7 +20,7 @@ export default function AdminAuditPage() {
       <div className="space-y-6" data-testid="admin-audit-page">
         <div>
           <h1 className="text-2xl font-bold text-content-primary flex items-center gap-3">
-            <ScrollText className="w-7 h-7 text-brand-gold" />
+            <ScrollText className="w-7 h-7 text-primary" />
             <span>{isAr ? 'سجل الرقابة والعمليات الأمنية الموحد' : 'Unified Security Audit Trail'}</span>
           </h1>
           <p className="text-sm text-content-secondary mt-1">
