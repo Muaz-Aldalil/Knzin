@@ -156,8 +156,13 @@ export default function GoogleIdentityButton({
     };
   }, [clientId, handleCredentialResponse, locale]);
 
-  // Fallback direct click handler (uses redirect flow or mock mode if GSI fails to load)
+  // Fallback direct click handler (uses GIS prompt or redirect flow if GSI fails)
   const handleFallbackClick = () => {
+    if (window.google?.accounts?.id) {
+      window.google.accounts.id.prompt();
+      return;
+    }
+
     setIsLoading(true);
     const backendUrl = getApiBaseUrl();
     let url = `${backendUrl}/auth/google/redirect`;
