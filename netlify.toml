@@ -5,9 +5,19 @@
 
 [build.environment]
   NODE_VERSION = "20.9.0"
+  NEXT_PUBLIC_API_URL = "https://knzin-backend.onrender.com/api/v1"
+  NEXT_PUBLIC_ENABLE_DEMO_LOGIN = "true"
+  NEXT_PUBLIC_ENABLE_GOOGLE_AUTH = "true"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Reverse proxy API requests to live Render backend
+[[redirects]]
+  from = "/api/v1/*"
+  to = "https://knzin-backend.onrender.com/api/v1/:splat"
+  status = 200
+  force = true
 
 [[headers]]
   for = "/*"

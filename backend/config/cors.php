@@ -24,11 +24,16 @@ return [
             rtrim((string) env('FRONTEND_URL', 'http://localhost:3000'), '/'),
             'http://localhost:3000',
             'http://127.0.0.1:3000',
+            'https://knzin.netlify.app',
         ],
         explode(',', (string) env('CORS_ALLOWED_ORIGINS', ''))
     )))),
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https://.*\.netlify\.app$#',
+        '#^https://.*\.onrender\.com$#',
+        '#^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$#',
+    ],
 
     'allowed_headers' => ['*'],
 
