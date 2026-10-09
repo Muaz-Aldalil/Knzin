@@ -113,7 +113,6 @@ export default function GoogleIdentityButton({
 
       // Render official Google button
       const isDark = document.documentElement.classList.contains('dark');
-      const width = containerRef.current.offsetWidth || 340;
 
       window.google.accounts.id.renderButton(containerRef.current, {
         type: 'standard',
@@ -122,7 +121,7 @@ export default function GoogleIdentityButton({
         text: 'continue_with',
         shape: 'rectangular',
         logo_alignment: 'left',
-        width: Math.min(width, 400),
+        width: 350,
         locale: locale,
       });
 
