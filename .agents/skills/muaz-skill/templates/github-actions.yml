@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Type check
+        run: npx tsc --noEmit
+      - name: Lint
+        run: npx eslint . --max-warnings 0
+      - name: Unit + component tests (with coverage gate)
+        run: npx vitest run --coverage --coverage.thresholds.lines=80 --coverage.thresholds.functions=80 --coverage.thresholds.statements=80
+      - name: Dependency audit (fail CI on high/critical)
+        run: npm audit --audit-level=high
+      - name: Build
+        run: npm run build
+      # Lighthouse CI — run after build. Set LHCI_GITHUB_APP_TOKEN for uploads.
+      - name: Lighthouse CI (perf/a11y/best-practices/SEO budgets)
+        run: npx lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+  # Runs the skill's own Python test suite (search engine, anti-slop, data integrity).
+  skill-python:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run Python test suite
+        run: |
+          python -m unittest discover -s tests -v
+      - name: Anti-slop self-check on scripts/ and references/
+        run: |
+          python scripts/anti_slop.py scripts/ --fail-on CRITICAL
+          python scripts/anti_slop.py tests/ --fail-on CRITICAL
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [quality, skill-python]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

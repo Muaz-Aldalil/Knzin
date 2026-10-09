@@ -1,0 +1,14 @@
+{
+  "name": "ui-review-loop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Verify UI work with recorded evidence — video, DOM timeline, and sanitized network capture — reviewed by a human on a local site.",
+  "license": "Apache-2.0",
+  "author": "Ahmed Nagdy",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node test/self-test.mjs"
+  }
+}

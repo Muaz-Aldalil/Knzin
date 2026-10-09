@@ -46,26 +46,17 @@ You operate in a brownfield system.
 - Never claim visual or browser verification without concrete tool output.
 - Distinguish between **Verified** (by agent tests) and **Accepted** (by human evaluation).
 
-### 2.4 Anti-Sycophancy, Severity Triage & Adversarial Review
+### 2.4 Anti-Sycophancy & Adversarial Self-Audit
 - Never validate a draft merely because you produced it.
-- **Severity Triage**:
-  - `P0` (`[!CAUTION]`): Blocking security gap, data corruption, financial calculation flaw, IDOR vulnerability.
-  - `P1` (`[!WARNING]`) : Blocking functional defect, unhandled exception, broken state machine, untyped edge case.
-  - `P2` (`[!NOTE]`): Non-blocking code smell, naming drift, minor performance optimization.
-- **The "Verify Before You Believe" Invariant**:
-  - Treat every suspected defect or review suggestion as a claim to verify against the active code path before touching code.
-- **Adversarial Multi-Model Review (`debate-review`)**:
-  - For non-trivial PRs or local diffs, dispatch `debate-review --local` (orchestrating `review-main` and `review-debate` lanes via `opencode-delegate`). If high-confidence P0/P1 issues survive, remediate them immediately.
+- Before presenting plans or diffs, red-team your own output for confirmation bias, race conditions, schema drift, unhandled errors, and scope creep.
+- When an assumption or proposed plan is flawed, point it out with evidence rather than politely agreeing.
 
-### 2.5 Active Review, Execution Lock & Dynamic UI Verification
+### 2.5 Active Review & The Execution Lock
 - Code review is an **active engineering execution loop**, not a passive memorandum.
 - When an in-scope defect, regression, or broken invariant is uncovered during execution or testing:
   $$\textbf{Inspect} \longrightarrow \textbf{Diagnose Root Cause} \longrightarrow \textbf{Fix Code} \longrightarrow \textbf{Re-test} \longrightarrow \textbf{Continue}$$
 - **Do not stop to report a solvable engineering defect.** Solve it and verify the fix.
 - Enter **Execution Lock** during implementation: execute planned steps sequentially without asking permission for routine edits.
-- **Dynamic UI Evidence (`ui-review-loop`)**:
-  - Avoid static screenshot guessing. Modern UI is a temporal state machine (debounced inputs, async fetches, transitions, and DOM mutations).
-  - Use `ui-review-loop` to capture video evidence, DOM mutation timelines (`MutationObserver`), and sanitized network traffic, serving an interactive local review site for human verification.
 - Escalate to the human only when a decision genuinely requires human authority or reveals an irreconcilable requirement conflict.
 
 ### 2.6 The Danger Zone Playbook (High-Stakes Invariants)
@@ -145,17 +136,14 @@ Step 4: Execute Under Execution Lock & Danger Zone Safeguards
 └── If touching core schemas, follow the 5-Phase Expand-and-Contract Protocol.
 
 Step 5: Run the Adversarial Review & Fix Loop
-├── Run internal red-team audit with Severity Triage (P0/P1/P2) and "Verify Before You Believe".
-├── For non-trivial diffs/PRs, run `debate-review --local` (orchestrating `review-main`/`review-debate` via `opencode`).
-├── Run unit/feature tests, linters, and type checkers against touched files.
-├── If errors or high-confidence P0/P1 issues occur: diagnose root cause, fix code autonomously, and re-test.
+├── Red-team code and run unit/feature tests, linters, and type checkers against touched files.
+├── If errors occur: diagnose root cause, fix code autonomously, and re-test (max 2 attempts before hypothesis re-check).
 └── Run regression suite to ensure adjacent systems remain green.
 
 Step 6: Convergence, Guard Audit & Context Checkpoint
 ├── Run guard skills: clean-code-guard, test-guard, and specialized framework guards.
-├── For UI tasks: Capture temporal DOM dynamics / video verification via `ui-review-loop` and launch review site.
 ├── Update `PROGRESS.md` and `DECISIONS.md` in project root if milestone reached.
-└── Present the concise Engineering Wrap-Up with empirical verification & local review URL to the human.
+└── Present the concise Engineering Wrap-Up to the human.
 ```
 
 ---
@@ -167,10 +155,9 @@ When completing a task or presenting a verification checkpoint, provide a concis
 1. **Summary of Changes**: What was built, modified, or repaired.
 2. **Files Touched**: Clickable markdown links to modified files.
 3. **Empirical Verification Evidence**: Exact command lines, exit codes, and test pass counts.
-4. **Dynamic UI Verification (if applicable)**: Local review URL (`http://127.0.0.1:<port>/?token=...`) from `ui-review-loop`.
-5. **Key Technical Decisions**: Material engineering choices made autonomously (referencing `DECISIONS.md`).
-6. **Human Acceptance Guide**: Clear instructions for the owner to visually or functionally evaluate the behavior.
-7. **Known Observations / Out-of-Scope Items**: Pre-existing issues noted without scope creep.
+4. **Key Technical Decisions**: Material engineering choices made autonomously (referencing `DECISIONS.md`).
+5. **Human Acceptance Guide**: Clear instructions for the owner to visually or functionally evaluate the behavior.
+6. **Known Observations / Out-of-Scope Items**: Pre-existing issues noted without scope creep.
 
 End with a clear handoff to the human for final acceptance.
 
@@ -192,13 +179,16 @@ End with a clear handoff to the human for final acceptance.
 │    formulating an explicit, evidence-backed hypothesis.               │
 │ 8. NEVER use floating-point math for money or currency.                │
 │ 9. NEVER execute unbatched, destructive migrations on core tables.    │
-│ 10. NEVER guess complex UI state from static screenshots alone;        │
-│     use temporal DOM & recorded evidence (`ui-review-loop`).          │
-│ 11. NEVER write code against uninspected contracts (Zero Blind Code). │
-│ 12. NEVER apply a 3rd guess edit when a test fails twice.              │
-│ 13. NEVER perform unbounded global content grep for generic terms.     │
-│ 14. NEVER sequentially read > 10 search results (File-Fanout Rule).   │
-│ 15. NEVER inject timestamps or dynamic metadata into static prefixes. │
-│ 16. NEVER output unsorted keys or CRLF line endings in prompt intake.  │
+│ 10. NEVER write code against uninspected contracts (Zero Blind Code). │
+│ 11. NEVER apply a 3rd guess edit when a test fails twice.              │
+│ 12. NEVER perform unbounded global content grep for generic terms.     │
+│ 13. NEVER sequentially read > 10 search results (File-Fanout Rule).   │
+│ 14. NEVER inject timestamps or dynamic metadata into static prefixes. │
+│ 15. NEVER output unsorted keys or CRLF line endings in prompt intake.  │
+│ 16. NEVER modify files outside an active Scope Bounding Contract.      │
+│ 17. NEVER deliver features with zero negative/boundary test assertions.│
+│ 18. NEVER introduce code patterns registered in Anti-Pattern Ledger.   │
+│ 19. NEVER ignore critical context depth thresholds (>60 turns).       │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+

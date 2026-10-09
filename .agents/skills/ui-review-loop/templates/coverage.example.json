@@ -1,0 +1,24 @@
+{
+  "_doc": "Browser-interaction audit inventory. Every client-facing view x state x interactive element. The driver must touch 100% of inventoried ids and assert each element's declared expectations. `expects` holds machine-checked atoms from the vocabulary: nav (URL changes), fetch (recorder sees fetch:start/end), mut (recorder sees a mutation after the interaction), focus (activeElement moves), disable (button disabled + feedback label while submitting), value (typed value registers), toggle (open/closed state flips). `note` carries the human prose (what, why, nav target). The audit proves the INVENTORY was exercised — elements missing from the inventory are invisible to it, so review the inventory like code.",
+  "views": [
+    {
+      "id": "landing-signed-in",
+      "path": "/support (signed in, no open items)",
+      "elements": [
+        { "id": "composer-input", "el": "textarea[name=body]", "expects": ["value", "focus"] },
+        { "id": "composer-send", "el": "Send button", "expects": ["disable", "nav"], "note": "navigates to the new question" },
+        { "id": "sidebar-search", "el": "search input", "expects": ["value", "mut"], "note": "list filters" },
+        { "id": "affordances", "el": "auditAffordances sweep", "expects": [], "note": "no violations" }
+      ]
+    },
+    {
+      "id": "conversation-open",
+      "path": "question page (open, AI channel)",
+      "elements": [
+        { "id": "reply-send", "el": "send button", "expects": ["disable", "mut"], "note": "bubble appended" },
+        { "id": "resolve-btn", "el": "'Mark as resolved'", "expects": ["disable", "nav"], "note": "navigates back to the question list" },
+        { "id": "affordances", "el": "auditAffordances sweep", "expects": [], "note": "no violations" }
+      ]
+    }
+  ]
+}
