@@ -159,9 +159,26 @@ function LoginContent() {
     window.location.href = googleRedirectUrl;
   };
 
-  const handleDevQuickLogin = (quickEmail: string) => {
+  const handleDevQuickLogin = async (quickEmail: string) => {
     setEmail(quickEmail);
-    handleSendOtp(undefined, quickEmail);
+    setIsLoading(true);
+    setError(null);
+    setInfoMessage(null);
+    try {
+      const res = await sendOtp(quickEmail);
+      const codeToUse = res.dev_code || '123456';
+      setDevCode(codeToUse);
+      setCode(codeToUse);
+      await verifyOtp(quickEmail, codeToUse);
+      // Navigation is handled by the isLoggedIn effect (role-aware destination).
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message || (isRtl ? 'حدث خطأ أثناء تسجيل الدخول التجريبي.' : 'Error during demo sign in.'));
+      } else {
+        setError(isRtl ? 'حدث خطأ في الاتصال بالخادم.' : 'A network connection error occurred.');
+      }
+      setIsLoading(false);
+    }
   };
 
   if (isRedirecting) {
