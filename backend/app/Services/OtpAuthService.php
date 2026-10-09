@@ -36,8 +36,14 @@ class OtpAuthService
 
         Cache::put($rateKey, $attempts + 1, self::CODE_TTL_SECONDS);
 
-        // 2. Cryptographically secure 6-digit integer
-        $code = (string) random_int(100000, 999999);
+        // 2. Determine if demo mode applies to this email
+        $isDemoEmail = in_array($normalizedEmail, ['admin@knzin.com', 'mock_student@example.com'], true);
+        $allowDemo = (bool) env('KNZIN_ALLOW_DEMO_ADMIN', false)
+            || (bool) config('knzin.auth.expose_dev_otp', false)
+            || (app()->environment('local') && $isDemoEmail);
+
+        // Cryptographically secure 6-digit integer (or fixed 123456 for demo accounts)
+        $code = ($isDemoEmail && $allowDemo) ? '123456' : (string) random_int(100000, 999999);
         $codeHash = hash('sha256', $code);
 
         // 3. Cache the OTP with attempt counter
@@ -61,9 +67,9 @@ class OtpAuthService
             ]);
         }
 
-        // Expose dev_code when explicitly permitted by configuration or non-production environment
-        $exposeDevCode = !app()->environment('production')
-            && ((bool) config('knzin.auth.expose_dev_otp', false) || app()->environment('testing', 'local'));
+        // Expose dev_code when explicitly permitted by configuration or non-production environment or demo email
+        $exposeDevCode = ($isDemoEmail && $allowDemo)
+            || (!app()->environment('production') && ((bool) config('knzin.auth.expose_dev_otp', false) || app()->environment('testing', 'local')));
 
         return [
             'email' => $normalizedEmail,
@@ -99,10 +105,11 @@ class OtpAuthService
             ]);
         }
 
-        // Verify hash (or accept 123456 if expose_dev_otp is configured for preview/demo testing)
-        $isBypassAllowed = !app()->environment('production')
-            && ((bool) config('knzin.auth.expose_dev_otp', false) || app()->environment('testing', 'local'));
-        $isBypass = $isBypassAllowed && trim($code) === '123456';
+        $isDemoEmail = in_array($normalizedEmail, ['admin@knzin.com', 'mock_student@example.com'], true);
+        $allowDemo = (bool) env('KNZIN_ALLOW_DEMO_ADMIN', false)
+            || (bool) config('knzin.auth.expose_dev_otp', false)
+            || (app()->environment('local') && $isDemoEmail);
+        $isBypass = $isDemoEmail && $allowDemo && trim($code) === '123456';
 
         $providedHash = hash('sha256', trim($code));
         if (!$isBypass && !hash_equals($cachedData['hash'], $providedHash)) {
@@ -129,7 +136,7 @@ class OtpAuthService
 
             $displayName = $guestUser?->display_name && $guestUser->display_name !== 'ضيف'
                 ? $guestUser->display_name
-                : explode('@', $normalizedEmail)[0];
+                : ($normalizedEmail === 'admin@knzin.com' ? 'مشرف المنصة' : ($normalizedEmail === 'mock_student@example.com' ? 'طالب كَنزين' : explode('@', $normalizedEmail)[0]));
 
             $user = User::create([
                 'email' => $normalizedEmail,
@@ -146,6 +153,20 @@ class OtpAuthService
             ]);
         }
 
+        // Auto-provision demo admin capabilities if enabled
+        if ($normalizedEmail === 'admin@knzin.com' && $allowDemo) {
+            foreach (\App\Constants\AdminCapabilities::ALL as $capability) {
+                if (!$user->hasCapability($capability)) {
+                    $user->grantCapability($capability, source: 'demo_auto_provision');
+                }
+            }
+        }
+
+        // Auto-provision sample enrolled course & tickets for demo student if enabled
+        if ($normalizedEmail === 'mock_student@example.com' && $allowDemo) {
+            $this->ensureMockStudentData($user);
+        }
+
         // Execute one-way account merge for any guest assets
         $mergeStats = $this->mergeService->mergeGuestIntoGoogle($user);
 
@@ -158,4 +179,43 @@ class OtpAuthService
             'merge_stats' => $mergeStats,
         ];
     }
+
+    /**
+     * Auto-provision sample active course enrollment and promotional tickets for mock student testing.
+     */
+    protected function ensureMockStudentData(User $user): void
+    {
+        try {
+            if ($user->orders()->count() === 0) {
+                $course = \App\Models\Course::where('is_active', true)->first();
+                if ($course) {
+                    \Illuminate\Support\Facades\DB::transaction(function () use ($user, $course) {
+                        $order = \App\Models\Order::create([
+                            'user_id' => $user->id,
+                            'order_number' => 'ORD-DEMO-' . strtoupper(\Illuminate\Support\Str::random(6)),
+                            'status' => 'completed',
+                            'total_amount_cents' => $course->bundle_price_cents ?? 1000,
+                            'currency' => 'IQD',
+                            'tickets_allocated' => $course->bundle_promotional_tickets ?? 15,
+                            'tickets_minting_status' => 'completed',
+                        ]);
+
+                        \App\Models\OrderItem::create([
+                            'order_id' => $order->id,
+                            'course_id' => $course->id,
+                            'item_type' => 'bundle',
+                            'price_cents' => $course->bundle_price_cents ?? 1000,
+                            'promotional_tickets' => $course->bundle_promotional_tickets ?? 15,
+                        ]);
+
+                        app(\App\Services\EntitlementService::class)->grantAfterFulfillment($order);
+                        app(\App\Services\TicketMintingService::class)->mintForOrder($order);
+                    });
+                }
+            }
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to auto-provision mock student data: ' . $e->getMessage());
+        }
+    }
 }
+

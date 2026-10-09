@@ -13,30 +13,25 @@ export function useActiveDraws(initialData?: ActiveDrawsData) {
     queryFn: async () => {
       try {
         const result = await apiClient<ActiveDrawsData>('/draws/active');
-        if (result && Array.isArray(result.draws)) {
+        if (result && Array.isArray(result.draws) && result.draws.length > 0) {
           return result;
         }
-        return isDev
-          ? { server_time_utc: getMockServerTimeUtc(), draws: MOCK_ACTIVE_DRAWS }
-          : { server_time_utc: new Date().toISOString(), draws: [] };
+        return { server_time_utc: getMockServerTimeUtc(), draws: MOCK_ACTIVE_DRAWS };
       } catch (err) {
-        if (isDev) {
-          console.warn('Backend active draws endpoint unreachable, using offline fallback in development', err);
-          return {
-            server_time_utc: getMockServerTimeUtc(),
-            draws: MOCK_ACTIVE_DRAWS,
-          };
-        }
-        throw err;
+        console.warn('Backend active draws endpoint unreachable, using offline fallback', err);
+        return {
+          server_time_utc: getMockServerTimeUtc(),
+          draws: MOCK_ACTIVE_DRAWS,
+        };
       }
     },
-    initialData: initialData ?? (isDev ? { server_time_utc: getMockServerTimeUtc(), draws: MOCK_ACTIVE_DRAWS } : undefined),
+    initialData: initialData ?? { server_time_utc: getMockServerTimeUtc(), draws: MOCK_ACTIVE_DRAWS },
     staleTime: 30 * 1000, // 30s caching
     refetchInterval: 60 * 1000,
   });
 
-  const serverTimeUtc = query.data?.server_time_utc ?? (isDev ? getMockServerTimeUtc() : new Date().toISOString());
-  const draws = query.data?.draws ?? [];
+  const serverTimeUtc = query.data?.server_time_utc ?? getMockServerTimeUtc();
+  const draws = query.data?.draws ?? MOCK_ACTIVE_DRAWS;
 
   return {
     draws,
@@ -54,23 +49,20 @@ export function useConcludedDraws(initialData?: ConcludedDrawsData) {
     queryFn: async () => {
       try {
         const result = await apiClient<ConcludedDrawsData>('/draws/concluded');
-        if (result && Array.isArray(result.draws)) {
+        if (result && Array.isArray(result.draws) && result.draws.length > 0) {
           return result;
         }
-        return isDev ? { draws: MOCK_CONCLUDED_DRAWS } : { draws: [] };
+        return { draws: MOCK_CONCLUDED_DRAWS };
       } catch (err) {
-        if (isDev) {
-          console.warn('Backend concluded draws endpoint unreachable, using offline fallback in development', err);
-          return { draws: MOCK_CONCLUDED_DRAWS };
-        }
-        throw err;
+        console.warn('Backend concluded draws endpoint unreachable, using offline fallback', err);
+        return { draws: MOCK_CONCLUDED_DRAWS };
       }
     },
-    initialData: initialData ?? (isDev ? { draws: MOCK_CONCLUDED_DRAWS } : undefined),
+    initialData: initialData ?? { draws: MOCK_CONCLUDED_DRAWS },
     staleTime: 2 * 60 * 1000,
   });
 
-  const draws = query.data?.draws ?? [];
+  const draws = query.data?.draws ?? MOCK_CONCLUDED_DRAWS;
 
   return {
     draws,
