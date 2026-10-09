@@ -21,7 +21,6 @@ import {
   Gift,
   Shield,
   Globe,
-  Sparkles,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -42,7 +41,6 @@ import { useLearnerTickets } from '@/hooks/useLearnerTickets';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminAccess } from '@/hooks/admin/useAdminAccess';
 import { useSiteWideCms } from '@/hooks/admin/useAdminCms';
-import { sanitizeCtaUrl } from '@/lib/safe-url';
 import { USER_MENU_ITEMS, UserMenuItemId } from '@/lib/user-menu';
 import { getApiBaseUrl } from '@/lib/api-client';
 
@@ -114,14 +112,6 @@ export default function HeaderHUD() {
   const { data: cmsData } = useSiteWideCms();
   const siteShell = cmsData?.sections?.site_shell;
 
-  const headerBadge = isRtl
-    ? siteShell?.header_announcement_badge_ar
-    : siteShell?.header_announcement_badge_en;
-  const headerCtaLabel = isRtl
-    ? siteShell?.header_cta_label_ar
-    : siteShell?.header_cta_label_en;
-  const headerCtaUrl = siteShell?.header_cta_url;
-
   useEffect(() => {
     if (typeof navigator !== 'undefined') {
       setIsMac(/Mac|iPod|iPhone|iPad/.test(navigator.userAgent));
@@ -191,31 +181,27 @@ export default function HeaderHUD() {
         <div className="flex items-center gap-4 lg:gap-6 min-w-0">
           <Link href="/" className="flex items-center gap-2.5 group focus:outline-none shrink-0">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-colors">
-              <span className="text-white font-bold text-sm tracking-wider">K</span>
+              <span className="text-white font-bold text-sm tracking-wider">
+                {isRtl ? 'ك' : 'K'}
+              </span>
             </div>
             <div className="flex items-baseline gap-1.5">
               <span className="font-bold text-lg tracking-tight text-content-primary group-hover:text-primary transition-colors">
-                كَنزين
+                {isRtl ? 'كَنزين' : 'KNZIN'}
               </span>
               <span className="hidden sm:inline text-xs font-medium text-content-muted">
-                KNZIN
+                {isRtl ? 'KNZIN' : 'كَنزين'}
               </span>
             </div>
           </Link>
 
-          {headerBadge && (
-            <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 shrink-0 animate-in fade-in">
-              <Sparkles className="w-3 h-3 text-primary shrink-0" />
-              <span>{headerBadge}</span>
-            </span>
-          )}
 
           {/* Full Desktop Navigation (>= 1024px) */}
-          <nav className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-content-secondary">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 text-xs font-medium text-content-secondary">
             {/* 1. Vocational Course */}
             <Link
               href="/"
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
+              className={`px-2.5 xl:px-3 py-1.5 rounded-lg transition-colors shrink-0 ${
                 isCoursesActive
                   ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
                   : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
@@ -227,7 +213,7 @@ export default function HeaderHUD() {
             {/* 2. Promotional */}
             <Link
               href="/raffle"
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
+              className={`px-2.5 xl:px-3 py-1.5 rounded-lg transition-colors shrink-0 ${
                 isRaffleActive
                   ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
                   : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
@@ -239,7 +225,7 @@ export default function HeaderHUD() {
             {/* 3. Referral */}
             <Link
               href="/affiliate#referral"
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
+              className={`px-2.5 xl:px-3 py-1.5 rounded-lg transition-colors shrink-0 ${
                 isReferralActive
                   ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
                   : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
@@ -252,7 +238,7 @@ export default function HeaderHUD() {
             {user && (
               <Link
                 href="/affiliate"
-                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                className={`px-2.5 xl:px-3 py-1.5 rounded-lg transition-colors shrink-0 ${
                   pathname.startsWith('/affiliate') && !isReferralActive
                     ? 'bg-surface-secondary text-primary font-bold shadow-2xs'
                     : 'text-content-secondary hover:text-content-primary hover:bg-surface-secondary/70'
@@ -262,11 +248,26 @@ export default function HeaderHUD() {
               </Link>
             )}
 
-            {/* 5. Global Search Bar */}
+            {/* 5. Global Search Trigger */}
+            {/* Compact button on lg (1024px - 1279px) */}
             <button
               type="button"
               onClick={() => setIsSearchOpen(true)}
-              className="ms-2 flex items-center justify-between gap-3 w-52 xl:w-64 px-3 py-1.5 rounded-xl bg-surface-secondary/70 hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-muted hover:text-content-primary transition-all duration-150 text-xs font-normal group cursor-pointer shadow-2xs text-start"
+              className="ms-1 hidden lg:flex xl:hidden items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-secondary/70 hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-muted hover:text-content-primary transition-all duration-150 text-xs font-normal group cursor-pointer shadow-2xs shrink-0"
+              title={isRtl ? 'البحث الذكي في كَنزين (Ctrl + K)' : 'Smart Search in KNZiN (Ctrl + K)'}
+              aria-label={t('searchPlaceholder')}
+            >
+              <Search className="w-3.5 h-3.5 text-content-muted group-hover:text-primary shrink-0 transition-colors" />
+              <kbd className="inline-flex items-center px-1 py-0.5 text-[9px] font-mono text-content-muted bg-surface-primary border border-border-subtle rounded select-none shrink-0">
+                {isMac ? '⌘' : 'Ctrl'} K
+              </kbd>
+            </button>
+
+            {/* Full search input on xl+ (>= 1280px) */}
+            <button
+              type="button"
+              onClick={() => setIsSearchOpen(true)}
+              className="ms-1.5 hidden xl:flex items-center justify-between gap-2.5 w-40 xl:w-48 2xl:w-56 px-3 py-1.5 rounded-xl bg-surface-secondary/70 hover:bg-surface-elevated border border-border-subtle hover:border-border text-content-muted hover:text-content-primary transition-all duration-150 text-xs font-normal group cursor-pointer shadow-2xs text-start shrink-0"
               title={isRtl ? 'البحث الذكي في كَنزين (Ctrl + K)' : 'Smart Search in KNZiN (Ctrl + K)'}
               aria-label={t('searchPlaceholder')}
             >
@@ -300,12 +301,12 @@ export default function HeaderHUD() {
           <button
             type="button"
             onClick={() => setIsTicketsDrawerOpen(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-secondary text-xs font-medium transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-secondary text-xs font-medium transition-colors cursor-pointer shrink-0"
             title={isRtl ? 'دفتر تذاكر السحب الترويجية' : 'Promotional Raffle Tickets Ledger'}
             aria-label={isRtl ? 'دفتر تذاكر السحب الترويجية' : 'Promotional Raffle Tickets Ledger'}
           >
-            <Ticket className="w-3.5 h-3.5 text-accent" />
-            <span>{totalTickets} <span className="hidden sm:inline text-content-muted">{tCommon('ticket')}</span></span>
+            <Ticket className="w-3.5 h-3.5 text-accent shrink-0" />
+            <span>{totalTickets} <span className="hidden xl:inline text-content-muted">{tCommon('ticket')}</span></span>
           </button>
 
           {/* Notifications HUD Bell (authenticated users / active sessions) */}
@@ -317,30 +318,22 @@ export default function HeaderHUD() {
             />
           )}
 
-          {/* Desktop-only: Wallet Balance HUD (>= 1024px) */}
-          <div
-            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary text-xs font-medium"
-            title={isRtl ? 'رصيد المحفظة' : 'Wallet Balance'}
-          >
-            <Wallet className="w-3.5 h-3.5 text-content-muted" />
-            <span>0 {tCommon('currencyIqd')}</span>
-          </div>
-
-          {/* Dynamic CMS Header CTA Button */}
-          {headerCtaLabel && (
-            <a
-              href={sanitizeCtaUrl(headerCtaUrl, '#catalog')}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+          {/* Desktop Wallet Balance HUD: Shown only for authenticated users on wide screens (>= 1280px) */}
+          {user && (
+            <div
+              className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-content-secondary text-xs font-medium shrink-0"
+              title={isRtl ? 'رصيد المحفظة' : 'Wallet Balance'}
             >
-              <span>{headerCtaLabel}</span>
-            </a>
+              <Wallet className="w-3.5 h-3.5 text-content-muted shrink-0" />
+              <span>0 {tCommon('currencyIqd')}</span>
+            </div>
           )}
 
           {/* Sign In quick button when unauthenticated (Guest) */}
           {!user && (
             <Link
               href="/auth/login"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer shrink-0"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>{isRtl ? 'تسجيل الدخول' : 'Sign In'}</span>
@@ -348,7 +341,7 @@ export default function HeaderHUD() {
           )}
 
           {/* Primary Dropdown Menu (Theme, Language, How It Works, Account/Actions) */}
-          <div className="hidden lg:flex items-center">
+          <div className="hidden lg:flex items-center shrink-0">
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-secondary border border-border-subtle text-xs font-semibold text-content-primary hover:bg-surface-elevated transition-colors outline-none focus:ring-1 focus:ring-primary/40 cursor-pointer">
                 <UserIcon className="w-3.5 h-3.5 text-content-muted" />
@@ -417,6 +410,15 @@ export default function HeaderHUD() {
                         </span>
                       )}
                       <span className="truncate block">{user.email}</span>
+                    </div>
+
+                    {/* Quick Wallet Balance item inside dropdown */}
+                    <div className="mx-2 mb-2 px-2.5 py-1.5 rounded-md bg-surface-secondary flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-1.5 text-content-secondary">
+                        <Wallet className="w-3.5 h-3.5 text-content-muted" />
+                        <span>{tCommon('wallet')}</span>
+                      </span>
+                      <span className="font-semibold text-content-primary">0 {tCommon('currencyIqd')}</span>
                     </div>
                     <DropdownMenuSeparator />
 

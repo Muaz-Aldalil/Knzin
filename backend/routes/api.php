@@ -60,23 +60,26 @@ Route::prefix('v1')->group(function () {
     Route::get('/checkout/orders/{orderNumber}', [CheckoutController::class, 'show'])->middleware('throttle:60,1');
     Route::post('/checkout/orders/{orderNumber}/pay', [PaymentController::class, 'pay'])->middleware('throttle:60,1');
     Route::get('/checkout/orders/{orderNumber}/payment-status', [PaymentController::class, 'paymentStatus'])->middleware('throttle:60,1');
-    Route::post('/checkout/orders/{orderNumber}/simulate-success', [CheckoutController::class, 'simulateSuccess'])->middleware('throttle:60,1');
 
     // Payment Webhook Ingestion Endpoints (Feature 007)
-    Route::post('/payments/webhooks/simulator', [PaymentWebhookController::class, 'simulator']);
     Route::match(['get', 'post'], '/payments/webhooks/zaincash', [PaymentWebhookController::class, 'zaincash']);
     Route::post('/payments/webhooks/asiahawala', [PaymentWebhookController::class, 'asiahawala']);
 
     // Payment Sandbox Simulator & Financial Testing Tools (Feature 007 / 010)
-    Route::prefix('payments/simulator')->middleware('throttle:60,1')->group(function () {
-        Route::get('/transactions', [PaymentSimulatorController::class, 'listTransactions']);
-        Route::post('/seed-scenario', [PaymentSimulatorController::class, 'seedScenario']);
-        Route::post('/fast-forward-maturation', [PaymentSimulatorController::class, 'fastForwardMaturation']);
-        Route::post('/simulate-co-prize', [PaymentSimulatorController::class, 'simulateCoPrize']);
-        Route::get('/{transactionRef}', [PaymentSimulatorController::class, 'show']);
-        Route::post('/{transactionRef}/reconcile', [PaymentSimulatorController::class, 'reconcile']);
-        Route::post('/{transactionRef}/refund', [PaymentSimulatorController::class, 'refund']);
-    });
+    if (!app()->isProduction()) {
+        Route::post('/checkout/orders/{orderNumber}/simulate-success', [CheckoutController::class, 'simulateSuccess'])->middleware('throttle:60,1');
+        Route::post('/payments/webhooks/simulator', [PaymentWebhookController::class, 'simulator']);
+
+        Route::prefix('payments/simulator')->middleware('throttle:60,1')->group(function () {
+            Route::get('/transactions', [PaymentSimulatorController::class, 'listTransactions']);
+            Route::post('/seed-scenario', [PaymentSimulatorController::class, 'seedScenario']);
+            Route::post('/fast-forward-maturation', [PaymentSimulatorController::class, 'fastForwardMaturation']);
+            Route::post('/simulate-co-prize', [PaymentSimulatorController::class, 'simulateCoPrize']);
+            Route::get('/{transactionRef}', [PaymentSimulatorController::class, 'show']);
+            Route::post('/{transactionRef}/reconcile', [PaymentSimulatorController::class, 'reconcile']);
+            Route::post('/{transactionRef}/refund', [PaymentSimulatorController::class, 'refund']);
+        });
+    }
 
     // Learner Hub & Ticket Ledger (Feature 005)
     Route::get('/user/dashboard', [DashboardController::class, 'index'])->middleware('auth:sanctum');

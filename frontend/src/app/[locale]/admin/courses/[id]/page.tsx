@@ -41,6 +41,7 @@ import {
 } from 'lucide-react';
 import { normalizeImageUrl } from '@/lib/image';
 import { uploadAdminImage } from '@/lib/api/media';
+import { isSafeMediaUrl, sanitizeMediaUrl, validateMediaUrlInput } from '@/lib/safe-url';
 
 export default function CourseDetailPage() {
   const locale = useLocale();
@@ -80,6 +81,7 @@ export default function CourseDetailPage() {
   const [titleEn, setTitleEn] = useState('');
   const [slug, setSlug] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [coverImageError, setCoverImageError] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState(false);
   const [priceDollars, setPriceDollars] = useState('10.00');
   const [promotionalTickets, setPromotionalTickets] = useState('15');
@@ -108,6 +110,7 @@ export default function CourseDetailPage() {
       const data = await uploadAdminImage(file, 'courses');
       if (data?.url) {
         setCoverImageUrl(data.url);
+        setCoverImageError(null);
         setPreviewError(false);
         showSuccess(isAr ? 'تم رفع صورة الغلاف بنجاح.' : 'Cover image uploaded successfully.');
       }
@@ -146,6 +149,8 @@ export default function CourseDetailPage() {
   const [partPdfTitleEn, setPartPdfTitleEn] = useState('');
   const [partPriceDollars, setPartPriceDollars] = useState('2.00');
   const [partTickets, setPartTickets] = useState('1');
+  const [partVideoUrlError, setPartVideoUrlError] = useState<string | null>(null);
+  const [partPdfUrlError, setPartPdfUrlError] = useState<string | null>(null);
 
   // Delete course confirmation
   const [isDeleteCourseOpen, setIsDeleteCourseOpen] = useState(false);
@@ -161,6 +166,7 @@ export default function CourseDetailPage() {
       setTitleEn(course.title_en || '');
       setSlug(course.slug || '');
       setCoverImageUrl(course.cover_image_url || '');
+      setCoverImageError(null);
       setPriceDollars(((course.bundle_price_cents || 0) / 100).toFixed(2));
       setPromotionalTickets(String(course.bundle_promotional_tickets || 15));
       setDisplayPriceLabel(course.display_price_label || '');
@@ -203,6 +209,16 @@ export default function CourseDetailPage() {
 
   const handleSaveGeneral = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (coverImageUrl.trim()) {
+      const valRes = validateMediaUrlInput(coverImageUrl, isAr);
+      if (!valRes.isValid) {
+        setCoverImageError(valRes.error);
+        showError(valRes.error || (isAr ? 'رابط صورة الغلاف غير آمن أو غير صالح.' : 'Cover image URL is unsafe or invalid.'));
+        return;
+      }
+    }
+
     try {
       const priceCents = Math.round(parseFloat(priceDollars || '0') * 100);
       await updateCourse({
@@ -290,6 +306,8 @@ export default function CourseDetailPage() {
     setPartPdfTitleEn('');
     setPartPriceDollars('2.00');
     setPartTickets('1');
+    setPartVideoUrlError(null);
+    setPartPdfUrlError(null);
     setIsPartModalOpen(true);
   };
 
@@ -307,6 +325,8 @@ export default function CourseDetailPage() {
     setPartPdfTitleEn(part.pdf_title_en || '');
     setPartPriceDollars(((part.part_price_cents || 200) / 100).toFixed(2));
     setPartTickets(String(part.part_promotional_tickets || 1));
+    setPartVideoUrlError(null);
+    setPartPdfUrlError(null);
     setIsPartModalOpen(true);
   };
 
@@ -315,6 +335,24 @@ export default function CourseDetailPage() {
     if (!partTitleAr.trim()) {
       showWarning(isAr ? 'يرجى إدخال عنوان الجزء بالعربية.' : 'Please enter part title in Arabic.');
       return;
+    }
+
+    if (partVideoUrl.trim()) {
+      const videoVal = validateMediaUrlInput(partVideoUrl, isAr);
+      if (!videoVal.isValid) {
+        setPartVideoUrlError(videoVal.error);
+        showError(videoVal.error || (isAr ? 'رابط الفيديو غير آمن أو غير صالح.' : 'Video URL is unsafe or invalid.'));
+        return;
+      }
+    }
+
+    if (partPdfUrl.trim()) {
+      const pdfVal = validateMediaUrlInput(partPdfUrl, isAr);
+      if (!pdfVal.isValid) {
+        setPartPdfUrlError(pdfVal.error);
+        showError(pdfVal.error || (isAr ? 'رابط ملف الـ PDF غير آمن أو غير صالح.' : 'PDF URL is unsafe or invalid.'));
+        return;
+      }
     }
 
     const payload: any = {
@@ -624,16 +662,21 @@ export default function CourseDetailPage() {
                         onChange={(e) => {
                           const normalized = normalizeImageUrl(e.target.value);
                           setCoverImageUrl(normalized);
+                          const valRes = validateMediaUrlInput(normalized, isAr);
+                          setCoverImageError(valRes.error);
                           setPreviewError(false);
                         }}
                         placeholder={isAr ? 'أدخل رابط الصورة https://... أو ارفع من جهازك' : 'https://... or upload from device'}
-                        className="w-full px-3.5 py-2.5 pe-8 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-primary transition-colors"
+                        className={`w-full px-3.5 py-2.5 pe-8 bg-surface-elevated border rounded-xl text-sm font-mono text-content-primary focus:outline-hidden transition-colors ${
+                          coverImageError ? 'border-rose-500 focus:border-rose-500' : 'border-border-subtle focus:border-primary'
+                        }`}
                       />
                       {coverImageUrl && (
                         <button
                           type="button"
                           onClick={() => {
                             setCoverImageUrl('');
+                            setCoverImageError(null);
                             setPreviewError(false);
                           }}
                           className="absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-content-muted hover:text-content-primary hover:bg-surface transition-colors cursor-pointer"
@@ -673,12 +716,19 @@ export default function CourseDetailPage() {
                     </button>
                   </div>
 
-                  {coverImageUrl && (
+                  {coverImageError && (
+                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-400">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{coverImageError}</span>
+                    </div>
+                  )}
+
+                  {coverImageUrl && !coverImageError && isSafeMediaUrl(coverImageUrl) && (
                     <div className="mt-2.5 flex items-center gap-3 p-2.5 bg-surface-elevated/60 border border-border-subtle rounded-xl">
                       <div className="relative w-16 h-10 rounded-lg overflow-hidden bg-slate-900 border border-border-subtle shrink-0 flex items-center justify-center">
                         {!previewError ? (
                           <img
-                            src={coverImageUrl}
+                            src={sanitizeMediaUrl(coverImageUrl)}
                             alt="Preview"
                             className="w-full h-full object-cover"
                             onError={() => setPreviewError(true)}
@@ -1404,10 +1454,22 @@ export default function CourseDetailPage() {
                     <input
                       type="text"
                       value={partVideoUrl}
-                      onChange={(e) => setPartVideoUrl(e.target.value)}
-                      placeholder="https://... أو مسار التخزين الداخلي"
-                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs font-mono text-content-primary focus:outline-hidden focus:border-primary"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setPartVideoUrl(val);
+                        const valRes = validateMediaUrlInput(val, isAr);
+                        setPartVideoUrlError(valRes.error);
+                      }}
+                      placeholder={isAr ? 'https://... أو مسار التخزين /storage/' : 'https://... or /storage/ path'}
+                      className={`w-full px-3 py-2 bg-surface-card border rounded-lg text-xs font-mono text-content-primary focus:outline-hidden transition-colors ${
+                        partVideoUrlError ? 'border-rose-500 focus:border-rose-500' : 'border-border-subtle focus:border-primary'
+                      }`}
                     />
+                    {partVideoUrlError && (
+                      <span className="text-[11px] text-rose-400 mt-1 block">
+                        {partVideoUrlError}
+                      </span>
+                    )}
                     <span className="text-[10px] text-content-muted mt-1 block">
                       {isAr
                         ? 'إذا ترك فارغاً، سيتم تشغيل فيديو المسار الافتراضي المحدد للمنهاج.'
@@ -1457,10 +1519,22 @@ export default function CourseDetailPage() {
                     <input
                       type="text"
                       value={partPdfUrl}
-                      onChange={(e) => setPartPdfUrl(e.target.value)}
-                      placeholder="https://... أو مسار التخزين"
-                      className="w-full px-3 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs font-mono text-content-primary focus:outline-hidden focus:border-primary"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setPartPdfUrl(val);
+                        const valRes = validateMediaUrlInput(val, isAr);
+                        setPartPdfUrlError(valRes.error);
+                      }}
+                      placeholder={isAr ? 'https://... أو مسار التخزين /storage/' : 'https://... or /storage/ path'}
+                      className={`w-full px-3 py-2 bg-surface-card border rounded-lg text-xs font-mono text-content-primary focus:outline-hidden transition-colors ${
+                        partPdfUrlError ? 'border-rose-500 focus:border-rose-500' : 'border-border-subtle focus:border-primary'
+                      }`}
                     />
+                    {partPdfUrlError && (
+                      <span className="text-[11px] text-rose-400 mt-1 block">
+                        {partPdfUrlError}
+                      </span>
+                    )}
                   </div>
                 </div>
 

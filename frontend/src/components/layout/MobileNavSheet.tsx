@@ -102,11 +102,15 @@ export default function MobileNavSheet({
           <SheetHeader className="text-start">
             <SheetTitle className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xs">
-                K
+                {isRtl ? 'ك' : 'K'}
               </div>
               <div className="flex items-baseline gap-1.5">
-                <span className="font-bold text-base text-content-primary">كَنزين</span>
-                <span className="text-[11px] font-medium text-content-muted">KNZIN</span>
+                <span className="font-bold text-base text-content-primary">
+                  {isRtl ? 'كَنزين' : 'KNZIN'}
+                </span>
+                <span className="text-[11px] font-medium text-content-muted">
+                  {isRtl ? 'KNZIN' : 'كَنزين'}
+                </span>
               </div>
             </SheetTitle>
             <SheetDescription className="sr-only">

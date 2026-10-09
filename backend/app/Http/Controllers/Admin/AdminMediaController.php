@@ -20,7 +20,7 @@ class AdminMediaController extends ApiController
                 'required',
                 'file',
                 'image',
-                'mimes:jpeg,png,jpg,webp,gif,svg',
+                'mimes:jpeg,png,jpg,webp,gif',
                 'max:10240', // 10MB
             ],
             'folder' => ['nullable', 'string', 'in:courses,draws,prizes,general'],

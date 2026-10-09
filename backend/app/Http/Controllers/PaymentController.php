@@ -58,9 +58,7 @@ class PaymentController extends ApiController
 
         return DB::transaction(function () use ($request, $orderNumber, $gateway, $locale) {
             /** @var Order|null $order */
-            $order = Order::with('user')->where(function ($q) use ($orderNumber) {
-                $q->where('order_number', $orderNumber)->orWhere('id', $orderNumber);
-            })->lockForUpdate()->first();
+            $order = Order::with('user')->where('order_number', $orderNumber)->lockForUpdate()->first();
 
             if (!$order) {
                 return response()->json([
@@ -166,9 +164,7 @@ class PaymentController extends ApiController
      */
     public function paymentStatus(Request $request, string $orderNumber): JsonResponse
     {
-        $order = Order::with('user')->where(function ($q) use ($orderNumber) {
-            $q->where('order_number', $orderNumber)->orWhere('id', $orderNumber);
-        })->first();
+        $order = Order::with('user')->where('order_number', $orderNumber)->first();
 
         if (!$order) {
             return response()->json([
@@ -250,6 +246,26 @@ class PaymentController extends ApiController
                         'message_en' => 'Please sign in to access this order',
                     ],
                 ], Response::HTTP_UNAUTHORIZED);
+            }
+
+            // For unauthenticated access to guest order, require matching customer email (fail-closed if missing or mismatch)
+            $providedEmail = strtolower(trim((string) (
+                $request->input('guest_email') 
+                ?? $request->input('email') 
+                ?? $request->query('guest_email') 
+                ?? $request->query('email', '')
+            )));
+            $orderEmail = strtolower(trim($order->user?->email ?? ''));
+            if ($orderEmail !== '' && $providedEmail !== $orderEmail) {
+                return response()->json([
+                    'success' => false,
+                    'status' => 'fail',
+                    'error' => [
+                        'code' => 'ERR_FORBIDDEN',
+                        'message' => 'البريد الإلكتروني المدخل لا يتطابق مع هذا الطلب أو غير مصرح لك بالوصول إليه',
+                        'message_en' => 'Authentication or matching order email required to access this order',
+                    ],
+                ], Response::HTTP_FORBIDDEN);
             }
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Rules\SafeMediaUrl;
 use Illuminate\Validation\Rule;
 
 class UpdateCourseRequest extends AdminFormRequest
@@ -23,7 +24,7 @@ class UpdateCourseRequest extends AdminFormRequest
             'slug' => ['sometimes', 'nullable', 'string', 'max:255', Rule::unique('courses', 'slug')->ignore($courseId)],
             'description_ar' => ['sometimes', 'required', 'string'],
             'description_en' => ['sometimes', 'required', 'string'],
-            'cover_image_url' => ['nullable', 'string', 'max:500'],
+            'cover_image_url' => ['nullable', 'string', 'max:1000', new SafeMediaUrl()],
             'bundle_price_cents' => ['sometimes', 'required', 'integer', 'min:0'],
             'bundle_promotional_tickets' => ['nullable', 'integer', 'min:0'],
             'display_price_label' => ['nullable', 'string', 'max:255'],

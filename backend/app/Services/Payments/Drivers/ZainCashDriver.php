@@ -87,6 +87,14 @@ class ZainCashDriver implements PaymentGatewayInterface
 
         $secret = config('payments.gateways.zaincash.secret');
 
+        if (empty($secret)) {
+            Log::error('ZainCash callback verification failed: secret is not configured.');
+            return [
+                'verified' => false,
+                'error' => 'Payment gateway secret key is not configured on the server.',
+            ];
+        }
+
         try {
             $decoded = (array) JWT::decode($token, new Key($secret, 'HS256'));
         } catch (\Throwable $e) {

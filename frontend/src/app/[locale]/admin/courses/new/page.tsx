@@ -22,9 +22,11 @@ import {
   ImageIcon,
   Upload,
   X,
+  AlertTriangle,
 } from 'lucide-react';
 import { normalizeImageUrl } from '@/lib/image';
 import { uploadAdminImage } from '@/lib/api/media';
+import { isSafeMediaUrl, sanitizeMediaUrl, validateMediaUrlInput } from '@/lib/safe-url';
 
 export default function CreateCoursePage() {
   const locale = useLocale();
@@ -39,6 +41,7 @@ export default function CreateCoursePage() {
   const [titleEn, setTitleEn] = useState('');
   const [slug, setSlug] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [coverImageError, setCoverImageError] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState(false);
 
   // Local image upload state
@@ -64,6 +67,7 @@ export default function CreateCoursePage() {
       const data = await uploadAdminImage(file, 'courses');
       if (data?.url) {
         setCoverImageUrl(data.url);
+        setCoverImageError(null);
         setPreviewError(false);
         showSuccess(isAr ? 'تم رفع صورة الغلاف بنجاح.' : 'Cover image uploaded successfully.');
       }
@@ -139,6 +143,15 @@ export default function CreateCoursePage() {
     if (!titleAr.trim() || !titleEn.trim()) {
       showWarning(isAr ? 'يرجى إدخال عنوان الدورة باللغتين العربية والإنجليزية.' : 'Please enter course title in Arabic and English.');
       return;
+    }
+
+    if (coverImageUrl.trim()) {
+      const valRes = validateMediaUrlInput(coverImageUrl, isAr);
+      if (!valRes.isValid) {
+        setCoverImageError(valRes.error);
+        showError(valRes.error || (isAr ? 'رابط صورة الغلاف غير آمن أو غير صالح.' : 'Cover image URL is unsafe or invalid.'));
+        return;
+      }
     }
 
     const priceCents = Math.round(parseFloat(priceDollars || '0') * 100);
@@ -274,16 +287,21 @@ export default function CreateCoursePage() {
                       onChange={(e) => {
                         const normalized = normalizeImageUrl(e.target.value);
                         setCoverImageUrl(normalized);
+                        const valRes = validateMediaUrlInput(normalized, isAr);
+                        setCoverImageError(valRes.error);
                         setPreviewError(false);
                       }}
                       placeholder={isAr ? 'أدخل رابط الصورة https://... أو ارفع من جهازك' : 'https://... or upload from device'}
-                      className="w-full px-3.5 py-2.5 pe-8 bg-surface-elevated border border-border-subtle rounded-xl text-sm font-mono text-content-primary focus:outline-hidden focus:border-primary transition-colors"
+                      className={`w-full px-3.5 py-2.5 pe-8 bg-surface-elevated border rounded-xl text-sm font-mono text-content-primary focus:outline-hidden transition-colors ${
+                        coverImageError ? 'border-rose-500 focus:border-rose-500' : 'border-border-subtle focus:border-primary'
+                      }`}
                     />
                     {coverImageUrl && (
                       <button
                         type="button"
                         onClick={() => {
                           setCoverImageUrl('');
+                          setCoverImageError(null);
                           setPreviewError(false);
                         }}
                         className="absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-content-muted hover:text-content-primary hover:bg-surface transition-colors cursor-pointer"
@@ -323,12 +341,19 @@ export default function CreateCoursePage() {
                   </button>
                 </div>
 
-                {coverImageUrl && (
+                {coverImageError && (
+                  <div className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-400">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{coverImageError}</span>
+                  </div>
+                )}
+
+                {coverImageUrl && !coverImageError && isSafeMediaUrl(coverImageUrl) && (
                   <div className="mt-2.5 flex items-center gap-3 p-2.5 bg-surface-elevated/60 border border-border-subtle rounded-xl">
                     <div className="relative w-16 h-10 rounded-lg overflow-hidden bg-slate-900 border border-border-subtle shrink-0 flex items-center justify-center">
                       {!previewError ? (
                         <img
-                          src={coverImageUrl}
+                          src={sanitizeMediaUrl(coverImageUrl)}
                           alt="Preview"
                           className="w-full h-full object-cover"
                           onError={() => setPreviewError(true)}

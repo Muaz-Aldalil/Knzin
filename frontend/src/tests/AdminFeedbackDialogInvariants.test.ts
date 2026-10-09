@@ -68,6 +68,7 @@ describe('Admin Feedback Dialog Invariants', () => {
         } else if (
           (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx') || entry.name.endsWith('.js') || entry.name.endsWith('.jsx')) &&
           !fullPath.includes(path.join('tests', 'AuthRedirect.test.ts')) && // XSS security test fixture
+          !fullPath.includes(path.join('tests', 'AdminMediaUrlSanitization.test.ts')) && // XSS security test fixture
           !fullPath.includes('AdminFeedbackDialogInvariants.test.ts') // this test file itself
         ) {
           const fileContent = fs.readFileSync(fullPath, 'utf8');

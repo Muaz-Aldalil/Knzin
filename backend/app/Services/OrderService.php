@@ -215,10 +215,8 @@ class OrderService
     public function getOrderByNumber(string $orderNumber): ?Order
     {
         return Order::with(['items.course', 'items.part', 'user'])
-            ->where(function ($query) use ($orderNumber) {
-                $query->where('order_number', $orderNumber)
-                    ->orWhere('id', $orderNumber);
-            })
+            ->where('order_number', $orderNumber)
+            ->orWhere('id', $orderNumber)
             ->first();
     }
 }

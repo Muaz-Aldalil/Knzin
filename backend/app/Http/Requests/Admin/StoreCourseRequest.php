@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Rules\SafeMediaUrl;
+
 class StoreCourseRequest extends AdminFormRequest
 {
     protected function prepareForValidation(): void
@@ -19,7 +21,7 @@ class StoreCourseRequest extends AdminFormRequest
             'slug' => ['nullable', 'string', 'max:255', 'unique:courses,slug'],
             'description_ar' => ['required', 'string'],
             'description_en' => ['required', 'string'],
-            'cover_image_url' => ['nullable', 'string', 'max:500'],
+            'cover_image_url' => ['nullable', 'string', 'max:1000', new SafeMediaUrl()],
             'bundle_price_cents' => ['required', 'integer', 'min:0'],
             'bundle_promotional_tickets' => ['nullable', 'integer', 'min:0'],
             'display_price_label' => ['nullable', 'string', 'max:255'],

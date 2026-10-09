@@ -70,7 +70,7 @@ class CheckoutController extends ApiController
             }
         } else {
             // For unauthenticated access, require matching customer email
-            $queryEmail = strtolower(trim((string) $request->query('email', '')));
+            $queryEmail = strtolower(trim((string) ($request->query('guest_email') ?? $request->query('email', ''))));
             $orderEmail = strtolower(trim($order->user?->email ?? ''));
 
             if ($orderEmail !== '' && $queryEmail !== $orderEmail) {
@@ -92,6 +92,15 @@ class CheckoutController extends ApiController
      */
     public function simulateSuccess(string $orderNumber, \Illuminate\Http\Request $request): JsonResponse
     {
+        if (app()->isProduction()) {
+            return $this->failResponse(
+                'ERR_SIMULATOR_DISABLED',
+                'محاكي الدفع غير متاح في بيئة الإنتاج.',
+                ['message_en' => 'Payment simulator is disabled in production.'],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
         $order = $this->orderService->getOrderByNumber($orderNumber);
 
         if (!$order) {
@@ -109,9 +118,11 @@ class CheckoutController extends ApiController
         // Security check: allow if owner, admin, or demo email / mode
         $isOwner = $authUser && ($authUser->id === $order->user_id || strtolower(trim((string)$authUser->email)) === strtolower(trim((string)$order->user?->email)));
         $isAdmin = $authUser && $authUser->isAdmin();
-        $isDemoAllowed = config('payments.simulator_enabled', false) 
-            || env('KNZIN_ALLOW_DEMO_ADMIN', true)
-            || in_array(strtolower(trim((string)$order->user?->email)), ['mock_student@example.com', 'admin@knzin.com']);
+        $isDemoAllowed = !app()->isProduction() && (
+            config('payments.simulator_enabled', false) 
+            || (bool) env('KNZIN_ALLOW_DEMO_ADMIN', false)
+            || in_array(strtolower(trim((string)$order->user?->email)), ['mock_student@example.com', 'admin@knzin.com'], true)
+        );
 
         if (!$isOwner && !$isAdmin && !$isDemoAllowed) {
             return $this->failResponse(

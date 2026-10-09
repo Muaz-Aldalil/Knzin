@@ -63,7 +63,12 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
     setIsCheckoutOpen(true);
   };
 
-  const heroBadge = isAr ? heroCms?.badge_ar : heroCms?.badge_en;
+  const siteShell = cmsData?.sections?.site_shell;
+  const heroBadge =
+    (isAr
+      ? (heroCms?.badge_ar || siteShell?.header_announcement_badge_ar)
+      : (heroCms?.badge_en || siteShell?.header_announcement_badge_en)) ||
+    (isAr ? 'منصة التدريب المهني الأولى في العراق' : "Iraq's #1 Vocational Platform");
   const heroHeading = (isAr ? heroCms?.heading_ar : heroCms?.heading_en) || t('heading');
   const heroSubheading = (isAr ? heroCms?.subheading_ar : heroCms?.subheading_en) || t('subheading');
 
@@ -78,8 +83,8 @@ export default function CatalogClientView({ initialCourses }: CatalogClientViewP
       {/* Hero Section */}
       <div className="text-center max-w-3xl mx-auto pt-6 sm:pt-10 space-y-4">
         {heroBadge && (
-          <div className="inline-flex items-center gap-1.5 text-brand-gold text-xs font-bold tracking-wide mb-1 animate-in fade-in">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-2xs mb-2 animate-in fade-in">
+            <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
             <span>{heroBadge}</span>
           </div>
         )}

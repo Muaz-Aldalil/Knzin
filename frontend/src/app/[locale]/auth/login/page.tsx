@@ -182,7 +182,7 @@ function LoginContent() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 group mb-4">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-xs">
-              <span className="text-white font-extrabold text-base">K</span>
+              <span className="text-white font-extrabold text-base">{isRtl ? 'ك' : 'K'}</span>
             </div>
             <span className="text-xl font-extrabold tracking-tight text-content-primary">
               {isRtl ? 'كَنزين' : 'KNZiN'}

@@ -236,8 +236,8 @@ class LandingCmsService
     {
         return match ($section) {
             'hero' => [
-                'badge_ar' => 'فرصتك لتعلم مهارة حقيقية والفوز بجوائز قيمة',
-                'badge_en' => 'Learn a real vocational skill and win dream rewards',
+                'badge_ar' => 'منصة التدريب المهني الأولى في العراق',
+                'badge_en' => 'Iraq\'s #1 Vocational Platform',
                 'heading_ar' => 'تعلم مهنة المستقبل... واربح سيارة أحلامك',
                 'heading_en' => 'Master In-Demand Trades... And Win Your Dream Car',
                 'subheading_ar' => 'دورات مهنية تطبيقية في سوق العمل العراقي مع تذكرة سحب مجانية مرفقة مع كل دورة أو جزء تشتريه.',

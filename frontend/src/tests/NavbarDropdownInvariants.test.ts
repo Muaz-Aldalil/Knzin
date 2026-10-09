@@ -107,3 +107,19 @@ describe('Mobile Sheet Preferences Ordering Invariants', () => {
     assert.ok(themeIdx < langIdx, 'Language toggle must be placed directly underneath Theme toggle on mobile');
   });
 });
+
+describe('Dynamic Locale-Aware Logo Invariants', () => {
+  const headerHud = read('components/layout/HeaderHUD.tsx');
+  const mobileSheet = read('components/layout/MobileNavSheet.tsx');
+
+  it('HeaderHUD switches brand icon and primary label between Arabic and English dynamically', () => {
+    assert.ok(headerHud.includes("{isRtl ? 'ك' : 'K'}"), 'HeaderHUD must toggle logo icon between ك and K based on locale');
+    assert.ok(headerHud.includes("{isRtl ? 'كَنزين' : 'KNZIN'}"), 'HeaderHUD must toggle primary logo brand text based on locale');
+  });
+
+  it('MobileNavSheet switches brand icon and primary label between Arabic and English dynamically', () => {
+    assert.ok(mobileSheet.includes("{isRtl ? 'ك' : 'K'}"), 'MobileNavSheet must toggle logo icon between ك and K based on locale');
+    assert.ok(mobileSheet.includes("{isRtl ? 'كَنزين' : 'KNZIN'}"), 'MobileNavSheet must toggle primary logo brand text based on locale');
+  });
+});
+

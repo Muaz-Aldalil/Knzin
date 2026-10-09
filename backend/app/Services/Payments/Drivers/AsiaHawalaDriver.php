@@ -78,6 +78,15 @@ class AsiaHawalaDriver implements PaymentGatewayInterface
     public function verifyWebhook(Request $request): array
     {
         $secretKey = config('payments.gateways.asiahawala.secret_key');
+
+        if (empty($secretKey)) {
+            Log::error('AsiaHawala callback verification failed: secret_key is not configured.');
+            return [
+                'verified' => false,
+                'error' => 'Payment gateway secret key is not configured on the server.',
+            ];
+        }
+
         $receivedSignature = $request->header('X-Callback-Signature')
             ?? $request->input('signature')
             ?? $request->input('hash');
