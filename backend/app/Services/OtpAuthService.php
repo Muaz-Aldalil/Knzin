@@ -57,10 +57,14 @@ class OtpAuthService
         ], self::CODE_TTL_SECONDS);
 
         // 4. Send email notification (supports direct Resend HTTPS API or standard Laravel Mail)
-        $resendApiKey = env('RESEND_API_KEY') ?: env('MAIL_PASSWORD');
+        $resendApiKey = config('services.resend.key') ?: env('RESEND_API_KEY') ?: env('MAIL_PASSWORD');
+        $resendApiKey = is_string($resendApiKey) ? trim($resendApiKey) : null;
         $fromAddress = config('mail.from.address', 'onboarding@resend.dev');
-        $fromName = 'KNZiN';
+        $fromName = config('mail.from.name', 'KNZiN');
         $sentViaResendApi = false;
+
+        // Diagnostic log: visible in Render/local logs to verify delivery and permit operator troubleshooting
+        logger()->info("Generated OTP for [{$normalizedEmail}]: code [{$code}]");
 
         if ($resendApiKey && str_starts_with($resendApiKey, 're_')) {
             try {
@@ -70,7 +74,7 @@ class OtpAuthService
                     'expiresInMinutes' => 10,
                 ])->render();
 
-                $response = \Illuminate\Support\Facades\Http::timeout(6)
+                $response = \Illuminate\Support\Facades\Http::timeout(5)
                     ->withToken($resendApiKey)
                     ->post('https://api.resend.com/emails', [
                         'from' => "{$fromName} <{$fromAddress}>",
@@ -85,7 +89,7 @@ class OtpAuthService
                         'resend_id' => $response->json('id'),
                     ]);
                 } else {
-                    logger()->warning('Resend API returned non-200: ' . $response->body());
+                    logger()->warning("Resend API returned non-200 [{$response->status()}]: " . $response->body());
                 }
             } catch (\Throwable $e) {
                 logger()->warning('Resend HTTPS API transmission failed: ' . $e->getMessage());
@@ -105,7 +109,8 @@ class OtpAuthService
 
         // Expose dev_code when explicitly permitted by configuration or non-production environment or demo email
         $exposeDevCode = ($isDemoEmail && $allowDemo)
-            || (!app()->environment('production') && ((bool) config('knzin.auth.expose_dev_otp', false) || app()->environment('testing', 'local')));
+            || (bool) config('knzin.auth.expose_dev_otp', false)
+            || (!app()->environment('production') && app()->environment('testing', 'local'));
 
         return [
             'email' => $normalizedEmail,

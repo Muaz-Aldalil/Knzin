@@ -46,7 +46,17 @@ services:
         value: "true"
       - key: KNZIN_PAYMENT_SIMULATOR
         value: "true"
+      - key: MAIL_MAILER
+        value: log
+      - key: MAIL_FROM_ADDRESS
+        value: onboarding@resend.dev
+      - key: MAIL_FROM_NAME
+        value: "كَنزين | KNZiN"
+      - key: KNZIN_EXPOSE_DEV_OTP
+        value: "true"
       # Prompted in Render UI (Secrets & Deployment URLs):
+      - key: RESEND_API_KEY
+        sync: false
       - key: DB_PASSWORD
         sync: false
       - key: MYSQL_SSL_CA_CONTENT

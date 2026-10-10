@@ -47,6 +47,7 @@ class OtpAuthenticationTest extends TestCase
     public function test_send_otp_does_not_expose_dev_code_in_production(): void
     {
         $this->app['env'] = 'production';
+        config(['knzin.auth.expose_dev_otp' => false]);
 
         $response = $this->postJson('/api/v1/auth/otp/send', [
             'email' => 'prod_student@example.com',
@@ -56,6 +57,22 @@ class OtpAuthenticationTest extends TestCase
             ->assertJsonPath('status', 'success');
 
         $this->assertNull($response->json('data.dev_code'));
+    }
+
+    public function test_send_otp_exposes_dev_code_when_explicitly_configured_in_production(): void
+    {
+        $this->app['env'] = 'production';
+        config(['knzin.auth.expose_dev_otp' => true]);
+
+        $response = $this->postJson('/api/v1/auth/otp/send', [
+            'email' => 'prod_student_bypass@example.com',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('status', 'success');
+
+        $this->assertNotNull($response->json('data.dev_code'));
+        $this->assertEquals(6, strlen($response->json('data.dev_code')));
     }
 
     public function test_verify_otp_creates_verified_user_and_issues_token(): void

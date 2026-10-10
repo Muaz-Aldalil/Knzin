@@ -25,6 +25,10 @@ if [ -n "$DB_USERNAME" ]; then
     DB_USERNAME="$(printf '%s' "$DB_USERNAME" | tr -d '\r\n')"
     export DB_USERNAME
 fi
+if [ -n "$RESEND_API_KEY" ]; then
+    RESEND_API_KEY="$(printf '%s' "$RESEND_API_KEY" | tr -d '\r\n ')"
+    export RESEND_API_KEY
+fi
 
 # Support SSL CA certificate injection via environment variable
 if [ -n "$MYSQL_SSL_CA_CONTENT" ]; then

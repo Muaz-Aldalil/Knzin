@@ -43,7 +43,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'auth' => [
-        'expose_dev_otp' => (bool) env('KNZIN_EXPOSE_DEV_OTP', env('APP_ENV') === 'local'),
+        'expose_dev_otp' => filter_var(env('KNZIN_EXPOSE_DEV_OTP', env('APP_ENV') === 'local'), FILTER_VALIDATE_BOOLEAN),
     ],
 
     /*
