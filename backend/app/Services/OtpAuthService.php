@@ -56,14 +56,51 @@ class OtpAuthService
             'created_at' => now()->timestamp,
         ], self::CODE_TTL_SECONDS);
 
-        // 4. Send email notification via Laravel Mail
-        try {
-            Mail::to($normalizedEmail)->send(new \App\Mail\OtpVerificationMail($code, $normalizedEmail, 10));
-        } catch (\Throwable $e) {
-            // Mail transport error logged without breaking dev/testing
-            logger()->warning('OTP email transmission failed: ' . $e->getMessage(), [
-                'email' => $normalizedEmail,
-            ]);
+        // 4. Send email notification (supports direct Resend HTTPS API or standard Laravel Mail)
+        $resendApiKey = env('RESEND_API_KEY') ?: env('MAIL_PASSWORD');
+        $fromAddress = config('mail.from.address', 'onboarding@resend.dev');
+        $fromName = config('mail.from.name', 'كَنزين | KNZiN');
+        $sentViaResendApi = false;
+
+        if ($resendApiKey && str_starts_with($resendApiKey, 're_')) {
+            try {
+                $htmlContent = view('emails.otp-verification', [
+                    'code' => $code,
+                    'recipientEmail' => $normalizedEmail,
+                    'expiresInMinutes' => 10,
+                ])->render();
+
+                $response = \Illuminate\Support\Facades\Http::timeout(6)
+                    ->withToken($resendApiKey)
+                    ->post('https://api.resend.com/emails', [
+                        'from' => "{$fromName} <{$fromAddress}>",
+                        'to' => [$normalizedEmail],
+                        'subject' => 'رمز التحقق لمنصة كَنزين | KNZiN Verification Code',
+                        'html' => $htmlContent,
+                    ]);
+
+                if ($response->successful()) {
+                    $sentViaResendApi = true;
+                    logger()->info("OTP email successfully dispatched via Resend API to {$normalizedEmail}", [
+                        'resend_id' => $response->json('id'),
+                    ]);
+                } else {
+                    logger()->warning('Resend API returned non-200: ' . $response->body());
+                }
+            } catch (\Throwable $e) {
+                logger()->warning('Resend HTTPS API transmission failed: ' . $e->getMessage());
+            }
+        }
+
+        if (!$sentViaResendApi) {
+            try {
+                Mail::to($normalizedEmail)->send(new \App\Mail\OtpVerificationMail($code, $normalizedEmail, 10));
+            } catch (\Throwable $e) {
+                // Mail transport error logged without breaking dev/testing
+                logger()->warning('OTP email transmission failed: ' . $e->getMessage(), [
+                    'email' => $normalizedEmail,
+                ]);
+            }
         }
 
         // Expose dev_code when explicitly permitted by configuration or non-production environment or demo email
