@@ -59,7 +59,7 @@ class OtpAuthService
         // 4. Send email notification (supports direct Resend HTTPS API or standard Laravel Mail)
         $resendApiKey = env('RESEND_API_KEY') ?: env('MAIL_PASSWORD');
         $fromAddress = config('mail.from.address', 'onboarding@resend.dev');
-        $fromName = config('mail.from.name', 'كَنزين | KNZiN');
+        $fromName = 'KNZiN';
         $sentViaResendApi = false;
 
         if ($resendApiKey && str_starts_with($resendApiKey, 're_')) {
@@ -75,7 +75,7 @@ class OtpAuthService
                     ->post('https://api.resend.com/emails', [
                         'from' => "{$fromName} <{$fromAddress}>",
                         'to' => [$normalizedEmail],
-                        'subject' => 'رمز التحقق لمنصة كَنزين | KNZiN Verification Code',
+                        'subject' => 'رمز التحقق الخاص بك في كَنزين | KNZiN Verification Code',
                         'html' => $htmlContent,
                     ]);
 
