@@ -44,34 +44,24 @@ describe('Public Platform Dropdown Invariants', () => {
   });
 });
 
-describe('Admin Application Shell & Dropdown Invariants', () => {
+describe('Admin Application Shell & Unified Side Panel Invariants', () => {
   const adminShell = read('components/admin/AdminShell.tsx');
 
-  it('provides dedicated Admin Dropdown with testid admin-topbar-profile-trigger', () => {
-    assert.ok(adminShell.includes('data-testid="admin-topbar-profile-trigger"'));
+  it('eliminates redundant topbar dropdown trigger to maintain a single side panel navigation', () => {
+    assert.ok(!adminShell.includes('data-testid="admin-topbar-profile-trigger"'));
   });
 
-  it('Admin dropdown orders items strictly: Theme -> Language -> How It Works -> Admin Details -> View Platform -> Sign Out', () => {
-    const themeIdx = adminShell.indexOf('data-testid="admin-dropdown-theme"');
-    const langIdx = adminShell.indexOf('data-testid="admin-dropdown-language"');
-    const howItWorksIdx = adminShell.indexOf('data-testid="admin-dropdown-how-it-works"');
-    const dashboardIdx = adminShell.indexOf('data-testid="admin-dropdown-dashboard"');
-    const viewPlatformIdx = adminShell.indexOf('data-testid="admin-dropdown-view-platform"');
-    const logoutIdx = adminShell.indexOf('data-testid="admin-dropdown-logout"');
+  it('Side Panel orders utility controls strictly: Theme -> Language -> How It Works', () => {
+    const themeIdx = adminShell.indexOf('data-testid="admin-sidebar-theme"');
+    const langIdx = adminShell.indexOf('data-testid="admin-sidebar-language"');
+    const howItWorksIdx = adminShell.indexOf('data-testid="admin-sidebar-how-it-works"');
 
-    assert.ok(themeIdx !== -1, 'Admin dropdown must have theme toggle');
-    assert.ok(langIdx !== -1, 'Admin dropdown must have language toggle');
-    assert.ok(howItWorksIdx !== -1, 'Admin dropdown must have How It Works action');
-    assert.ok(dashboardIdx !== -1, 'Admin dropdown must have Dashboard return shortcut');
-    assert.ok(adminShell.includes('لوحة التحكم الإدارية'), 'Admin dropdown must use canonical Arabic label');
-    assert.ok(viewPlatformIdx !== -1, 'Admin dropdown must have View Platform shortcut');
-    assert.ok(logoutIdx !== -1, 'Admin dropdown must have Sign Out action');
+    assert.ok(themeIdx !== -1, 'Admin sidebar must have theme toggle');
+    assert.ok(langIdx !== -1, 'Admin sidebar must have language toggle');
+    assert.ok(howItWorksIdx !== -1, 'Admin sidebar must have How It Works action');
 
-    assert.ok(themeIdx < langIdx, 'Language toggle must be directly underneath Theme toggle in Admin dropdown');
-    assert.ok(langIdx < howItWorksIdx, 'How It Works must be directly underneath Language toggle in Admin dropdown');
-    assert.ok(howItWorksIdx < dashboardIdx, 'Dashboard shortcut must follow How It Works');
-    assert.ok(dashboardIdx < viewPlatformIdx, 'View Platform must follow Dashboard shortcut');
-    assert.ok(viewPlatformIdx < logoutIdx, 'Sign Out must be at the bottom of the dropdown');
+    assert.ok(themeIdx < langIdx, 'Language toggle must be directly underneath Theme toggle in Admin sidebar');
+    assert.ok(langIdx < howItWorksIdx, 'How It Works must be directly underneath Language toggle in Admin sidebar');
   });
 
   it('mounts reusable HowItWorksModal in AdminShell for full administrative access', () => {
@@ -91,7 +81,6 @@ describe('Admin Application Shell & Dropdown Invariants', () => {
     assert.ok(adminShell.includes('data-testid="admin-sidebar-logout"'));
     assert.ok(adminShell.includes('data-testid="admin-topbar-logout"'));
     assert.ok(adminShell.includes('data-testid="admin-drawer-logout"'));
-    assert.ok(adminShell.includes('data-testid="admin-dropdown-logout"'));
   });
 });
 

@@ -18,19 +18,20 @@ function read(rel: string): string {
   return fs.readFileSync(path.join(srcRoot, rel), 'utf8');
 }
 
-describe('Admin Dropdown Dashboard Invariants', () => {
+describe('Admin Dashboard Navigation Invariants', () => {
   const adminShell = read('components/admin/AdminShell.tsx');
+  const adminNav = read('components/admin/AdminNav.tsx');
   const navTs = read('lib/admin/nav.ts');
   const arJson = read('../messages/ar.json');
 
-  it('renders dashboard link with testid and canonical Arabic label in AdminShell', () => {
+  it('renders dashboard link with testid and canonical Arabic label', () => {
     assert.ok(
-      adminShell.includes('data-testid="admin-dropdown-dashboard"'),
-      'Admin dropdown must include data-testid="admin-dropdown-dashboard"'
+      adminNav.includes('data-testid={`admin-nav-item-${group.id}`}'),
+      'AdminNav must include dynamic data-testid for navigation items'
     );
     assert.ok(
       adminShell.includes('لوحة التحكم الإدارية'),
-      'Admin dropdown must use canonical Arabic label لوحة التحكم الإدارية'
+      'AdminShell must use canonical Arabic label لوحة التحكم الإدارية'
     );
     assert.ok(
       !adminShell.includes('لوحة المراقبة'),
