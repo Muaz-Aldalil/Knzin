@@ -58,10 +58,7 @@ class OtpAuthService
 
         // 4. Send email notification via Laravel Mail
         try {
-            Mail::raw("رمز التحقق الخاص بك لمنصة كَنزين هو: {$code}\n\nهذا الرمز صالح لمدة 10 دقائق فقط. لا تشارك هذا الرمز مع أي شخص.", function ($message) use ($normalizedEmail) {
-                $message->to($normalizedEmail)
-                    ->subject('رمز التحقق لمنصة كَنزين (KNZiN)');
-            });
+            Mail::to($normalizedEmail)->send(new \App\Mail\OtpVerificationMail($code, $normalizedEmail, 10));
         } catch (\Throwable $e) {
             // Mail transport error logged without breaking dev/testing
             logger()->warning('OTP email transmission failed: ' . $e->getMessage(), [
