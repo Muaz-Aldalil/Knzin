@@ -61,8 +61,10 @@ export default function GoogleIdentityButton({
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGsiLoaded, setIsGsiLoaded] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
+  const lastWidthRef = useRef<number>(0);
 
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || DEFAULT_CLIENT_ID;
 
@@ -94,38 +96,54 @@ export default function GoogleIdentityButton({
     [isRtl, onError, onSuccess, verifyGoogleCredential]
   );
 
-  // Initialize and render Google Identity Services button
+  const renderGoogleButton = useCallback(() => {
+    if (!window.google?.accounts?.id || !containerRef.current) return;
+
+    const measuredWidth =
+      containerRef.current.clientWidth ||
+      wrapperRef.current?.clientWidth ||
+      containerRef.current.parentElement?.clientWidth ||
+      350;
+
+    // Google Identity Services requires width between 200px and 400px
+    const targetWidth = Math.max(200, Math.min(Math.floor(measuredWidth), 400));
+    lastWidthRef.current = targetWidth;
+
+    containerRef.current.innerHTML = '';
+    const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+
+    window.google.accounts.id.renderButton(containerRef.current, {
+      type: 'standard',
+      theme: isDark ? 'filled_black' : 'outline',
+      size: 'large',
+      text: 'continue_with',
+      shape: 'rectangular',
+      logo_alignment: 'left',
+      width: targetWidth,
+      locale: locale,
+    });
+
+    setIsGsiLoaded(true);
+  }, [locale]);
+
+  // Initialize Google Identity Services
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const setupGsi = () => {
       if (!window.google?.accounts?.id || !containerRef.current) return;
-      if (initializedRef.current) return;
 
-      initializedRef.current = true;
+      if (!initializedRef.current) {
+        initializedRef.current = true;
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleCredentialResponse,
+          auto_select: false,
+          context: 'signin',
+        });
+      }
 
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleCredentialResponse,
-        auto_select: false,
-        context: 'signin',
-      });
-
-      // Render official Google button
-      const isDark = document.documentElement.classList.contains('dark');
-
-      window.google.accounts.id.renderButton(containerRef.current, {
-        type: 'standard',
-        theme: isDark ? 'filled_black' : 'outline',
-        size: 'large',
-        text: 'continue_with',
-        shape: 'rectangular',
-        logo_alignment: 'left',
-        width: 350,
-        locale: locale,
-      });
-
-      setIsGsiLoaded(true);
+      renderGoogleButton();
     };
 
     // If script already loaded
@@ -153,7 +171,54 @@ export default function GoogleIdentityButton({
         script.removeEventListener('load', setupGsi);
       }
     };
-  }, [clientId, handleCredentialResponse, locale]);
+  }, [clientId, handleCredentialResponse, renderGoogleButton]);
+
+  // Handle container resize (orientation change, window resize)
+  useEffect(() => {
+    if (!isGsiLoaded || !wrapperRef.current) return;
+
+    let resizeTimer: NodeJS.Timeout | null = null;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const measured = Math.max(200, Math.min(Math.floor(entry.contentRect.width), 400));
+        if (Math.abs(measured - lastWidthRef.current) >= 10) {
+          if (resizeTimer) clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            renderGoogleButton();
+          }, 150);
+        }
+      }
+    });
+
+    observer.observe(wrapperRef.current);
+
+    return () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      observer.disconnect();
+    };
+  }, [isGsiLoaded, renderGoogleButton]);
+
+  // Handle theme changes (dark/light)
+  useEffect(() => {
+    if (!isGsiLoaded || typeof MutationObserver === 'undefined') return;
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          renderGoogleButton();
+        }
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isGsiLoaded, renderGoogleButton]);
 
   // Fallback direct click handler (uses GIS prompt or redirect flow if GSI fails)
   const handleFallbackClick = () => {
@@ -183,7 +248,10 @@ export default function GoogleIdentityButton({
   };
 
   return (
-    <div className={`relative w-full flex flex-col items-center justify-center ${className}`}>
+    <div
+      ref={wrapperRef}
+      className={`relative w-full max-w-full flex flex-col items-center justify-center ${className}`}
+    >
       {isLoading && (
         <div className="absolute inset-0 bg-surface/80 backdrop-blur-xs flex items-center justify-center rounded-xl z-20 gap-2">
           <Loader2 className="w-5 h-5 animate-spin text-primary" />
@@ -196,7 +264,9 @@ export default function GoogleIdentityButton({
       {/* Official GSI Button Mount Target */}
       <div
         ref={containerRef}
-        className={`w-full flex justify-center min-h-[44px] ${!isGsiLoaded ? 'hidden' : ''}`}
+        className={`w-full flex justify-center min-h-[44px] max-w-full overflow-hidden [&>div]:max-w-full [&_iframe]:max-w-full ${
+          !isGsiLoaded ? 'h-0 opacity-0 overflow-hidden pointer-events-none' : ''
+        }`}
       />
 
       {/* Beautiful Fallback Button while script loads or if blocked by ad-blocker */}

@@ -194,7 +194,7 @@ function LoginContent() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-surface border border-border-subtle rounded-3xl p-8 shadow-sm">
+      <div className="w-full max-w-md bg-surface border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-sm">
         {/* Brand Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 group mb-4">
@@ -306,7 +306,7 @@ function LoginContent() {
                   <KeyRound className="w-4 h-4" />
                   <span>{isRtl ? 'حسابات بيئة التطوير (Dev Only)' : 'Development Quick Login'}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                   <button
                     type="button"
                     onClick={() => handleDevQuickLogin('admin@knzin.com')}
