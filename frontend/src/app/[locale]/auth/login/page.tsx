@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { ApiError, getApiBaseUrl } from '@/lib/api-client';
 import { fetchAdminCapabilities } from '@/lib/admin/access';
 import { resolvePostLoginDestination, sanitizeRedirectTarget } from '@/lib/auth-redirect';
-import { Mail, ArrowLeft, ArrowRight, ShieldCheck, Sparkles, Loader2, AlertCircle } from 'lucide-react';
+import { Mail, ArrowLeft, ArrowRight, ShieldCheck, Sparkles, Loader2, KeyRound, UserCheck, AlertCircle } from 'lucide-react';
 import { DeveloperAttribution } from '@/components/layout/DeveloperAttribution';
 import GoogleIdentityButton from '@/components/auth/GoogleIdentityButton';
 
@@ -158,6 +158,28 @@ function LoginContent() {
     window.location.href = googleRedirectUrl;
   };
 
+  const handleDevQuickLogin = async (quickEmail: string) => {
+    setEmail(quickEmail);
+    setIsLoading(true);
+    setError(null);
+    setInfoMessage(null);
+    try {
+      const res = await sendOtp(quickEmail);
+      const codeToUse = res.dev_code || '123456';
+      setDevCode(codeToUse);
+      setCode(codeToUse);
+      await verifyOtp(quickEmail, codeToUse);
+      // Navigation is handled by the isLoggedIn effect (role-aware destination).
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message || (isRtl ? 'حدث خطأ أثناء تسجيل الدخول التجريبي.' : 'Error during demo sign in.'));
+      } else {
+        setError(isRtl ? 'حدث خطأ في الاتصال بالخادم.' : 'A network connection error occurred.');
+      }
+      setIsLoading(false);
+    }
+  };
+
   if (isRedirecting) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center gap-3 px-4" role="status" aria-live="polite">
@@ -265,6 +287,41 @@ function LoginContent() {
                   onError={(err) => setError(err)}
                 />
               </>
+            )}
+
+            {/* Mock Data Quick Shortcuts (Dev & Demo) */}
+            {isDemoLoginEnabled && (
+              <div className="mt-5 pt-4 border-t border-border-subtle">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+                    <KeyRound className="w-3.5 h-3.5" />
+                    <span>{isRtl ? 'بيانات تجريبية (Mock Data)' : 'Mock Data Quick Login'}</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-md">
+                    DEV
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDevQuickLogin('admin@knzin.com')}
+                    disabled={isLoading}
+                    className="py-2 px-2 rounded-xl bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-primary/40 text-xs font-semibold text-content-primary flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-[0.98] disabled:opacity-50"
+                  >
+                    <UserCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>{isRtl ? 'مشرف (Admin)' : 'Admin'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDevQuickLogin('mock_student@example.com')}
+                    disabled={isLoading}
+                    className="py-2 px-2 rounded-xl bg-surface-secondary hover:bg-surface-elevated border border-border-subtle hover:border-emerald-500/40 text-xs font-semibold text-content-primary flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-[0.98] disabled:opacity-50"
+                  >
+                    <UserCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <span>{isRtl ? 'متدرب (Student)' : 'Student'}</span>
+                  </button>
+                </div>
+              </div>
             )}
           </form>
         ) : (
