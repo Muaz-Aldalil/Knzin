@@ -59,8 +59,7 @@ export interface PostLoginInput {
 
 /**
  * - valid intended destination  -> that destination (admin pages only for admins)
- * - otherwise admin             -> Admin Dashboard
- * - otherwise normal user       -> normal landing/home
+ * - default (no intent/root)     -> normal landing/home for all users (admins access dashboard via navbar controls)
  */
 export function resolvePostLoginDestination({ redirect, isAdmin }: PostLoginInput): string {
   const target = sanitizeRedirectTarget(redirect);
@@ -70,5 +69,5 @@ export function resolvePostLoginDestination({ redirect, isAdmin }: PostLoginInpu
     return target;
   }
 
-  return isAdmin ? ADMIN_HOME : USER_HOME;
+  return USER_HOME;
 }

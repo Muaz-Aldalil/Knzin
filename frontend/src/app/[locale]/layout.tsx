@@ -45,6 +45,8 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} className={tajawal.variable} suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://knzin-backend.onrender.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://knzin-backend.onrender.com" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

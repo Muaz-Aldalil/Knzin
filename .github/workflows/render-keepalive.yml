@@ -1,0 +1,20 @@
+name: Render Backend Keep-Alive
+
+on:
+  schedule:
+    # Run every 10 minutes to prevent Render free-tier container from spinning down
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  ping:
+    name: Ping Health Endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Backend Health Endpoint
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://knzin-backend.onrender.com/api/v1/health)
+          echo "Render Health Endpoint HTTP Status: $STATUS"
+          if [ "$STATUS" -ne 200 ]; then
+            echo "Warning: Backend responded with non-200 status $STATUS"
+          fi

@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { ApiError, getApiBaseUrl } from '@/lib/api-client';
 import { fetchAdminCapabilities } from '@/lib/admin/access';
 import { resolvePostLoginDestination, sanitizeRedirectTarget } from '@/lib/auth-redirect';
-import { Mail, ArrowLeft, ArrowRight, ShieldCheck, Sparkles, Loader2, KeyRound, UserCheck, AlertCircle } from 'lucide-react';
+import { Mail, ArrowLeft, ArrowRight, ShieldCheck, Sparkles, Loader2, KeyRound, UserCheck, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { DeveloperAttribution } from '@/components/layout/DeveloperAttribution';
 import GoogleIdentityButton from '@/components/auth/GoogleIdentityButton';
 
@@ -18,6 +18,8 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedRedirect = searchParams.get('redirect');
+  const isLoggedOut = searchParams.get('logged_out') === '1';
+  const isExpired = searchParams.get('expired') === '1';
 
   const { isLoggedIn, sendOtp, verifyOtp } = useAuth();
 
@@ -75,9 +77,12 @@ function LoginContent() {
       if (res.dev_code) {
         setDevCode(res.dev_code);
         setCode(res.dev_code);
-      } else if (isDemoLoginEnabled) {
+      } else if (isDemoLoginEnabled && ['admin@knzin.com', 'mock_student@example.com'].includes(targetEmail)) {
         setDevCode('123456');
         setCode('123456');
+      } else {
+        setDevCode(null);
+        setCode('');
       }
       setStep('otp');
       setInfoMessage(
@@ -225,6 +230,44 @@ function LoginContent() {
           <div className="mb-6 p-4 rounded-2xl bg-primary/10 border border-primary/20 flex items-start gap-3 text-sm text-primary">
             <Sparkles className="w-5 h-5 shrink-0 mt-0.5" />
             <span>{infoMessage}</span>
+          </div>
+        )}
+
+        {isLoggedOut && !isLoggedIn && !infoMessage && !error && (
+          <div
+            data-testid="auth-logout-alert"
+            className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-start gap-3 text-sm text-emerald-700 dark:text-emerald-400"
+          >
+            <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
+            <div className="space-y-0.5">
+              <p className="font-bold text-sm text-emerald-800 dark:text-emerald-300">
+                {isRtl ? 'تم تسجيل الخروج بنجاح' : 'Logged Out Successfully'}
+              </p>
+              <p className="text-xs text-content-secondary">
+                {isRtl
+                  ? 'تم إنهاء جلستك بأمان. يمكنك تسجيل الدخول مجدداً في أي وقت.'
+                  : 'Your session has been securely closed. You can sign in again anytime.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isExpired && !isLoggedIn && !infoMessage && !error && (
+          <div
+            data-testid="auth-expired-alert"
+            className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-3 text-sm text-amber-700 dark:text-amber-400"
+          >
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+            <div className="space-y-0.5">
+              <p className="font-bold text-sm text-amber-800 dark:text-amber-300">
+                {isRtl ? 'انتهت صلاحية الجلسة' : 'Session Expired'}
+              </p>
+              <p className="text-xs text-content-secondary">
+                {isRtl
+                  ? 'انتهت صلاحية جلستك السابقة لدواعي الأمان. يرجى تسجيل الدخول مجدداً للمتابعة.'
+                  : 'Your session expired for security reasons. Please sign in again to continue.'}
+              </p>
+            </div>
           </div>
         )}
 

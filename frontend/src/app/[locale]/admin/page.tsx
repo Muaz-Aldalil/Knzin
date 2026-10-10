@@ -104,20 +104,20 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Quick Platform Bridge */}
-          <div className="shrink-0 flex flex-col sm:flex-row lg:flex-col gap-2">
+          <div className="shrink-0 flex flex-wrap items-center gap-2 sm:gap-3 self-start lg:self-center lg:flex-col lg:items-end">
             <Link
               href={`/${locale}`}
-              className="inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-content-primary hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-card hover:bg-surface-elevated border border-border-subtle hover:border-primary/40 text-xs font-semibold text-content-primary hover:text-primary transition-all shadow-2xs group"
               data-testid="dashboard-view-platform-link"
             >
-              <ExternalLink className="w-4 h-4 text-primary" />
+              <ExternalLink className="w-3.5 h-3.5 text-primary group-hover:scale-110 transition-transform" />
               <span>{isAr ? 'عرض المنصة للجمهور' : 'View Public Platform'}</span>
             </Link>
 
             {serverTimeUtc && (
-              <div className="px-3 py-1 text-[11px] text-content-secondary flex items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-card/60 border border-border-subtle/80 text-[11px] text-content-secondary font-mono shadow-2xs">
                 <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span className="font-mono">UTC: {serverTimeUtc.slice(11, 19)}</span>
+                <span>UTC: {serverTimeUtc.slice(11, 19)}</span>
               </div>
             )}
           </div>
@@ -126,14 +126,15 @@ export default function AdminDashboardPage() {
 
       {/* 2. Live Platform Operations KPI Grid */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-content-primary flex items-center gap-2">
-            <Activity className="w-5 h-5 text-primary" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 mb-4">
+          <h2 className="text-base sm:text-lg font-bold text-content-primary flex items-center gap-2">
+            <Activity className="w-5 h-5 text-primary shrink-0" />
             <span>{isAr ? 'مؤشرات العمليات الحية للمنصة' : 'Live Platform Operational Metrics'}</span>
           </h2>
-          <span className="text-xs text-content-secondary">
-            {isAr ? 'محدثة تلقائياً من خادم العمليات' : 'Live synced from platform backend'}
-          </span>
+          <div className="flex items-center gap-1.5 text-xs text-content-secondary sm:text-end shrink-0">
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span>{isAr ? 'محدثة تلقائياً من خادم العمليات' : 'Live synced from platform backend'}</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -363,14 +364,14 @@ export default function AdminDashboardPage() {
       {/* 5. Recent Security Audit Stream (if authorized) */}
       {canAudit && logs.length > 0 && (
         <div className="p-6 rounded-2xl bg-surface-card border border-border-subtle shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h3 className="text-sm font-bold text-content-primary flex items-center gap-2">
-              <ScrollText className="w-4 h-4 text-primary" />
+              <ScrollText className="w-4 h-4 text-primary shrink-0" />
               <span>{isAr ? 'أحدث العمليات في سجل الرقابة والتدقيق' : 'Recent Security Audit Events'}</span>
             </h3>
             <Link
               href={`/${locale}/admin/audit`}
-              className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-primary hover:underline flex items-center gap-1 self-start sm:self-auto"
             >
               <span>{isAr ? 'عرض السجل الكامل' : 'View Full Trail'}</span>
               <ArrowIcon className="w-3.5 h-3.5" />

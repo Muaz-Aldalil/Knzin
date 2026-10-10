@@ -44,6 +44,8 @@ services:
         value: 118096304294-3vikmbr2diolhadj2q6lbo4647umueav.apps.googleusercontent.com
       - key: KNZIN_ALLOW_DEMO_ADMIN
         value: "true"
+      - key: KNZIN_PAYMENT_SIMULATOR
+        value: "true"
       # Prompted in Render UI (Secrets & Deployment URLs):
       - key: DB_PASSWORD
         sync: false

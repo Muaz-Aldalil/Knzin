@@ -34,7 +34,7 @@ class PaymentSimulatorController extends ApiController
      */
     protected function ensureSimulatorAllowed(): ?JsonResponse
     {
-        if (app()->environment('production') || !config('payments.simulator_enabled', false)) {
+        if (app()->environment('production') && !config('payments.simulator_enabled', false)) {
             return $this->failResponse(
                 'ERR_SIMULATOR_DISABLED',
                 'محاكي الدفع معطل في بيئة الإنتاج',

@@ -22,11 +22,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'timestamp' => now()->toIso8601String(),
+    ], 200, [
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+    ]);
+});
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
 Route::prefix('v1')->group(function () {
+    // Health / Keep-Alive Endpoint for Render Container & Monitors (Zero Cold Starts)
+    Route::get('/health', function () {
+        return response()->json([
+            'status' => 'healthy',
+            'timestamp' => now()->toIso8601String(),
+        ], 200, [
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+        ]);
+    });
+
     // Auth Endpoints (US3) - Throttled 60 req/min (DEF-02G)
     Route::post('/auth/guest', [AuthController::class, 'guest'])->middleware('throttle:60,1');
     Route::post('/auth/otp/send', [AuthController::class, 'sendOtp'])->middleware('throttle:10,1');
@@ -66,7 +85,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/payments/webhooks/asiahawala', [PaymentWebhookController::class, 'asiahawala']);
 
     // Payment Sandbox Simulator & Financial Testing Tools (Feature 007 / 010)
-    if (!app()->isProduction()) {
+    if (!app()->isProduction() || config('payments.simulator_enabled', false)) {
         Route::post('/checkout/orders/{orderNumber}/simulate-success', [CheckoutController::class, 'simulateSuccess'])->middleware('throttle:60,1');
         Route::post('/payments/webhooks/simulator', [PaymentWebhookController::class, 'simulator']);
 

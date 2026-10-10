@@ -10,12 +10,12 @@ trait ApiResponse
     /**
      * Return a standardized JSend success response.
      */
-    public function successResponse(mixed $data = null, int $code = Response::HTTP_OK): JsonResponse
+    public function successResponse(mixed $data = null, int $code = Response::HTTP_OK, array $headers = []): JsonResponse
     {
         return response()->json([
             'status' => 'success',
             'data' => $data,
-        ], $code);
+        ], $code, $headers);
     }
 
     /**

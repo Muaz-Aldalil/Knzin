@@ -22,7 +22,11 @@ class CatalogController extends ApiController
                 ->get();
         });
 
-        return $this->successResponse(CourseResource::collection($courses));
+        return $this->successResponse(
+            CourseResource::collection($courses),
+            Response::HTTP_OK,
+            ['Cache-Control' => 'public, max-age=60, s-maxage=300, stale-while-revalidate=600']
+        );
     }
 
     /**
@@ -46,6 +50,10 @@ class CatalogController extends ApiController
             );
         }
 
-        return $this->successResponse(new CourseResource($course));
+        return $this->successResponse(
+            new CourseResource($course),
+            Response::HTTP_OK,
+            ['Cache-Control' => 'public, max-age=60, s-maxage=300, stale-while-revalidate=600']
+        );
     }
 }

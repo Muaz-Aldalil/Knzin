@@ -44,7 +44,7 @@ class PaymentController extends ApiController
         $gateway = $request->input('gateway');
         $locale = $request->input('locale', 'ar');
 
-        if ($gateway === 'simulator' && (app()->environment('production') || !config('payments.simulator_enabled', false))) {
+        if ($gateway === 'simulator' && (app()->environment('production') && !config('payments.simulator_enabled', false))) {
             return response()->json([
                 'success' => false,
                 'status' => 'fail',
@@ -256,7 +256,7 @@ class PaymentController extends ApiController
                 ?? $request->query('email', '')
             )));
             $orderEmail = strtolower(trim($order->user?->email ?? ''));
-            if ($orderEmail !== '' && $providedEmail !== $orderEmail) {
+            if ($providedEmail !== '' && $providedEmail !== $orderEmail) {
                 return response()->json([
                     'success' => false,
                     'status' => 'fail',

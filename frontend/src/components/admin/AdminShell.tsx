@@ -25,6 +25,7 @@ import {
   X,
   Shield,
   LogOut,
+  Loader2,
   Globe,
   Sparkles,
   Eye,
@@ -117,9 +118,16 @@ export function AdminShell({ children }: AdminShellProps) {
     window.location.href = newPath;
   };
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   const handleLogout = async () => {
-    await logout();
-    window.location.href = `/${locale}`;
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      window.location.href = `/${locale}/auth/login?logged_out=1`;
+    }
   };
 
   const renderAdminDropdownContent = () => (
@@ -234,11 +242,16 @@ export function AdminShell({ children }: AdminShellProps) {
       {/* Sign Out action in Dropdown */}
       <DropdownMenuItem
         onClick={handleLogout}
+        onSelect={(e) => {
+          e.preventDefault();
+          void handleLogout();
+        }}
+        disabled={isLoggingOut}
         data-testid="admin-dropdown-logout"
-        className="text-rose-600 dark:text-rose-400 focus:bg-rose-50 dark:focus:bg-rose-950/20 cursor-pointer flex items-center gap-2 text-xs"
+        className="text-rose-600 dark:text-rose-400 focus:bg-rose-50 dark:focus:bg-rose-950/20 cursor-pointer flex items-center gap-2 text-xs disabled:opacity-60 disabled:pointer-events-none"
       >
-        <LogOut className="w-4 h-4" />
-        <span>{isAr ? 'تسجيل الخروج' : 'Sign Out'}</span>
+        {isLoggingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
+        <span>{isLoggingOut ? (isAr ? 'جارِ تسجيل الخروج...' : 'Signing out...') : (isAr ? 'تسجيل الخروج' : 'Sign Out')}</span>
       </DropdownMenuItem>
     </DropdownMenuContent>
   );
@@ -297,11 +310,12 @@ export function AdminShell({ children }: AdminShellProps) {
             </div>
             <button
               onClick={handleLogout}
+              disabled={isLoggingOut}
               title={isAr ? 'تسجيل الخروج' : 'Sign Out'}
               data-testid="admin-sidebar-logout"
-              className="p-2 rounded-lg text-content-muted hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-content-muted hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer disabled:opacity-60 disabled:pointer-events-none"
             >
-              <LogOut className="w-4 h-4" />
+              {isLoggingOut ? <Loader2 className="w-4 h-4 animate-spin text-rose-500" /> : <LogOut className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -445,10 +459,12 @@ export function AdminShell({ children }: AdminShellProps) {
               <span className="text-xs text-content-secondary truncate">{user?.email}</span>
               <button
                 onClick={handleLogout}
+                disabled={isLoggingOut}
                 data-testid="admin-drawer-logout"
-                className="text-xs text-rose-500 font-bold hover:underline cursor-pointer"
+                className="text-xs text-rose-500 font-bold hover:underline cursor-pointer flex items-center gap-1.5 disabled:opacity-60 disabled:pointer-events-none"
               >
-                {isAr ? 'تسجيل الخروج' : 'Sign Out'}
+                {isLoggingOut && <Loader2 className="w-3 h-3 animate-spin" />}
+                <span>{isLoggingOut ? (isAr ? 'جارِ تسجيل الخروج...' : 'Signing out...') : (isAr ? 'تسجيل الخروج' : 'Sign Out')}</span>
               </button>
             </div>
           </div>
@@ -504,12 +520,13 @@ export function AdminShell({ children }: AdminShellProps) {
             {/* Quick 1-click Sign Out Button */}
             <button
               onClick={handleLogout}
+              disabled={isLoggingOut}
               data-testid="admin-topbar-logout"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer disabled:opacity-60 disabled:pointer-events-none"
               title={isAr ? 'تسجيل الخروج' : 'Sign Out'}
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>{isAr ? 'تسجيل الخروج' : 'Sign Out'}</span>
+              {isLoggingOut ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LogOut className="w-3.5 h-3.5" />}
+              <span>{isLoggingOut ? (isAr ? 'جارِ تسجيل الخروج...' : 'Signing out...') : (isAr ? 'تسجيل الخروج' : 'Sign Out')}</span>
             </button>
           </div>
         </header>
@@ -535,6 +552,7 @@ export function AdminShell({ children }: AdminShellProps) {
           await extendSession();
         }}
         onSignOut={handleLogout}
+        isSigningOut={isLoggingOut}
         isExtending={isExtending}
       />
     </div>

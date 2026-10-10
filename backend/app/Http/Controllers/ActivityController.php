@@ -19,7 +19,7 @@ class ActivityController extends ApiController
      */
     public function recent(Request $request): JsonResponse
     {
-        $cacheTtl = app()->environment('testing') ? 0 : 15;
+        $cacheTtl = app()->environment('testing') ? 0 : 120;
 
         $cachedPayload = Cache::remember('knzin_activity_feed', $cacheTtl, function () {
             $now = Carbon::now('UTC');
@@ -73,7 +73,7 @@ class ActivityController extends ApiController
             'status' => 'success',
             'data' => $cachedPayload,
         ], 200, [
-            'Cache-Control' => 'public, max-age=15, stale-while-revalidate=30',
+            'Cache-Control' => 'public, max-age=30, s-maxage=60, stale-while-revalidate=120',
         ]);
     }
 

@@ -50,9 +50,9 @@ export function useSiteWideCms() {
   const query = useQuery<SiteWideCmsData, ApiError>({
     queryKey: ['public', 'site-wide', 'cms'],
     queryFn: () => apiClient<SiteWideCmsData>('/content/site-wide'),
-    staleTime: 10 * 1000,
-    refetchInterval: 15 * 1000, // Background poll every 15s for live updates
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

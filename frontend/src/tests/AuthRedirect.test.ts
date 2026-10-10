@@ -63,9 +63,9 @@ describe('sanitizeRedirectTarget', () => {
 });
 
 describe('resolvePostLoginDestination', () => {
-  it('sends an admin with no intent to the Admin Dashboard', () => {
-    assert.equal(resolvePostLoginDestination({ redirect: null, isAdmin: true }), ADMIN_HOME);
-    assert.equal(resolvePostLoginDestination({ redirect: '/', isAdmin: true }), ADMIN_HOME);
+  it('sends an admin with no explicit intent to the landing/home page', () => {
+    assert.equal(resolvePostLoginDestination({ redirect: null, isAdmin: true }), USER_HOME);
+    assert.equal(resolvePostLoginDestination({ redirect: '/', isAdmin: true }), USER_HOME);
   });
 
   it('sends a normal user with no intent to the normal landing/home', () => {
@@ -93,9 +93,9 @@ describe('resolvePostLoginDestination', () => {
     assert.equal(resolvePostLoginDestination({ redirect: '/ar/admin/settings', isAdmin: true }), '/admin/settings');
   });
 
-  it('falls back to the role default for unsafe redirect values', () => {
+  it('falls back to the landing page for unsafe redirect values', () => {
     assert.equal(resolvePostLoginDestination({ redirect: 'https://evil.example', isAdmin: false }), USER_HOME);
-    assert.equal(resolvePostLoginDestination({ redirect: '//evil.example', isAdmin: true }), ADMIN_HOME);
+    assert.equal(resolvePostLoginDestination({ redirect: '//evil.example', isAdmin: true }), USER_HOME);
   });
 
   it('isAdminPath only matches the admin subtree', () => {

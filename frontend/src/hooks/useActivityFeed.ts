@@ -59,9 +59,9 @@ export function useActivityFeed(initialData?: { events: ActivityEvent[]; meta: A
       }
     },
     initialData: initialData ?? FALLBACK_FEED_DATA,
-    staleTime: 30 * 1000,
-    refetchInterval: 45 * 1000,
-    refetchOnWindowFocus: true,
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 3 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const events = query.data?.events ?? FALLBACK_ACTIVITY_EVENTS;

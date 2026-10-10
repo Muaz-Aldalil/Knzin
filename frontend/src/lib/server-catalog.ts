@@ -14,6 +14,7 @@ export async function getCatalogCoursesServer(): Promise<CourseData[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/catalog/courses`, {
       next: { revalidate: 300 },
+      signal: AbortSignal.timeout(3000),
       headers: {
         'Accept': 'application/json',
       },
@@ -43,6 +44,7 @@ export async function getCourseDetailServer(slug: string): Promise<DetailedCours
   try {
     const res = await fetch(`${API_BASE_URL}/catalog/courses/${slug}`, {
       next: { revalidate: 300 },
+      signal: AbortSignal.timeout(3000),
       headers: {
         'Accept': 'application/json',
       },

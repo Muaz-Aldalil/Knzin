@@ -72,8 +72,9 @@ export function useLearnerTickets() {
       return data;
     },
     enabled: hasToken,
-    staleTime: 15 * 1000,
-    refetchInterval: 60 * 1000,
+    staleTime: 60 * 1000,
+    refetchInterval: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   // Synchronized countdown ticker

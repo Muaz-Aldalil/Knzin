@@ -26,8 +26,9 @@ export function useActiveDraws(initialData?: ActiveDrawsData) {
       }
     },
     initialData: initialData ?? { server_time_utc: getMockServerTimeUtc(), draws: MOCK_ACTIVE_DRAWS },
-    staleTime: 30 * 1000, // 30s caching
-    refetchInterval: 60 * 1000,
+    staleTime: 60 * 1000,
+    refetchInterval: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const serverTimeUtc = query.data?.server_time_utc ?? getMockServerTimeUtc();

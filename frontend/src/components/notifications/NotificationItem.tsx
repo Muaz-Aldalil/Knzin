@@ -154,18 +154,16 @@ export function NotificationItem({
           : 'bg-primary/5 hover:bg-primary/10 border-primary/20 hover:border-primary/30 text-content-primary shadow-2xs'
       }`}
     >
-      {/* Unread Indicator Dot */}
-      {!is_read && (
-        <span
-          className={`absolute top-3.5 ${
-            isRtl ? 'left-3.5' : 'right-3.5'
-          } w-2 h-2 rounded-full bg-primary ring-4 ring-primary/20`}
-        />
-      )}
-
-      {/* Header Row: Category Badge & Timestamp */}
+      {/* Header Row: Category Badge, Unread Indicator & Timestamp */}
       <div className="flex items-center justify-between gap-2 mb-2">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
+          {!is_read && (
+            <span
+              className="w-2 h-2 rounded-full bg-primary ring-4 ring-primary/20 shrink-0"
+              aria-label={isRtl ? 'غير مقروء' : 'Unread'}
+              data-testid="notification-unread-dot"
+            />
+          )}
           <span
             className={`inline-flex items-center gap-1 text-[11px] font-bold ${categoryMeta.badgeColor}`}
           >
@@ -174,14 +172,14 @@ export function NotificationItem({
           </span>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] text-content-muted">
+        <div className="flex items-center gap-1 text-[11px] text-content-muted shrink-0">
           <Clock className="w-3 h-3" />
           <span>{formatTime(created_at)}</span>
         </div>
       </div>
 
       {/* Title with BDI */}
-      <h4 className="text-xs sm:text-sm font-semibold text-content-primary mb-1 pe-4 leading-snug">
+      <h4 className="text-xs sm:text-sm font-semibold text-content-primary mb-1 leading-snug">
         <bdi>{title}</bdi>
       </h4>
 

@@ -134,8 +134,8 @@ async function runLiveVerification() {
 
   // Verify post-login destination resolution for admin
   const adminDestination = resolvePostLoginDestination({ redirect: null, isAdmin: true });
-  assert.equal(adminDestination, '/admin', 'Admin default destination must be /admin (Admin Dashboard)');
-  console.log(`[PASS] Admin destination resolved to Admin Dashboard: ${adminDestination}`);
+  assert.equal(adminDestination, '/', 'Admin default destination must be / (Landing Page)');
+  console.log(`[PASS] Admin default destination resolved to Landing Page: ${adminDestination}`);
 
   // Verify Admin Navigation Items
   const visibleAdminItems = getVisibleAdminNavItems(caps);

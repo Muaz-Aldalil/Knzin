@@ -38,9 +38,9 @@ export function useNotifications(
   const unreadCountQuery = useQuery<UnreadCountResponse>({
     queryKey: ['notifications', 'unread-count'],
     queryFn: () => fetchUnreadCount(),
-    enabled: hasToken,
-    staleTime: 30000,
-    refetchInterval: 60000, // Poll every 60s in background
+    staleTime: 60 * 1000,
+    refetchInterval: 2 * 60 * 1000, // Poll every 2m in background
+    refetchOnWindowFocus: false,
   });
 
   // 3. Mark single notification as read mutation with optimistic update

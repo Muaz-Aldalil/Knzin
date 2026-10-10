@@ -30,9 +30,11 @@ class PublicLandingCmsController extends ApiController
             $contentMap[$sectionKey] = $data['content'];
         }
 
-        return $this->successResponse([
-            'sections' => $contentMap,
-        ]);
+        return $this->successResponse(
+            ['sections' => $contentMap],
+            \Symfony\Component\HttpFoundation\Response::HTTP_OK,
+            ['Cache-Control' => 'public, max-age=60, s-maxage=300, stale-while-revalidate=600']
+        );
     }
 
     /**
@@ -47,8 +49,10 @@ class PublicLandingCmsController extends ApiController
             $contentMap[$sectionKey] = $data['content'];
         }
 
-        return $this->successResponse([
-            'sections' => $contentMap,
-        ]);
+        return $this->successResponse(
+            ['sections' => $contentMap],
+            \Symfony\Component\HttpFoundation\Response::HTTP_OK,
+            ['Cache-Control' => 'public, max-age=60, s-maxage=300, stale-while-revalidate=600']
+        );
     }
 }

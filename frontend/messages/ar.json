@@ -29,6 +29,7 @@
     "login": "تسجيل الدخول",
     "loginWithGoogle": "الدخول عبر Google",
     "logout": "تسجيل الخروج",
+    "loggingOut": "جارِ تسجيل الخروج...",
     "guestBadge": "حساب زائر",
     "ticketsCount": "{count} تذكرة",
     "balanceIqd": "{amount} د.ع",

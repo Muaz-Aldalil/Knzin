@@ -17,6 +17,7 @@ interface AdminSessionTimeoutModalProps {
   remainingSeconds: number | null;
   onExtend: () => Promise<void>;
   onSignOut: () => void;
+  isSigningOut?: boolean;
   isExtending?: boolean;
 }
 
@@ -25,6 +26,7 @@ export function AdminSessionTimeoutModal({
   remainingSeconds,
   onExtend,
   onSignOut,
+  isSigningOut = false,
   isExtending = false,
 }: AdminSessionTimeoutModalProps) {
   const locale = useLocale();
@@ -91,11 +93,16 @@ export function AdminSessionTimeoutModal({
           <button
             type="button"
             onClick={onSignOut}
+            disabled={isSigningOut || isExtending}
             data-testid="admin-session-signout-btn"
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-border-subtle text-xs font-semibold text-content-secondary hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-border-subtle text-xs font-semibold text-content-secondary hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:pointer-events-none"
           >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>{isAr ? 'تسجيل الخروج الآن' : 'Sign Out Now'}</span>
+            {isSigningOut ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <LogOut className="w-3.5 h-3.5" />
+            )}
+            <span>{isSigningOut ? (isAr ? 'جارِ الخروج...' : 'Signing out...') : (isAr ? 'تسجيل الخروج الآن' : 'Sign Out Now')}</span>
           </button>
 
           <button

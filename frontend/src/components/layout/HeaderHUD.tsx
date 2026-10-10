@@ -10,6 +10,7 @@ import {
   User as UserIcon,
   LogIn,
   LogOut,
+  Loader2,
   Search,
   Trophy,
   ChevronDown,
@@ -144,10 +145,17 @@ export default function HeaderHUD() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   const handleLogout = async () => {
-    // Revokes the Sanctum token server-side, then clears local identity and cached data.
-    await logout();
-    router.replace('/');
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      // Revokes the Sanctum token server-side, then clears local identity and cached data.
+      await logout();
+    } finally {
+      window.location.href = `/${locale}/auth/login?logged_out=1`;
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -340,6 +348,19 @@ export default function HeaderHUD() {
             </Link>
           )}
 
+          {/* Quick 1-Click Admin Access on Desktop Navbar */}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              data-testid="header-admin-direct-link"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-gold/15 hover:bg-brand-gold/25 border border-brand-gold/30 text-brand-gold text-xs font-bold transition-all shadow-2xs group shrink-0"
+              title={isRtl ? 'لوحة التحكم الإدارية' : 'Admin Dashboard'}
+            >
+              <Shield className="w-3.5 h-3.5 text-brand-gold group-hover:scale-110 transition-transform" />
+              <span>{isRtl ? 'لوحة الإدارة' : 'Admin Panel'}</span>
+            </Link>
+          )}
+
           {/* Primary Dropdown Menu (Theme, Language, How It Works, Account/Actions) */}
           <div className="hidden lg:flex items-center shrink-0">
             <DropdownMenu modal={false}>
@@ -460,10 +481,19 @@ export default function HeaderHUD() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={handleLogout}
-                      className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20 cursor-pointer"
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        void handleLogout();
+                      }}
+                      disabled={isLoggingOut}
+                      className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20 cursor-pointer disabled:opacity-60 disabled:pointer-events-none"
                     >
-                      <LogOut className="w-4 h-4 ms-0 me-2" />
-                      <span>{t('logout')}</span>
+                      {isLoggingOut ? (
+                        <Loader2 className="w-4 h-4 ms-0 me-2 animate-spin" />
+                      ) : (
+                        <LogOut className="w-4 h-4 ms-0 me-2" />
+                      )}
+                      <span>{isLoggingOut ? t('loggingOut') : t('logout')}</span>
                     </DropdownMenuItem>
                   </>
                 ) : (
@@ -514,6 +544,7 @@ export default function HeaderHUD() {
         isAdmin={isAdmin}
         adminCapabilities={capabilities}
         onLogout={handleLogout}
+        isLoggingOut={isLoggingOut}
         onGoogleLogin={handleGoogleLogin}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenHowItWorks={() => setIsHowItWorksOpen(true)}

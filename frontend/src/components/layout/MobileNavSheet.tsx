@@ -16,6 +16,7 @@ import {
   User as UserIcon,
   LogIn,
   LogOut,
+  Loader2,
   Ticket,
   Wallet,
   BookOpen,
@@ -52,6 +53,7 @@ interface MobileNavSheetProps {
   isAdmin?: boolean;
   adminCapabilities?: AdminCapability[];
   onLogout: () => void;
+  isLoggingOut?: boolean;
   onGoogleLogin: () => void;
   onOpenSearch: () => void;
   onOpenHowItWorks?: () => void;
@@ -64,6 +66,7 @@ export default function MobileNavSheet({
   isAdmin = false,
   adminCapabilities = [],
   onLogout,
+  isLoggingOut = false,
   onGoogleLogin,
   onOpenSearch,
   onOpenHowItWorks,
@@ -280,14 +283,16 @@ export default function MobileNavSheet({
 
                 <button
                   type="button"
-                  onClick={() => {
-                    close();
-                    onLogout();
-                  }}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-start cursor-pointer"
+                  disabled={isLoggingOut}
+                  onClick={onLogout}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-start cursor-pointer disabled:opacity-60 disabled:pointer-events-none"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>{t('logout')}</span>
+                  {isLoggingOut ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <LogOut className="w-3.5 h-3.5" />
+                  )}
+                  <span>{isLoggingOut ? t('loggingOut') : t('logout')}</span>
                 </button>
               </div>
             ) : (

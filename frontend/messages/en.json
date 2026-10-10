@@ -29,6 +29,7 @@
     "login": "Sign In",
     "loginWithGoogle": "Continue with Google",
     "logout": "Sign Out",
+    "loggingOut": "Signing out...",
     "guestBadge": "Guest User",
     "ticketsCount": "{count} Tickets",
     "balanceIqd": "{amount} IQD",
